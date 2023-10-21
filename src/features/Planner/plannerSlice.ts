@@ -2,12 +2,15 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
+import { Master } from '../../types';
 
 interface PlannerState {
   date: Date;
+  currentMaster: string | null;
 }
 const initialState: PlannerState = {
   date: new Date(),
+  currentMaster: null,
 };
 
 const plannerSlice = createSlice({
@@ -20,9 +23,17 @@ const plannerSlice = createSlice({
     ) => {
       state.date = action.payload;
     },
+
+    setCurrentMaster: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.currentMaster = action.payload;
+    },
   },
 });
 
-export const { setDate } = plannerSlice.actions;
+export const { setDate, setCurrentMaster } =
+  plannerSlice.actions;
 
 export default plannerSlice.reducer;

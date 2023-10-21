@@ -8,6 +8,7 @@ import {
   useAppSelector,
 } from '../../store';
 import { setIsMobile } from './appSlice';
+import Planner from '../Planner/Planner';
 // import MyCalendar from './components/MyCalendar';
 // import RegCalendar from './components/RegCalendar';
 // import TimeTable from './components/TimeTable';
@@ -31,7 +32,7 @@ function App() {
 
   return (
     <div className=''>
-      <RegCalendar />
+      <Planner />
       {/* <MyCalendar setDate={setDate} />
       <RegCalendar />
       <TimeTable date={date} />

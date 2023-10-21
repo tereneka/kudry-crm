@@ -24,6 +24,8 @@ import {
   useGetPhotoQuery,
 } from '../api/apiSlise';
 import { Master } from '../../types';
+import MastersSelect from '../../components/MastersSelect';
+import { setCurrentMaster } from './plannerSlice';
 
 interface Props {}
 export default function Planner({}: Props) {
@@ -33,27 +35,14 @@ export default function Planner({}: Props) {
     isError,
   } = useGetActualRegistrationListQuery();
 
-  const { data: masterList } =
-    useGetMasterListQuery();
-
-  const { data: masterPhotoList } =
-    useGetPhotoListQuery({
-      folderPath: 'masters',
-      numberPhotosPerPage: 4,
-    });
-
-  // const { data: masterPhotoUrl } =
-  //   useGetPhotoQuery('masters/ulka.png');
-  // console.log(masterPhotoUrl);
-
-  const { isMobile } = useAppSelector(
-    (state) => state.appState
-  );
-
-  const { date } = useAppSelector(
-    (state) => state.regState
+  const { date, currentMaster } = useAppSelector(
+    (state) => state.plannerState
   );
   const dispatch = useAppDispatch();
+
+  const currentMasterRegList = regList?.filter(
+    (reg) => reg.masterId === currentMaster
+  );
 
   const onPanelChange = (
     value: Dayjs,
@@ -75,28 +64,17 @@ export default function Planner({}: Props) {
   // };
   // };
 
-  const { Option } = Select;
-
-  const selectOptionContent = (
-    master: Master
-  ) => (
-    <div>
-      <Avatar
-        style={{ background: '#10899e' }}
-        src={master.photoUrl}
-        alt='фото мастера'
-      />{' '}
-      {master.name}
-    </div>
-  );
+  const handleMasterChange = (value: string) => {
+    dispatch(setCurrentMaster(value));
+  };
 
   return (
-    <>
+    <div className='planner'>
       <Calendar
-        className='reg-calendar'
+        style={{ maxWidth: 400 }}
         dateCellRender={(date: Dayjs) => {
           if (
-            regList?.some(
+            currentMasterRegList?.some(
               (reg) =>
                 reg.date
                   .toDate()
@@ -104,17 +82,18 @@ export default function Planner({}: Props) {
                 date.format('DD.MM.YYYY')
             )
           ) {
-            const regCount = regList.filter(
-              (reg) =>
-                reg.date
-                  .toDate()
-                  .toLocaleDateString() ===
-                date.format('DD.MM.YYYY')
-            ).length;
+            const regCount =
+              currentMasterRegList.filter(
+                (reg) =>
+                  reg.date
+                    .toDate()
+                    .toLocaleDateString() ===
+                  date.format('DD.MM.YYYY')
+              ).length;
 
             return (
-              <div className='reg-calendar__selected-cell'>
-                <div className='reg-calendar__badge'>
+              <div className='planner__calendar-cell planner__calendar-cell_type_event'>
+                <div className='planner__badge'>
                   {regCount}
                 </div>
               </div>
@@ -126,23 +105,11 @@ export default function Planner({}: Props) {
         onPanelChange={onPanelChange}
       />
 
-      <Select
-        placeholder='Please select store'
-        optionLabelProp='label'
-        style={{ width: '100%' }}>
-        {masterList?.map((master) => {
-          const content =
-            selectOptionContent(master);
-          return (
-            <Option
-              key={master.id}
-              value={master.name}
-              label={content}>
-              {content}
-            </Option>
-          );
-        })}
-      </Select>
-    </>
+      <MastersSelect
+        isAllOption={false}
+        currentMaster={currentMaster}
+        onChange={handleMasterChange}
+      />
+    </div>
   );
 }

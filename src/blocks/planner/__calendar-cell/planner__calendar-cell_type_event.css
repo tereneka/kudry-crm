@@ -1,4 +1,4 @@
-.reg-calendar__selected-cell {
+.planner__calendar-cell_type_event {
   width: 38px;
   height: 38px;
   position: absolute;
@@ -13,9 +13,3 @@
   justify-content: flex-end;
   align-items: center;
 }
-/* 
-@media screen and (min-width: 769px) {
-  .reg-calendar__selected-cell {
-    display: none;
-  }
-} */

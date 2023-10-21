@@ -16,7 +16,7 @@ export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     appState: appReducer,
-    regState: plannerReducer,
+    plannerState: plannerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

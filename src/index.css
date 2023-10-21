@@ -4,6 +4,17 @@
 
 @import url(./blocks/root/root.css);
 
-@import url(./blocks//reg-calendar/reg-calendar.css);
-@import url(./blocks/reg-calendar/reg-calendar__selected-cell.css);
-@import url(./blocks//reg-calendar/reg-calendar__badge.css);
+@import url(./blocks/planner/planner.css);
+@import url(./blocks/planner/__calendar-cell/planner__calendar-cell_type_event.css);
+@import url(./blocks/planner/planner__badge.css);
+
+/* стили для antd */
+:where(
+    .css-dev-only-do-not-override-5dcebe
+  ).ant-select-single:not(
+    .ant-select-customize-input
+  )
+  .ant-select-selector {
+  height: 40px;
+  padding-top: 2px;
+}
