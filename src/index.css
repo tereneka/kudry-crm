@@ -1,1 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700;800&display=swap');
 
+@import url(./vendor/variables.css);
+
+@import url(./blocks/root/root.css);
+
+@import url(./blocks//reg-calendar/reg-calendar.css);
+@import url(./blocks/reg-calendar/reg-calendar__selected-cell.css);
+@import url(./blocks//reg-calendar/reg-calendar__badge.css);

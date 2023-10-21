@@ -1,0 +1,9 @@
+.reg-calendar__badge {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--main-back);
+  background: var(--accent-bright);
+  border-radius: 2px;
+  padding: 1px 2px;
+}
