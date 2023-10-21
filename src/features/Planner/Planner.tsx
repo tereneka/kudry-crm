@@ -1,34 +1,15 @@
-import React from 'react';
 import type { Dayjs } from 'dayjs';
-import {
-  Avatar,
-  Badge,
-  Calendar,
-  Select,
-  Space,
-  theme,
-} from 'antd';
+import { Calendar } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import type {
-  BadgeProps,
-  CalendarProps,
-} from 'antd';
-import {
-  useGetActualRegistrationListQuery,
-  useGetMasterListQuery,
-  useGetPhotoListQuery,
-  useGetPhotoQuery,
-} from '../api/apiSlise';
-import { Master } from '../../types';
+import { useGetActualRegistrationListQuery } from '../api/apiSlise';
 import MastersSelect from '../../components/MastersSelect';
 import { setCurrentMaster } from './plannerSlice';
 
-interface Props {}
-export default function Planner({}: Props) {
+export default function Planner() {
   const {
     data: regList,
     isLoading,
@@ -44,6 +25,35 @@ export default function Planner({}: Props) {
     (reg) => reg.masterId === currentMaster
   );
 
+  const dateCellRender = (date: Dayjs) => {
+    if (
+      currentMasterRegList?.some(
+        (reg) =>
+          reg.date
+            .toDate()
+            .toLocaleDateString() ===
+          date.format('DD.MM.YYYY')
+      )
+    ) {
+      const regCount =
+        currentMasterRegList.filter(
+          (reg) =>
+            reg.date
+              .toDate()
+              .toLocaleDateString() ===
+            date.format('DD.MM.YYYY')
+        ).length;
+
+      return (
+        <div className='planner__calendar-cell planner__calendar-cell_type_event'>
+          <div className='planner__badge'>
+            {regCount}
+          </div>
+        </div>
+      );
+    }
+  };
+
   const onPanelChange = (
     value: Dayjs,
     mode: CalendarMode
@@ -57,13 +67,6 @@ export default function Planner({}: Props) {
 
   // const onSelect = (value: Dayjs) => console.log(value.format('YYYY-MM-DD'));
 
-  // const cellRender: CalendarProps<Dayjs>['cellRender'] = (current, info) => {
-  //   if (info.type === 'date') return dateCellRender(current);
-  //   if (info.type === 'month') return monthCellRender(current);
-  //   return info.originNode;
-  // };
-  // };
-
   const handleMasterChange = (value: string) => {
     dispatch(setCurrentMaster(value));
   };
@@ -72,44 +75,28 @@ export default function Planner({}: Props) {
     <div className='planner'>
       <Calendar
         style={{ maxWidth: 400 }}
-        dateCellRender={(date: Dayjs) => {
-          if (
-            currentMasterRegList?.some(
-              (reg) =>
-                reg.date
-                  .toDate()
-                  .toLocaleDateString() ===
-                date.format('DD.MM.YYYY')
-            )
-          ) {
-            const regCount =
-              currentMasterRegList.filter(
-                (reg) =>
-                  reg.date
-                    .toDate()
-                    .toLocaleDateString() ===
-                  date.format('DD.MM.YYYY')
-              ).length;
-
-            return (
-              <div className='planner__calendar-cell planner__calendar-cell_type_event'>
-                <div className='planner__badge'>
-                  {regCount}
-                </div>
-              </div>
-            );
-          }
-        }}
+        dateCellRender={dateCellRender}
         fullscreen={false}
         onSelect={onSelect}
         onPanelChange={onPanelChange}
       />
 
-      <MastersSelect
-        isAllOption={false}
-        currentMaster={currentMaster}
-        onChange={handleMasterChange}
-      />
+      <div className='planner__description-container'>
+        <MastersSelect
+          isAllOption={false}
+          currentMaster={currentMaster}
+          onChange={handleMasterChange}
+        />
+
+        <ul className='planner__description-list'>
+          <li className='planner__description-list-item'>
+            записи
+          </li>
+          <li className='planner__description-list-item'>
+            напоминалки
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,9 @@
 @import url(./blocks/planner/planner.css);
 @import url(./blocks/planner/__calendar-cell/planner__calendar-cell_type_event.css);
 @import url(./blocks/planner/planner__badge.css);
+@import url(./blocks/planner/planner__description-container.css);
+@import url(./blocks/planner/planner__description-list.css);
+@import url(./blocks/planner/planner__description-list-item.css);
 
 /* стили для antd */
 :where(
