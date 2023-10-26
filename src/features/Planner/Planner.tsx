@@ -1,5 +1,5 @@
 import type { Dayjs } from 'dayjs';
-import { Calendar } from 'antd';
+import { Button, Calendar } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import {
   useAppDispatch,
@@ -7,7 +7,18 @@ import {
 } from '../../store';
 import { useGetActualRegistrationListQuery } from '../api/apiSlise';
 import MastersSelect from '../../components/MastersSelect';
-import { setCurrentMaster } from './plannerSlice';
+import {
+  setCurrentMaster,
+  setCurrentMasterRegList,
+  setDate,
+} from './plannerSlice';
+import TodoList from './TodoList';
+import { useEffect } from 'react';
+import dayjs from 'dayjs';
+import { DATE_FORMAT } from '../../constants';
+import plus from '../../images/plus.svg';
+import { PlusOutlined } from '@ant-design/icons';
+import { type } from 'os';
 
 export default function Planner() {
   const {
@@ -16,14 +27,15 @@ export default function Planner() {
     isError,
   } = useGetActualRegistrationListQuery();
 
-  const { date, currentMaster } = useAppSelector(
+  const {
+    date,
+    currentMaster,
+    currentMasterRegList,
+  } = useAppSelector(
     (state) => state.plannerState
   );
   const dispatch = useAppDispatch();
-
-  const currentMasterRegList = regList?.filter(
-    (reg) => reg.masterId === currentMaster
-  );
+  console.log(currentMasterRegList);
 
   const dateCellRender = (date: Dayjs) => {
     if (
@@ -32,7 +44,7 @@ export default function Planner() {
           reg.date
             .toDate()
             .toLocaleDateString() ===
-          date.format('DD.MM.YYYY')
+          date.format(DATE_FORMAT)
       )
     ) {
       const regCount =
@@ -41,7 +53,7 @@ export default function Planner() {
             reg.date
               .toDate()
               .toLocaleDateString() ===
-            date.format('DD.MM.YYYY')
+            date.format(DATE_FORMAT)
         ).length;
 
       return (
@@ -54,49 +66,69 @@ export default function Planner() {
     }
   };
 
-  const onPanelChange = (
-    value: Dayjs,
-    mode: CalendarMode
-  ) => {
-    // console.log(value.format('DD.MM.YYYY'), mode);
-    // console.log(new Date().toLocaleDateString());
-  };
   function onSelect(value: Dayjs) {
-    // setDate(value.format('DD.MM.YYYY'));
+    dispatch(setDate(value.format(DATE_FORMAT)));
   }
-
-  // const onSelect = (value: Dayjs) => console.log(value.format('YYYY-MM-DD'));
 
   const handleMasterChange = (value: string) => {
     dispatch(setCurrentMaster(value));
+    dispatch(
+      setDate(new Date().toLocaleDateString())
+    );
   };
+
+  useEffect(() => {
+    dispatch(
+      setCurrentMasterRegList(
+        regList?.filter(
+          (reg) => reg.masterId === currentMaster
+        )
+      )
+    );
+  }, [regList, currentMaster]);
 
   return (
     <div className='planner'>
-      <Calendar
-        style={{ maxWidth: 400 }}
-        dateCellRender={dateCellRender}
-        fullscreen={false}
-        onSelect={onSelect}
-        onPanelChange={onPanelChange}
-      />
-
-      <div className='planner__description-container'>
-        <MastersSelect
-          isAllOption={false}
-          currentMaster={currentMaster}
-          onChange={handleMasterChange}
+      <div>
+        <Button
+          shape='circle'
+          icon={<PlusOutlined />}
+          type='primary'
+          danger
+        />
+        <Button
+          shape='circle'
+          icon={<PlusOutlined />}
+          type='primary'
+        />
+      </div>
+      <div className='planner__calendar-container'>
+        <Calendar
+          style={{ maxWidth: 500 }}
+          dateCellRender={dateCellRender}
+          fullscreen={false}
+          onSelect={onSelect}
+          value={dayjs(date, DATE_FORMAT)}
         />
 
-        <ul className='planner__description-list'>
-          <li className='planner__description-list-item'>
-            записи
-          </li>
-          <li className='planner__description-list-item'>
-            напоминалки
-          </li>
-        </ul>
+        <div className='planner__description-container'>
+          <MastersSelect
+            isAllOption={false}
+            currentMaster={currentMaster}
+            onChange={handleMasterChange}
+          />
+
+          <ul className='planner__description-list'>
+            <li className='planner__description-list-item'>
+              записи
+            </li>
+            <li className='planner__description-list-item'>
+              напоминалки
+            </li>
+          </ul>
+        </div>
       </div>
+      <TodoList />
     </div>
   );
 }

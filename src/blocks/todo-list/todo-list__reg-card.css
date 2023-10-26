@@ -1,0 +1,11 @@
+.todo-list__reg-card {
+  width: calc((100% - 84px) / 2);
+  position: absolute;
+  left: 82px;
+  background: var(--accent-bright);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+}

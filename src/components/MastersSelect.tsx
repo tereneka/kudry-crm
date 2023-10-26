@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 interface Props {
   isAllOption: boolean;
   currentMaster: string | null;
-  onChange: any;
+  onChange: (value: string) => void;
 }
 
 export default function MastersSelect({

@@ -9,6 +9,7 @@ import {
 } from '../../store';
 import { setIsMobile } from './appSlice';
 import Planner from '../Planner/Planner';
+import TimeTable from '../../components/TimeTable';
 // import MyCalendar from './components/MyCalendar';
 // import RegCalendar from './components/RegCalendar';
 // import TimeTable from './components/TimeTable';
@@ -34,9 +35,9 @@ function App() {
     <div className=''>
       <Planner />
       {/* <MyCalendar setDate={setDate} />
-      <RegCalendar />
-      <TimeTable date={date} />
-      <UserRegForm /> */}
+      <RegCalendar /> */}
+      {/* <TimeTable /> */}
+      {/* <UserRegForm /> */}
     </div>
   );
 }

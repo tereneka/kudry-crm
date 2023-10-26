@@ -2,15 +2,22 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import { Master } from '../../types';
+import {
+  Master,
+  Registration,
+} from '../../types';
 
 interface PlannerState {
-  date: Date;
+  date: string;
   currentMaster: string | null;
+  currentMasterRegList:
+    | Registration[]
+    | undefined;
 }
 const initialState: PlannerState = {
-  date: new Date(),
+  date: new Date().toLocaleDateString(),
   currentMaster: null,
+  currentMasterRegList: undefined,
 };
 
 const plannerSlice = createSlice({
@@ -19,7 +26,7 @@ const plannerSlice = createSlice({
   reducers: {
     setDate: (
       state,
-      action: PayloadAction<Date>
+      action: PayloadAction<string>
     ) => {
       state.date = action.payload;
     },
@@ -30,10 +37,22 @@ const plannerSlice = createSlice({
     ) => {
       state.currentMaster = action.payload;
     },
+
+    setCurrentMasterRegList: (
+      state,
+      action: PayloadAction<
+        Registration[] | undefined
+      >
+    ) => {
+      state.currentMasterRegList = action.payload;
+    },
   },
 });
 
-export const { setDate, setCurrentMaster } =
-  plannerSlice.actions;
+export const {
+  setDate,
+  setCurrentMaster,
+  setCurrentMasterRegList,
+} = plannerSlice.actions;
 
 export default plannerSlice.reducer;

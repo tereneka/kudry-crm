@@ -1,12 +1,2 @@
 .planner {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-@media screen and (min-width: 700px) {
-  .planner {
-    flex-direction: row;
-    gap: 20px;
-  }
 }

@@ -56,6 +56,12 @@ interface RegistrationContext {
   registrationList: Registration[] | undefined;
 }
 
+interface User {
+  id: string;
+  name: string;
+  phone: string;
+}
+
 export type {
   Master,
   Category,
@@ -63,4 +69,5 @@ export type {
   Service,
   Registration,
   RegistrationContext,
+  User,
 };

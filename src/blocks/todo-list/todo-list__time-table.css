@@ -1,0 +1,6 @@
+.todo-list__time-table {
+  width: 100%;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}

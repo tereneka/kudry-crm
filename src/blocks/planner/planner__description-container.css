@@ -1,7 +1,6 @@
 .planner__description-container {
   display: flex;
   gap: 20px;
-  padding: 0 8px;
   align-items: center;
   justify-content: center;
 }
