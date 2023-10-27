@@ -1,5 +1,5 @@
 import type { Dayjs } from 'dayjs';
-import { Button, Calendar } from 'antd';
+import { Button, Calendar, Tooltip } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import {
   useAppDispatch,
@@ -11,6 +11,7 @@ import {
   setCurrentMaster,
   setCurrentMasterRegList,
   setDate,
+  setIsRegFormOpen,
 } from './plannerSlice';
 import TodoList from './TodoList';
 import { useEffect } from 'react';
@@ -19,6 +20,7 @@ import { DATE_FORMAT } from '../../constants';
 import plus from '../../images/plus.svg';
 import { PlusOutlined } from '@ant-design/icons';
 import { type } from 'os';
+import RegForm from './RegForm';
 
 export default function Planner() {
   const {
@@ -31,11 +33,11 @@ export default function Planner() {
     date,
     currentMaster,
     currentMasterRegList,
+    isRegFormOpen,
   } = useAppSelector(
     (state) => state.plannerState
   );
   const dispatch = useAppDispatch();
-  console.log(currentMasterRegList);
 
   const dateCellRender = (date: Dayjs) => {
     if (
@@ -66,16 +68,20 @@ export default function Planner() {
     }
   };
 
-  function onSelect(value: Dayjs) {
+  function handleDateSelect(value: Dayjs) {
     dispatch(setDate(value.format(DATE_FORMAT)));
   }
 
-  const handleMasterChange = (value: string) => {
+  function handleMasterChange(value: string) {
     dispatch(setCurrentMaster(value));
     dispatch(
       setDate(new Date().toLocaleDateString())
     );
-  };
+  }
+
+  function handleAddRegBtnClick() {
+    dispatch(setIsRegFormOpen(true));
+  }
 
   useEffect(() => {
     dispatch(
@@ -89,25 +95,33 @@ export default function Planner() {
 
   return (
     <div className='planner'>
-      <div>
-        <Button
-          shape='circle'
-          icon={<PlusOutlined />}
-          type='primary'
-          danger
-        />
-        <Button
-          shape='circle'
-          icon={<PlusOutlined />}
-          type='primary'
-        />
+      <div className='planner__add-btn-group'>
+        <Tooltip title='добавить запись'>
+          <Button
+            shape='circle'
+            icon={<PlusOutlined />}
+            type='primary'
+            danger
+            size='large'
+            onClick={handleAddRegBtnClick}
+          />
+        </Tooltip>
+
+        <Tooltip title='добавить напоминание'>
+          <Button
+            shape='circle'
+            icon={<PlusOutlined />}
+            type='primary'
+            size='large'
+          />
+        </Tooltip>
       </div>
       <div className='planner__calendar-container'>
         <Calendar
           style={{ maxWidth: 500 }}
           dateCellRender={dateCellRender}
           fullscreen={false}
-          onSelect={onSelect}
+          onSelect={handleDateSelect}
           value={dayjs(date, DATE_FORMAT)}
         />
 
@@ -129,6 +143,7 @@ export default function Planner() {
         </div>
       </div>
       <TodoList />
+      <RegForm />
     </div>
   );
 }

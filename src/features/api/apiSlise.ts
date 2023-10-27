@@ -25,6 +25,7 @@ import {
   Registration,
   Service,
   SubCategory,
+  User,
 } from '../../types';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
@@ -33,6 +34,7 @@ export const apiSlice = createApi({
   baseQuery: fakeBaseQuery(),
   tagTypes: [
     'Master',
+    'User',
     'Category',
     'SubCategory',
     'Photo',
@@ -63,6 +65,31 @@ export const apiSlice = createApi({
         }
       },
       providesTags: ['Master'],
+    }),
+
+    getUserList: builder.query<User[], void>({
+      async queryFn() {
+        try {
+          const usersQuery = query(
+            collection(db, 'users'),
+            orderBy('name')
+          );
+          const querySnaphot = await getDocs(
+            usersQuery
+          );
+          let users: any[] = [];
+          querySnaphot?.forEach((doc) => {
+            users.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          return { data: users };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ['User'],
     }),
 
     getCategoryList: builder.query<
@@ -303,31 +330,47 @@ export const apiSlice = createApi({
       providesTags: ['Registration'],
     }),
 
-    // addRegistration: builder.mutation<
-    //   string,
-    //   any
-    // >({
-    //   queryFn(body, api) {
-    //     const registrationRef = collection(
-    //       db,
-    //       'registrations'
-    //     );
-    //     return addDoc(registrationRef, body)
-    //       .then((data) => {
-    //         api.dispatch(
-    //           setFormValues({ id: data.id })
-    //         );
-    //         return data.id;
-    //       })
-    //       .catch((err) => err);
-    //   },
-    //   invalidatesTags: ['Registration'],
-    // }),
+    addRegistration: builder.mutation<
+      string,
+      any
+    >({
+      queryFn(body, api) {
+        const registrationRef = collection(
+          db,
+          'registrations'
+        );
+        return addDoc(registrationRef, body)
+          .then((data) => {
+            // api.dispatch(
+            //   setFormValues({ id: data.id })
+            // );
+            return data.id;
+          })
+          .catch((err) => err);
+      },
+      invalidatesTags: ['Registration'],
+    }),
+
+    addUser: builder.mutation<
+      string,
+      Omit<User, 'id'>
+    >({
+      queryFn(body, api) {
+        const userRef = collection(db, 'users');
+        return addDoc(userRef, body)
+          .then((data) => {
+            return data.id;
+          })
+          .catch((err) => err);
+      },
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
 export const {
   useGetMasterListQuery,
+  useGetUserListQuery,
   useGetCategoryListQuery,
   useGetRegCategoryListQuery,
   useGetSubCategoryListQuery,
@@ -335,5 +378,6 @@ export const {
   useGetPhotoQuery,
   useGetPhotoListQuery,
   useGetActualRegistrationListQuery,
-  // useAddRegistrationMutation,
+  useAddRegistrationMutation,
+  useAddUserMutation,
 } = apiSlice;

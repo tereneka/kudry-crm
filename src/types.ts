@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 interface Master {
   id: string;
   categoryIdList: string[];

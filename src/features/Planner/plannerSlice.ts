@@ -13,11 +13,15 @@ interface PlannerState {
   currentMasterRegList:
     | Registration[]
     | undefined;
+  isRegFormOpen: boolean;
+  isUserFormOpen: boolean;
 }
 const initialState: PlannerState = {
   date: new Date().toLocaleDateString(),
   currentMaster: null,
   currentMasterRegList: undefined,
+  isRegFormOpen: false,
+  isUserFormOpen: false,
 };
 
 const plannerSlice = createSlice({
@@ -46,6 +50,20 @@ const plannerSlice = createSlice({
     ) => {
       state.currentMasterRegList = action.payload;
     },
+
+    setIsRegFormOpen: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isRegFormOpen = action.payload;
+    },
+
+    setIsUserFormOpen: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isUserFormOpen = action.payload;
+    },
   },
 });
 
@@ -53,6 +71,8 @@ export const {
   setDate,
   setCurrentMaster,
   setCurrentMasterRegList,
+  setIsRegFormOpen,
+  setIsUserFormOpen,
 } = plannerSlice.actions;
 
 export default plannerSlice.reducer;
