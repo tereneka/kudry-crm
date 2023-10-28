@@ -1,7 +1,7 @@
 import React from 'react';
-import { useGetMasterListQuery } from '../features/api/apiSlise';
+import { useGetMasterListQuery } from '../../reducers/apiSlice';
 import { Avatar, Select } from 'antd';
-import { Master } from '../types';
+import { Master } from '../../types';
 import { nanoid } from 'nanoid';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-export default function MastersSelect({
+export default function MasterSelect({
   isAllOption,
   currentMaster,
   onChange,
@@ -33,7 +33,6 @@ export default function MastersSelect({
 
   return (
     <Select
-      className='master-select'
       value={currentMaster}
       onChange={onChange}
       placeholder={'Выберите мастера'}

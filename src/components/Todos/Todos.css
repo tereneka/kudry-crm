@@ -1,0 +1,46 @@
+.todos {
+  position: relative;
+  padding: 20px 0;
+}
+
+.todos__time-table {
+  width: 100%;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.todos__time-table-cell {
+  background: var(--disabled);
+  font-size: 16px;
+  text-align: center;
+  padding: 4px 0;
+  width: calc((100% - 84px) / 2);
+  height: 20px;
+  cursor: pointer;
+}
+
+.todos__time-table-cell:first-of-type {
+  width: 20%;
+  width: 80px;
+  cursor: auto;
+}
+
+.todos__reg-card {
+  width: calc((100% - 84px) / 2);
+  position: absolute;
+  left: 82px;
+  background: var(--accent-bright);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.todos__reg-card-item {
+  color: var(--main-back);
+  display: flex;
+  gap: 4px;
+  padding-left: 8px;
+}

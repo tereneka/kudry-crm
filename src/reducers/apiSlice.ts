@@ -18,7 +18,7 @@ import {
 import {
   db,
   storage,
-} from '../../db/firebaseConfig';
+} from '../db/firebaseConfig';
 import {
   Category,
   Master,
@@ -26,7 +26,7 @@ import {
   Service,
   SubCategory,
   User,
-} from '../../types';
+} from '../types';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({

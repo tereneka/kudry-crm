@@ -1,0 +1,42 @@
+.planner-calendar {
+  max-width: 500px;
+}
+
+.planner-calendar__description-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.planner-caledar__description-list-item {
+  position: relative;
+  /* margin-bottom: 4px; */
+}
+
+.planner-caledar__description-list-item:before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 6px;
+  left: -20px;
+  border-radius: 4px;
+}
+
+.planner-caledar__description-list-item:first-of-type::before {
+  background: var(--accent-bright);
+}
+
+.planner-caledar__description-list-item:nth-of-type(
+    2
+  )::before {
+  background: var(--accent-soft);
+}
+
+/* .planner-caledar__description-list-item:last-of-type {
+  margin-bottom: 0;
+} */

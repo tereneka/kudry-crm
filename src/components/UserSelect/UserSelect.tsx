@@ -9,7 +9,7 @@ import {
 import {
   useAddUserMutation,
   useGetUserListQuery,
-} from '../api/apiSlise';
+} from '../../reducers/apiSlice';
 import {
   PlusOutlined,
   CloseOutlined,
@@ -19,9 +19,9 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { setIsUserFormOpen } from './plannerSlice';
+import { setIsUserFormOpen } from '../../features/Planner/plannerSlice';
 
-export default function UsersSelect() {
+export default function UserSelect() {
   const { data: users } = useGetUserListQuery();
 
   const { isUserFormOpen } = useAppSelector(
@@ -76,6 +76,7 @@ export default function UsersSelect() {
         })}
         onDropdownVisibleChange={closeForm}
         showSearch
+        allowClear
         optionFilterProp='children'
         filterOption={(input, option) =>
           (option?.label ?? '').includes(input)

@@ -69,7 +69,7 @@ const plannerSlice = createSlice({
 
 export const {
   setDate,
-  setCurrentMaster,
+  // setCurrentMaster,
   setCurrentMasterRegList,
   setIsRegFormOpen,
   setIsUserFormOpen,

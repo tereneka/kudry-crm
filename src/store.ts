@@ -3,9 +3,11 @@ import {
   ThunkAction,
   Action,
 } from '@reduxjs/toolkit';
-import appReducer from './features/App/appSlice';
 import plannerReducer from './features/Planner/plannerSlice';
-import { apiSlice } from './features/api/apiSlise';
+import calendarReducer from './reducers/calendarSlice';
+import regReducer from './reducers/regSlice';
+import mastersReducer from './reducers/mastersSlice';
+import { apiSlice } from './reducers/apiSlice';
 import {
   TypedUseSelectorHook,
   useDispatch,
@@ -15,8 +17,10 @@ import {
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    appState: appReducer,
     plannerState: plannerReducer,
+    calendarState: calendarReducer,
+    regState: regReducer,
+    mastersState: mastersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

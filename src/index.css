@@ -30,6 +30,19 @@
   min-width: 160px;
 }
 
+/* :where(
+    .css-dev-only-do-not-override-5dcebe
+  ).ant-float-btn-primary
+  .ant-float-btn-body {
+  background: var(--accent-bright);
+}
+
+:where(
+    .css-dev-only-do-not-override-5dcebe
+  ).ant-float-btn-primary {
+  background-color: var(--accent-bright);
+} */
+
 .planner__add-btn-group {
   display: flex;
   justify-content: flex-end;
@@ -37,9 +50,5 @@
   gap: 8px;
 }
 
-.xxx {
-  display: flex;
-  gap: 8px;
-}
 @media screen and (min-width: 700px) {
 }
