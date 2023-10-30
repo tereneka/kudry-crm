@@ -40,12 +40,12 @@ interface Service {
 }
 
 interface Registration {
-  // id: string;
   userId: string;
   serviceIdList: string[];
   masterId: string;
   date: Date;
-  time: string[];
+  time: string;
+  duration: number;
 }
 
 interface DbRegistration

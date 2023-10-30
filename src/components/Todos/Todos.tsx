@@ -10,8 +10,8 @@ import { Button, Tooltip } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { TIME_LIST } from '../../constants';
 import { useState } from 'react';
-import { setRegStartTime } from '../../reducers/regSlice';
 import { useGetUserListQuery } from '../../reducers/apiSlice';
+import { setRegFormValues } from '../../reducers/regSlice';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -21,7 +21,7 @@ export default function Todos() {
   );
   const {
     masterRegList,
-    regStartTime,
+    regFormValues,
     isTimeError,
   } = useAppSelector((state) => state.regState);
 
@@ -42,16 +42,17 @@ export default function Todos() {
       const user = users?.find(
         (user) => user.id === reg.userId
       );
+
       return (
         <div
           className='todos__reg-card'
           style={{
             height:
-              reg.time.length * 28 +
-              (reg.time.length - 1) * 4,
+              reg.duration * 28 +
+              (reg.duration - 1) * 4,
             top:
-              52 +
-              TIME_LIST.indexOf(reg.time[0]) * 32,
+              44 +
+              TIME_LIST.indexOf(reg.time) * 32,
           }}
           key={nanoid()}
           draggable={true}
@@ -90,7 +91,12 @@ export default function Todos() {
     const time = e.currentTarget.dataset.time;
 
     if (isTimeSelectAvailable && time) {
-      dispatch(setRegStartTime(time));
+      dispatch(
+        setRegFormValues({
+          ...regFormValues,
+          time,
+        })
+      );
     }
 
     setIsTimeSelectAvailable(false);
@@ -109,11 +115,10 @@ export default function Todos() {
           isTimeError ? 'rgba(215, 142, 123)' : ''
         }>
         <Button
-          // shape='circle'
           icon={<SelectOutlined />}
           type='primary'
           danger={!isTimeSelectAvailable}
-          // size='large'
+          size='small'
           onClick={toggleTimeSelectBtn}
         />
       </Tooltip>
@@ -131,7 +136,7 @@ export default function Todos() {
                 ? 'todos__time-table-cell_active'
                 : ''
             } ${
-              regStartTime === time
+              regFormValues.time === time
                 ? 'todos__time-table-cell_selected'
                 : ''
             }`}

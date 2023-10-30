@@ -22,6 +22,7 @@ const INITIAL_REG_FORM_VALUES = {
   masterId: undefined,
   date: new Date(),
   time: undefined,
+  duration: 0,
 };
 
 export {

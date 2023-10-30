@@ -29,6 +29,7 @@ import {
   User,
 } from '../types';
 import dayjs from 'dayjs';
+import { getEarlierDate } from '../utils/date';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({
@@ -310,15 +311,7 @@ export const apiSlice = createApi({
         try {
           const registrationsQuery = query(
             collection(db, 'registrations'),
-            where(
-              'date',
-              '>=',
-              new Date(
-                new Date().setDate(
-                  new Date().getDate() - 1
-                )
-              )
-            )
+            where('date', '>=', getEarlierDate(1))
           );
           const querySnaphot = await getDocs(
             registrationsQuery

@@ -14,7 +14,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import { User } from '../../types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface UserSelectProps {
   showErrMessage: () => void;
@@ -28,8 +28,10 @@ export default function UserSelect({
   const [isUserFormOpened, setIsUserFormOpened] =
     useState(false);
 
-  const [addUser, { isLoading }] =
-    useAddUserMutation();
+  const [
+    addUser,
+    { isLoading, isError, isSuccess },
+  ] = useAddUserMutation();
 
   function handleAddUserBtnClick() {
     setIsUserFormOpened(true);
@@ -46,13 +48,15 @@ export default function UserSelect({
       addUser({
         ...values,
         phone: '+7' + values.phone,
-      })
-        .then(() => {
-          closeForm();
-        })
-        .catch(() => showErrMessage());
+      });
     }
   }
+
+  // обработка результата отправки формы регистрации
+  useEffect(() => {
+    if (isError) showErrMessage();
+    if (isSuccess) closeForm();
+  }, [isError, isSuccess]);
 
   return (
     <Form.Item
@@ -110,10 +114,7 @@ export default function UserSelect({
                 <Form
                   name='user'
                   onFinish={handleFormSubmit}
-                  layout='vertical'
-                  // labelCol={{ span: 4 }}
-                  // wrapperCol={{ span: 14 }}
-                >
+                  layout='vertical'>
                   <Form.Item
                     name='name'
                     label='имя'

@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 import './RegForm.css';
 import {
   Button,
@@ -24,9 +20,7 @@ import {
 import {
   setIsDateError,
   setIsTimeError,
-  setRegDuration,
   setRegFormValues,
-  setRegStartTime,
 } from '../../reducers/regSlice';
 import {
   HAIR_LENGTH_LIST,
@@ -34,18 +28,25 @@ import {
 } from '../../constants';
 import { useWatch } from 'antd/es/form/Form';
 import {
-  calculateRegTimeList,
-  calculateServicesDuration,
-  convertDateStringToDate,
-} from '../../utils/utils';
+  calculateRegDuration,
+  filterServicesByMaster,
+  isHairCategory,
+  isHairLengthSelect,
+  isMastersCategoriesSame,
+} from '../../utils/reg';
 import plural from '../../utils/plural';
 import { Registration } from '../../types';
+import { classByCondition } from '../../utils/className';
+import {
+  convertDateStrToDate,
+  isDateBeforeToday,
+} from '../../utils/date';
 
 export default function RegForm() {
   const [form] = Form.useForm();
 
-  const durationIndexFormItemValue = useWatch(
-    'durationIndex',
+  const hairLengthFormItemValue = useWatch(
+    'hairLength',
     form
   );
   const serviceIdListFormItemValue = useWatch(
@@ -53,11 +54,12 @@ export default function RegForm() {
     form
   );
 
-  const {
-    regFormValues,
-    regStartTime,
-    regDuration,
-  } = useAppSelector((state) => state.regState);
+  const [messageApi, errorMessage] =
+    message.useMessage();
+
+  const { regFormValues } = useAppSelector(
+    (state) => state.regState
+  );
 
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
@@ -65,19 +67,23 @@ export default function RegForm() {
     (state) => state.calendarState
   );
 
-  const { data: services } =
+  const { data: serviceList } =
     useGetServiceListQuery();
-  const { data: categories } =
+  const { data: categoryList } =
     useGetCategoryListQuery();
 
-  const [addReg, { isLoading }] =
-    useAddRegistrationMutation();
+  const [
+    addReg,
+    { isLoading, isError, isSuccess },
+  ] = useAddRegistrationMutation();
 
   const [isFormOpened, setIsFormOpened] =
     useState(false);
+  const [isFormActive, setIsFormActive] =
+    useState(false);
   const [
-    isDurationIndexItemVisible,
-    setIsDurationIndexItemVisible,
+    isHairLengthSelectVisible,
+    setIsHairLengthSelectVisible,
   ] = useState(false);
   const [durationIndex, setDurationIndex] =
     useState(0);
@@ -86,46 +92,47 @@ export default function RegForm() {
     setIsSubmitBtnClicked,
   ] = useState(false);
 
+  const durationCounterText = `${
+    regFormValues.duration / 2
+  } 
+            ${plural(
+              Math.floor(
+                regFormValues.duration / 2
+              ),
+              {
+                one: 'час',
+                few: 'часа',
+                many: 'часов',
+              }
+            )}`;
+
   const dispatch = useAppDispatch();
 
-  const isHairCategory =
-    currentMaster?.categoryIdList.some(
-      (categoryId) =>
-        categories?.find(
-          (category) => category.id === categoryId
-        )?.name === 'парикмахерские услуги'
-    );
-
-  const isDateIncorrect =
-    regFormValues.date.setHours(0, 0, 0, 0) <
-    new Date().setHours(0, 0, 0, 0);
-
-  const filtredServices = services?.filter(
-    (service) =>
-      currentMaster?.categoryIdList.some(
-        (id) => id === service.categoryId
-      )
+  const isDateIncorrect = isDateBeforeToday(
+    regFormValues.date
   );
 
   function toggleFormBtn() {
     setIsFormOpened(!isFormOpened);
+    setIsFormActive(true);
+    const isFormEmpty = !Object.values(
+      form.getFieldsValue()
+    ).some((value) => value);
+    if (isFormEmpty && isFormActive)
+      setIsFormActive(false);
   }
 
   function handleServiceChange(
-    selectedServices: string[]
+    selectedServiceList: string[]
   ) {
-    if (isHairCategory) {
-      const isDurationIndexItemVisible =
-        selectedServices.some((serviceID) =>
-          services?.find(
-            (service) =>
-              service.id === serviceID &&
-              service.duration.length > 1
-          )
-        );
-
-      setIsDurationIndexItemVisible(
-        isDurationIndexItemVisible
+    if (
+      isHairCategory(currentMaster, categoryList)
+    ) {
+      setIsHairLengthSelectVisible(
+        isHairLengthSelect(
+          selectedServiceList,
+          serviceList
+        )
       );
     }
   }
@@ -147,12 +154,8 @@ export default function RegForm() {
       regFormValues.time &&
       !isLoading
     ) {
-      addReg(body)
-        .then(() => {
-          setIsFormOpened(false);
-          resetForm();
-        })
-        .catch(() => showErrMessage());
+      addReg(body);
+      console.log(body);
     } else {
       setIsSubmitBtnClicked(true);
     }
@@ -164,17 +167,14 @@ export default function RegForm() {
       setRegFormValues({
         ...INITIAL_REG_FORM_VALUES,
         masterId: currentMaster?.id,
-        date: convertDateStringToDate(date),
+        date: convertDateStrToDate(date),
       })
     );
     dispatch(setIsDateError(false));
     dispatch(setIsTimeError(false));
-    dispatch(setRegStartTime(undefined));
-    dispatch(setRegDuration(0));
+    setIsFormOpened(false);
+    setIsFormActive(false);
   }
-
-  const [messageApi, errorMessage] =
-    message.useMessage();
 
   function showErrMessage() {
     messageApi.open({
@@ -184,48 +184,42 @@ export default function RegForm() {
     });
   }
 
+  // вносим в форму данные выбранных мастера и даты
   useEffect(() => {
     dispatch(
       setRegFormValues({
         ...regFormValues,
         masterId: currentMaster?.id,
-        date: convertDateStringToDate(date),
+        date: convertDateStrToDate(date),
       })
     );
   }, [currentMaster, date]);
 
+  // определяем индекс для массива продолжительности
+  // услуги в зависимости от выбранной длины волос
   useEffect(() => {
     setDurationIndex(
-      durationIndexFormItemValue || 0
+      hairLengthFormItemValue || 0
     );
-  }, [durationIndexFormItemValue]);
+  }, [hairLengthFormItemValue]);
 
+  // вычисляем продолжительность регистрации
   useEffect(() => {
     if (serviceIdListFormItemValue) {
       dispatch(
-        setRegDuration(
-          calculateServicesDuration(
+        setRegFormValues({
+          ...regFormValues,
+          duration: calculateRegDuration(
             serviceIdListFormItemValue,
-            services,
+            serviceList,
             durationIndex
-          )
-        )
+          ),
+        })
       );
     }
   }, [serviceIdListFormItemValue, durationIndex]);
 
-  useEffect(() => {
-    dispatch(
-      setRegFormValues({
-        ...regFormValues,
-        time: calculateRegTimeList(
-          regStartTime,
-          regDuration
-        ),
-      })
-    );
-  }, [regStartTime, regDuration]);
-
+  // валидация полей даты и времени
   useEffect(() => {
     if (
       isSubmitBtnClicked &&
@@ -250,73 +244,66 @@ export default function RegForm() {
     setIsSubmitBtnClicked(false);
   }, [regFormValues, isSubmitBtnClicked]);
 
+  // описываем действия при смене мастера
   useEffect(() => {
-    let isMastersCategoriesSame = true;
-    prevMaster?.categoryIdList.forEach(
-      (categoryId) => {
-        if (
-          !currentMaster?.categoryIdList.includes(
-            categoryId
-          )
-        ) {
-          isMastersCategoriesSame = false;
-        }
-      }
-    );
-
-    if (isMastersCategoriesSame) {
+    if (
+      isMastersCategoriesSame(
+        prevMaster,
+        currentMaster
+      )
+    ) {
       dispatch(
         setRegFormValues({
           ...regFormValues,
           masterId: currentMaster?.id,
+          time: undefined,
         })
       );
       dispatch(setIsDateError(false));
       dispatch(setIsTimeError(false));
-      dispatch(setRegStartTime(undefined));
     } else {
-      setIsDurationIndexItemVisible(false);
+      setIsHairLengthSelectVisible(false);
       resetForm();
     }
   }, [currentMaster]);
+
+  // обработка результата отправки формы регистрации
+  useEffect(() => {
+    if (isError) showErrMessage();
+    if (isSuccess) resetForm();
+  }, [isError, isSuccess]);
 
   return (
     <div className='reg-form'>
       <Button
         className='reg-form__toggle-btn'
+        type='primary'
         shape='circle'
+        danger={!isFormActive}
         icon={
           <PlusOutlined
-            className={`reg-form__toggle-btn-icon ${
+            className={classByCondition(
+              'reg-form__toggle-btn-icon',
+              'opened',
               isFormOpened
-                ? 'reg-form__toggle-btn-icon_opened'
-                : ''
-            }`}
+            )}
           />
         }
-        type='primary'
-        danger
-        size='large'
         onClick={toggleFormBtn}
       />
 
       <div
-        className={`reg-form__container ${
+        className={classByCondition(
+          'reg-form__container',
+          'opened',
           isFormOpened
-            ? 'reg-form__container_opened'
-            : ''
-        }`}>
+        )}>
         <div className='reg-form__header'>
           <h3 className='reg-form__title'>
             новая запись
           </h3>
           <p className='reg-form__duration'>
-            {regDuration / 2}{' '}
-            {plural(Math.floor(regDuration / 2), {
-              one: 'час',
-              few: 'часа',
-              many: 'часов',
-            })}
+            {durationCounterText}
           </p>
         </div>
 
@@ -335,14 +322,15 @@ export default function RegForm() {
               },
             ]}>
             <Select
-              options={filtredServices?.map(
-                (service) => {
-                  return {
-                    value: service.id,
-                    label: service.name,
-                  };
-                }
-              )}
+              options={filterServicesByMaster(
+                serviceList,
+                currentMaster
+              )?.map((service) => {
+                return {
+                  value: service.id,
+                  label: service.name,
+                };
+              })}
               mode='multiple'
               dropdownStyle={{
                 position: 'fixed',
@@ -359,9 +347,9 @@ export default function RegForm() {
             />
           </Form.Item>
 
-          {isDurationIndexItemVisible && (
+          {isHairLengthSelectVisible && (
             <Form.Item
-              name='durationIndex'
+              name='hairLength'
               label='длина волос'
               rules={[
                 {

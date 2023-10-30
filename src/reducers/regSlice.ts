@@ -2,10 +2,7 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import {
-  DbRegistration,
-  Registration,
-} from '../types';
+import { DbRegistration } from '../types';
 import { INITIAL_REG_FORM_VALUES } from '../constants';
 
 interface RegFormValues {
@@ -13,22 +10,19 @@ interface RegFormValues {
   serviceIdList: string[] | undefined;
   masterId: string | undefined;
   date: Date;
-  time: string[] | undefined;
+  time: string | undefined;
+  duration: number;
 }
 
 interface RegState {
   masterRegList: DbRegistration[] | undefined;
   regFormValues: RegFormValues;
-  regStartTime: string | undefined;
-  regDuration: number;
   isTimeError: boolean;
   isDateError: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
   regFormValues: INITIAL_REG_FORM_VALUES,
-  regStartTime: undefined,
-  regDuration: 0,
   isTimeError: false,
   isDateError: false,
 };
@@ -59,20 +53,6 @@ const regSlice = createSlice({
       state.regFormValues = action.payload;
     },
 
-    setRegStartTime: (
-      state,
-      action: PayloadAction<string | undefined>
-    ) => {
-      state.regStartTime = action.payload;
-    },
-
-    setRegDuration: (
-      state,
-      action: PayloadAction<number>
-    ) => {
-      state.regDuration = action.payload;
-    },
-
     setIsTimeError: (
       state,
       action: PayloadAction<boolean>
@@ -92,8 +72,6 @@ const regSlice = createSlice({
 export const {
   filterRegListByMasterId,
   setRegFormValues,
-  setRegStartTime,
-  setRegDuration,
   setIsTimeError,
   setIsDateError,
 } = regSlice.actions;
