@@ -4,7 +4,6 @@ import {
   Form,
   Input,
   Select,
-  message,
 } from 'antd';
 import {
   useAddUserMutation,
@@ -15,48 +14,39 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import { User } from '../../types';
-import {
-  useAppDispatch,
-  useAppSelector,
-} from '../../store';
-import { setIsUserFormOpen } from '../../features/Planner/plannerSlice';
+import { useState } from 'react';
 
-export default function UserSelect() {
+interface UserSelectProps {
+  showErrMessage: () => void;
+}
+
+export default function UserSelect({
+  showErrMessage,
+}: UserSelectProps) {
   const { data: users } = useGetUserListQuery();
 
-  const { isUserFormOpen } = useAppSelector(
-    (state) => state.plannerState
-  );
-
-  const dispatch = useAppDispatch();
+  const [isUserFormOpened, setIsUserFormOpened] =
+    useState(false);
 
   const [addUser, { isLoading }] =
     useAddUserMutation();
 
-  const [messageApi, errorMessage] =
-    message.useMessage();
-
   function handleAddUserBtnClick() {
-    dispatch(setIsUserFormOpen(true));
+    setIsUserFormOpened(true);
   }
 
   function closeForm() {
-    dispatch(setIsUserFormOpen(false));
-  }
-
-  function showErrMessage() {
-    messageApi.open({
-      type: 'error',
-      content: 'Произошла ошибка :(',
-      duration: 4,
-    });
+    setIsUserFormOpened(false);
   }
 
   function handleFormSubmit(
     values: Omit<User, 'id'>
   ) {
     if (!isLoading) {
-      addUser(values)
+      addUser({
+        ...values,
+        phone: '+7' + values.phone,
+      })
         .then(() => {
           closeForm();
         })
@@ -65,27 +55,45 @@ export default function UserSelect() {
   }
 
   return (
-    <>
-      {errorMessage}
+    <Form.Item
+      name='userId'
+      label='клиент'
+      rules={[
+        {
+          required: true,
+          message: 'выберите клиента',
+        },
+      ]}>
       <Select
-        options={users?.map((user) => {
-          return {
-            value: user.id,
-            label: user.name,
-          };
-        })}
+        notFoundContent={<></>}
+        options={
+          isUserFormOpened
+            ? []
+            : users?.map((user) => {
+                return {
+                  value: user.id,
+                  label: user.name,
+                };
+              })
+        }
         onDropdownVisibleChange={closeForm}
+        dropdownStyle={{
+          position: 'fixed',
+        }}
         showSearch
         allowClear
         optionFilterProp='children'
         filterOption={(input, option) =>
-          (option?.label ?? '').includes(input)
+          (
+            option?.label.toLocaleLowerCase() ??
+            ''
+          ).includes(input.toLocaleLowerCase())
         }
         dropdownRender={(menu) => (
           <>
             {menu}
 
-            {isUserFormOpen && (
+            {isUserFormOpened && (
               <>
                 <Divider
                   style={{ margin: '8px 0' }}
@@ -102,8 +110,10 @@ export default function UserSelect() {
                 <Form
                   name='user'
                   onFinish={handleFormSubmit}
-                  labelCol={{ span: 4 }}
-                  wrapperCol={{ span: 14 }}>
+                  layout='vertical'
+                  // labelCol={{ span: 4 }}
+                  // wrapperCol={{ span: 14 }}
+                >
                   <Form.Item
                     name='name'
                     label='имя'
@@ -138,9 +148,10 @@ export default function UserSelect() {
                   </Form.Item>
 
                   <Form.Item
-                    wrapperCol={{
-                      offset: 4,
-                      span: 14,
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      marginBottom: 8,
                     }}>
                     <Button
                       htmlType='submit'
@@ -153,7 +164,7 @@ export default function UserSelect() {
               </>
             )}
 
-            {!isUserFormOpen && (
+            {!isUserFormOpened && (
               <Button
                 type='primary'
                 icon={<PlusOutlined />}
@@ -165,6 +176,6 @@ export default function UserSelect() {
           </>
         )}
       />
-    </>
+    </Form.Item>
   );
 }

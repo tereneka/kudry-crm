@@ -134,7 +134,9 @@ export default function RegForm() {
               message: 'выберите клиента',
             },
           ]}>
-          <UserSelect />
+          <UserSelect
+            showErrMessage={() => console.log('')}
+          />
         </Form.Item>
 
         <Form.Item

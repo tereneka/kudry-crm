@@ -21,12 +21,14 @@ import {
 } from '../db/firebaseConfig';
 import {
   Category,
+  DbRegistration,
   Master,
   Registration,
   Service,
   SubCategory,
   User,
 } from '../types';
+import dayjs from 'dayjs';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({
@@ -301,14 +303,22 @@ export const apiSlice = createApi({
     }),
 
     getActualRegistrationList: builder.query<
-      Registration[],
+      DbRegistration[],
       void
     >({
       async queryFn() {
         try {
           const registrationsQuery = query(
             collection(db, 'registrations'),
-            where('date', '>=', new Date())
+            where(
+              'date',
+              '>=',
+              new Date(
+                new Date().setDate(
+                  new Date().getDate() - 1
+                )
+              )
+            )
           );
           const querySnaphot = await getDocs(
             registrationsQuery
@@ -332,7 +342,7 @@ export const apiSlice = createApi({
 
     addRegistration: builder.mutation<
       string,
-      any
+      Omit<Registration, 'id'>
     >({
       queryFn(body, api) {
         const registrationRef = collection(

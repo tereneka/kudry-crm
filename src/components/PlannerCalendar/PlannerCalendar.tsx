@@ -1,6 +1,6 @@
 import React from 'react';
 import './PlannerCalendar.css';
-import { Calendar } from 'antd';
+import { Calendar, Tooltip } from 'antd';
 import { DATE_FORMAT } from '../../constants';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
@@ -14,9 +14,8 @@ export default function PlannerCalendar() {
     (state) => state.calendarState
   );
 
-  const { masterRegList } = useAppSelector(
-    (state) => state.regState
-  );
+  const { masterRegList, isDateError } =
+    useAppSelector((state) => state.regState);
 
   const dispatch = useAppDispatch();
 
@@ -54,13 +53,18 @@ export default function PlannerCalendar() {
 
   return (
     <div className='planner-calendar'>
-      <Calendar
-        // style={{ maxWidth: 500 }}
-        dateCellRender={dateCellRender}
-        fullscreen={false}
-        onSelect={handleDateSelect}
-        value={dayjs(date, DATE_FORMAT)}
-      />
+      <Tooltip
+        title='некорректная дата для новой записи'
+        open={isDateError}
+        color='rgba(215, 142, 123)'
+        placement='rightTop'>
+        <Calendar
+          dateCellRender={dateCellRender}
+          fullscreen={false}
+          onSelect={handleDateSelect}
+          value={dayjs(date, DATE_FORMAT)}
+        />
+      </Tooltip>
 
       <ul className='planner-calendar__description-list'>
         <li className='planner-caledar__description-list-item'>

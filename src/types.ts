@@ -1,5 +1,3 @@
-import { type } from 'os';
-
 interface Master {
   id: string;
   categoryIdList: string[];
@@ -42,14 +40,18 @@ interface Service {
 }
 
 interface Registration {
-  id: string;
-  userName: string;
-  phone: string;
-  categoryId: string;
+  // id: string;
+  userId: string;
   serviceIdList: string[];
   masterId: string;
-  date: { [key: string]: any };
+  date: Date;
   time: string[];
+}
+
+interface DbRegistration
+  extends Omit<Registration, 'date'> {
+  id: string;
+  date: { [key: string]: any };
 }
 
 interface RegistrationContext {
@@ -71,5 +73,6 @@ export type {
   Service,
   Registration,
   RegistrationContext,
+  DbRegistration,
   User,
 };

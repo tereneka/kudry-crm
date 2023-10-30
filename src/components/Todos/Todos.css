@@ -17,7 +17,6 @@
   padding: 4px 0;
   width: calc((100% - 84px) / 2);
   height: 20px;
-  cursor: pointer;
 }
 
 .todos__time-table-cell:first-of-type {
@@ -26,10 +25,19 @@
   cursor: auto;
 }
 
+.todos__time-table-cell_active {
+  cursor: pointer;
+}
+
+.todos__time-table-cell_active:hover,
+.todos__time-table-cell_selected {
+  background: var(--accent-soft);
+}
+
 .todos__reg-card {
   width: calc((100% - 84px) / 2);
   position: absolute;
-  left: 82px;
+  left: 84px;
   background: var(--accent-bright);
   border-radius: 4px;
   display: flex;

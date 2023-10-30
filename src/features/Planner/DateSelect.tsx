@@ -20,16 +20,16 @@ export default function DateSelect() {
   // в переменную masterDisabledDate записываем даты с полной записью у выбранного мастера
   const masterDisabledDate: string[] = [];
 
-  currentMasterRegList?.forEach((reg) => {
-    const dateStr = reg.date
-      .toDate()
-      .toLocaleDateString();
-    if (masterDateList[dateStr]) {
-      masterDateList[dateStr].concat(reg.time);
-    } else {
-      masterDateList[dateStr] = reg.time;
-    }
-  });
+  // currentMasterRegList?.forEach((reg) => {
+  //   const dateStr = reg.date
+  //     .toDate()
+  //     .toLocaleDateString();
+  //   if (masterDateList[dateStr]) {
+  //     masterDateList[dateStr].concat(reg.time);
+  //   } else {
+  //     masterDateList[dateStr] = reg.time;
+  //   }
+  // });
 
   for (let key in masterDateList) {
     if (masterDateList[key].length >= 20)

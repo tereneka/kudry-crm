@@ -2,13 +2,35 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import { Registration } from '../types';
+import {
+  DbRegistration,
+  Registration,
+} from '../types';
+import { INITIAL_REG_FORM_VALUES } from '../constants';
+
+interface RegFormValues {
+  userId: string | undefined;
+  serviceIdList: string[] | undefined;
+  masterId: string | undefined;
+  date: Date;
+  time: string[] | undefined;
+}
 
 interface RegState {
-  masterRegList: Registration[] | undefined;
+  masterRegList: DbRegistration[] | undefined;
+  regFormValues: RegFormValues;
+  regStartTime: string | undefined;
+  regDuration: number;
+  isTimeError: boolean;
+  isDateError: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
+  regFormValues: INITIAL_REG_FORM_VALUES,
+  regStartTime: undefined,
+  regDuration: 0,
+  isTimeError: false,
+  isDateError: false,
 };
 
 const regSlice = createSlice({
@@ -19,7 +41,7 @@ const regSlice = createSlice({
       state,
       action: PayloadAction<{
         masterId: string;
-        regList: Registration[];
+        regList: DbRegistration[];
       }>
     ) => {
       const { masterId, regList } =
@@ -29,10 +51,51 @@ const regSlice = createSlice({
         (reg) => reg.masterId === masterId
       );
     },
+
+    setRegFormValues: (
+      state,
+      action: PayloadAction<RegFormValues>
+    ) => {
+      state.regFormValues = action.payload;
+    },
+
+    setRegStartTime: (
+      state,
+      action: PayloadAction<string | undefined>
+    ) => {
+      state.regStartTime = action.payload;
+    },
+
+    setRegDuration: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.regDuration = action.payload;
+    },
+
+    setIsTimeError: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isTimeError = action.payload;
+    },
+
+    setIsDateError: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isDateError = action.payload;
+    },
   },
 });
 
-export const { filterRegListByMasterId } =
-  regSlice.actions;
+export const {
+  filterRegListByMasterId,
+  setRegFormValues,
+  setRegStartTime,
+  setRegDuration,
+  setIsTimeError,
+  setIsDateError,
+} = regSlice.actions;
 
 export default regSlice.reducer;

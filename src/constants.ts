@@ -10,4 +10,23 @@ for (let i = 0; i < 20; i++) {
   TIME_LIST.push(time);
 }
 
-export { DATE_FORMAT, TIME_LIST };
+const HAIR_LENGTH_LIST = [
+  'короткие',
+  'средние',
+  'длинные',
+];
+
+const INITIAL_REG_FORM_VALUES = {
+  userId: undefined,
+  serviceIdList: undefined,
+  masterId: undefined,
+  date: new Date(),
+  time: undefined,
+};
+
+export {
+  DATE_FORMAT,
+  TIME_LIST,
+  HAIR_LENGTH_LIST,
+  INITIAL_REG_FORM_VALUES,
+};

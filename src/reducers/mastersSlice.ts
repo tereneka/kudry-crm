@@ -2,12 +2,15 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
+import { Master } from '../types';
 
 interface MastersState {
-  currentMaster: string | null;
+  currentMaster: Master | null | undefined;
+  prevMaster: Master | null | undefined;
 }
 const initialState: MastersState = {
   currentMaster: null,
+  prevMaster: null,
 };
 
 const mastersSlice = createSlice({
@@ -16,14 +19,23 @@ const mastersSlice = createSlice({
   reducers: {
     setCurrentMaster: (
       state,
-      action: PayloadAction<string>
+      action: PayloadAction<Master | undefined>
     ) => {
       state.currentMaster = action.payload;
+    },
+
+    setPrevMaster: (
+      state,
+      action: PayloadAction<
+        Master | undefined | null
+      >
+    ) => {
+      state.prevMaster = action.payload;
     },
   },
 });
 
-export const { setCurrentMaster } =
+export const { setCurrentMaster, setPrevMaster } =
   mastersSlice.actions;
 
 export default mastersSlice.reducer;
