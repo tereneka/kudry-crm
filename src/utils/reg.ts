@@ -14,7 +14,7 @@ function calculateRegDuration(
   serviceList: Service[] | undefined,
   index: number
 ) {
-  let result = 0;
+  let duration = 0;
 
   serviceIdList.forEach((id) => {
     const service = serviceList?.find(
@@ -22,12 +22,12 @@ function calculateRegDuration(
     );
 
     if (service) {
-      result +=
+      duration +=
         service.duration[index] ||
         service.duration[0];
     }
   });
-  return result;
+  return duration;
 }
 
 function calculateRegTimeList(
@@ -59,7 +59,22 @@ function filterServicesByMaster(
   );
 }
 
-function isHairCategory(
+function filterServicesByGender(
+  serviceList: Service[] | undefined,
+  gender: 'женский' | 'мужской' | undefined
+) {
+  return gender
+    ? serviceList?.filter((service) =>
+        gender === 'женский'
+          ? service.isFemale ||
+            service.isFemale === undefined
+          : service.isMale ||
+            service.isMale === undefined
+      )
+    : serviceList;
+}
+
+function hasMasterHairCategory(
   master: MasterData,
   categoryList: Category[] | undefined
 ) {
@@ -70,7 +85,7 @@ function isHairCategory(
   );
 }
 
-function isHairLengthSelect(
+function isIndexSelect(
   selectedServiceList: string[],
   serviceList: Service[] | undefined
 ) {
@@ -107,7 +122,8 @@ export {
   calculateRegDuration,
   calculateRegTimeList,
   filterServicesByMaster,
-  isHairCategory,
-  isHairLengthSelect,
+  filterServicesByGender,
+  hasMasterHairCategory,
+  isIndexSelect,
   isMastersCategoriesSame,
 };

@@ -25,13 +25,15 @@ import {
 import {
   HAIR_LENGTH_LIST,
   INITIAL_REG_FORM_VALUES,
+  MAILE_HAIRCAT_LIST,
 } from '../../constants';
 import { useWatch } from 'antd/es/form/Form';
 import {
   calculateRegDuration,
+  filterServicesByGender,
   filterServicesByMaster,
-  isHairCategory,
-  isHairLengthSelect,
+  hasMasterHairCategory,
+  isIndexSelect,
   isMastersCategoriesSame,
 } from '../../utils/reg';
 import plural from '../../utils/plural';
@@ -45,12 +47,16 @@ import {
 export default function RegForm() {
   const [form] = Form.useForm();
 
-  const hairLengthFormItemValue = useWatch(
-    'hairLength',
-    form
-  );
+  const genderFormItemValue:
+    | 'женский'
+    | 'мужской'
+    | undefined = useWatch('gender', form);
   const serviceIdListFormItemValue = useWatch(
     'serviceIdList',
+    form
+  );
+  const indexFormItemValue = useWatch(
+    'index',
     form
   );
 
@@ -82,8 +88,8 @@ export default function RegForm() {
   const [isFormActive, setIsFormActive] =
     useState(false);
   const [
-    isHairLengthSelectVisible,
-    setIsHairLengthSelectVisible,
+    isIndexSelectVisible,
+    setIsIndexSelectVisible,
   ] = useState(false);
   const [durationIndex, setDurationIndex] =
     useState(0);
@@ -91,6 +97,25 @@ export default function RegForm() {
     isSubmitBtnClicked,
     setIsSubmitBtnClicked,
   ] = useState(false);
+
+  const isHairCategory = hasMasterHairCategory(
+    currentMaster,
+    categoryList
+  );
+  const isDateIncorrect = isDateBeforeToday(
+    regFormValues.date
+  );
+  const filteredServicesByMaster =
+    filterServicesByMaster(
+      serviceList,
+      currentMaster
+    );
+  const indexSelectOptionList =
+    genderFormItemValue
+      ? genderFormItemValue === 'женский'
+        ? HAIR_LENGTH_LIST
+        : MAILE_HAIRCAT_LIST
+      : [];
 
   const durationCounterText = `${
     regFormValues.duration / 2
@@ -108,10 +133,6 @@ export default function RegForm() {
 
   const dispatch = useAppDispatch();
 
-  const isDateIncorrect = isDateBeforeToday(
-    regFormValues.date
-  );
-
   function toggleFormBtn() {
     setIsFormOpened(!isFormOpened);
     setIsFormActive(true);
@@ -122,14 +143,17 @@ export default function RegForm() {
       setIsFormActive(false);
   }
 
+  function handleGenderChange() {
+    form.resetFields(['serviceIdList', 'index']);
+    setIsIndexSelectVisible(false);
+  }
+
   function handleServiceChange(
     selectedServiceList: string[]
   ) {
-    if (
-      isHairCategory(currentMaster, categoryList)
-    ) {
-      setIsHairLengthSelectVisible(
-        isHairLengthSelect(
+    if (isHairCategory) {
+      setIsIndexSelectVisible(
+        isIndexSelect(
           selectedServiceList,
           serviceList
         )
@@ -154,7 +178,7 @@ export default function RegForm() {
       regFormValues.time &&
       !isLoading
     ) {
-      addReg(body);
+      // addReg(body);
       console.log(body);
     } else {
       setIsSubmitBtnClicked(true);
@@ -198,10 +222,8 @@ export default function RegForm() {
   // определяем индекс для массива продолжительности
   // услуги в зависимости от выбранной длины волос
   useEffect(() => {
-    setDurationIndex(
-      hairLengthFormItemValue || 0
-    );
-  }, [hairLengthFormItemValue]);
+    setDurationIndex(indexFormItemValue || 0);
+  }, [indexFormItemValue]);
 
   // вычисляем продолжительность регистрации
   useEffect(() => {
@@ -214,6 +236,13 @@ export default function RegForm() {
             serviceList,
             durationIndex
           ),
+        })
+      );
+    } else {
+      dispatch(
+        setRegFormValues({
+          ...regFormValues,
+          duration: 0,
         })
       );
     }
@@ -262,7 +291,7 @@ export default function RegForm() {
       dispatch(setIsDateError(false));
       dispatch(setIsTimeError(false));
     } else {
-      setIsHairLengthSelectVisible(false);
+      setIsIndexSelectVisible(false);
       resetForm();
     }
   }, [currentMaster]);
@@ -312,6 +341,34 @@ export default function RegForm() {
           name='reg'
           onFinish={handleFormSubmit}
           layout='vertical'>
+          {isHairCategory && (
+            <Form.Item
+              name='gender'
+              label='зал'
+              rules={[
+                {
+                  required: true,
+                  message: 'выберите зал',
+                },
+              ]}>
+              <Select
+                options={[
+                  'женский',
+                  'мужской',
+                ].map((item) => {
+                  return {
+                    value: item,
+                    label: item,
+                  };
+                })}
+                dropdownStyle={{
+                  position: 'fixed',
+                }}
+                onChange={handleGenderChange}
+              />
+            </Form.Item>
+          )}
+
           <Form.Item
             name='serviceIdList'
             label='услуги'
@@ -322,9 +379,9 @@ export default function RegForm() {
               },
             ]}>
             <Select
-              options={filterServicesByMaster(
-                serviceList,
-                currentMaster
+              options={filterServicesByGender(
+                filteredServicesByMaster,
+                genderFormItemValue
               )?.map((service) => {
                 return {
                   value: service.id,
@@ -335,8 +392,8 @@ export default function RegForm() {
               dropdownStyle={{
                 position: 'fixed',
               }}
-              allowClear
               showSearch
+              allowClear
               optionFilterProp='children'
               filterOption={(input, option) =>
                 (option?.label ?? '').includes(
@@ -344,21 +401,29 @@ export default function RegForm() {
                 )
               }
               onChange={handleServiceChange}
+              disabled={
+                isHairCategory &&
+                !!!genderFormItemValue
+              }
             />
           </Form.Item>
 
-          {isHairLengthSelectVisible && (
+          {isIndexSelectVisible && (
             <Form.Item
-              name='hairLength'
-              label='длина волос'
+              name='index'
+              label={
+                genderFormItemValue === 'женский'
+                  ? 'длина волос'
+                  : 'тип стрижки'
+              }
               rules={[
                 {
-                  required: true,
-                  message: 'выберите длину волос',
+                  required: isIndexSelectVisible,
+                  message: 'заполните поле',
                 },
               ]}>
               <Select
-                options={HAIR_LENGTH_LIST.map(
+                options={indexSelectOptionList.map(
                   (item, index) => {
                     return {
                       value: index,

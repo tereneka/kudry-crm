@@ -12,6 +12,9 @@ import { TIME_LIST } from '../../constants';
 import { useState } from 'react';
 import { useGetUserListQuery } from '../../reducers/apiSlice';
 import { setRegFormValues } from '../../reducers/regSlice';
+import { classByCondition } from '../../utils/className';
+import RegCard from '../RegCard/RegCard';
+import { convertDbDateToStr } from '../../utils/date';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -35,45 +38,14 @@ export default function Todos() {
   const regList = masterRegList
     ?.filter(
       (reg) =>
-        reg.date.toDate().toLocaleDateString() ===
-        date
+        convertDbDateToStr(reg.date) === date
     )
     .map((reg, index) => {
       const user = users?.find(
         (user) => user.id === reg.userId
       );
 
-      return (
-        <div
-          className='todos__reg-card'
-          style={{
-            height:
-              reg.duration * 28 +
-              (reg.duration - 1) * 4,
-            top:
-              44 +
-              TIME_LIST.indexOf(reg.time) * 32,
-          }}
-          key={nanoid()}
-          draggable={true}
-          onDragStart={(e) => {
-            e.dataTransfer.setData(
-              'index',
-              index.toString()
-            );
-          }}>
-          <div className='todos__reg-card-item'>
-            <img src={person} alt='' />
-            {user?.name}
-          </div>
-          <a
-            className='todo-list__reg-card-link'
-            href={`tel:${user?.phone}`}>
-            <img src={phone} alt='' />
-            {user?.phone}
-          </a>
-        </div>
-      );
+      return <RegCard reg={reg} user={user} />;
     });
 
   function toggleTimeSelectBtn() {
@@ -91,12 +63,21 @@ export default function Todos() {
     const time = e.currentTarget.dataset.time;
 
     if (isTimeSelectAvailable && time) {
-      dispatch(
-        setRegFormValues({
-          ...regFormValues,
-          time,
-        })
-      );
+      if (time === regFormValues.time) {
+        dispatch(
+          setRegFormValues({
+            ...regFormValues,
+            time: undefined,
+          })
+        );
+      } else {
+        dispatch(
+          setRegFormValues({
+            ...regFormValues,
+            time,
+          })
+        );
+      }
     }
 
     setIsTimeSelectAvailable(false);
@@ -125,21 +106,25 @@ export default function Todos() {
 
       {TIME_LIST.map((time) => (
         <div
-          className='todos__time-table'
+          className='todos__time-table-row'
           key={time}>
           <div className='todos__time-table-cell'>
             {time}
           </div>
           <div
-            className={`todos__time-table-cell ${
-              isTimeSelectAvailable
-                ? 'todos__time-table-cell_active'
-                : ''
-            } ${
-              regFormValues.time === time
-                ? 'todos__time-table-cell_selected'
-                : ''
-            }`}
+            className={
+              classByCondition(
+                'todos__time-table-cell',
+                'active',
+                isTimeSelectAvailable
+              ) +
+              ' ' +
+              classByCondition(
+                'todos__time-table-cell',
+                'selected',
+                regFormValues.time === time
+              )
+            }
             onClick={handleTimeCellClick}
             data-time={time}
           />

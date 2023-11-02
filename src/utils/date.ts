@@ -4,6 +4,12 @@ function convertDateStrToDate(dateStr: string) {
   );
 }
 
+function convertDbDateToStr(date: {
+  [key: string]: any;
+}) {
+  return date.toDate().toLocaleDateString();
+}
+
 function getEarlierDate(daysNum: number) {
   return new Date(
     new Date().setDate(
@@ -21,6 +27,7 @@ function isDateBeforeToday(date: Date) {
 
 export {
   convertDateStrToDate,
+  convertDbDateToStr,
   getEarlierDate,
   isDateBeforeToday,
 };

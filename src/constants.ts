@@ -16,6 +16,12 @@ const HAIR_LENGTH_LIST = [
   'длинные',
 ];
 
+const MAILE_HAIRCAT_LIST = [
+  '1 насадка',
+  '2 насадки',
+  'модельная',
+];
+
 const INITIAL_REG_FORM_VALUES = {
   userId: undefined,
   serviceIdList: undefined,
@@ -29,5 +35,6 @@ export {
   DATE_FORMAT,
   TIME_LIST,
   HAIR_LENGTH_LIST,
+  MAILE_HAIRCAT_LIST,
   INITIAL_REG_FORM_VALUES,
 };

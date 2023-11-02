@@ -3,7 +3,7 @@
   padding: 20px 0;
 }
 
-.todos__time-table {
+.todos__time-table-row {
   width: 100%;
   display: flex;
   gap: 4px;
@@ -15,8 +15,9 @@
   font-size: 16px;
   text-align: center;
   padding: 4px 0;
-  width: calc((100% - 84px) / 2);
-  height: 20px;
+  width: calc((100% - 84px));
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .todos__time-table-cell:first-of-type {
@@ -32,23 +33,4 @@
 .todos__time-table-cell_active:hover,
 .todos__time-table-cell_selected {
   background: var(--accent-soft);
-}
-
-.todos__reg-card {
-  width: calc((100% - 84px) / 2);
-  position: absolute;
-  left: 84px;
-  background: var(--accent-bright);
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.todos__reg-card-item {
-  color: var(--main-back);
-  display: flex;
-  gap: 4px;
-  padding-left: 8px;
 }

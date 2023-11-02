@@ -37,6 +37,8 @@ interface Service {
   duration: number[];
   available: boolean;
   index: number;
+  isMale?: boolean;
+  isFemale?: boolean;
 }
 
 interface Registration {
