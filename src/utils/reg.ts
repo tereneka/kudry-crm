@@ -9,12 +9,13 @@ import { getDataById } from './data';
 
 type MasterData = Master | null | undefined;
 
-function calculateRegDuration(
+function calculateRegDurationAndIncome(
   serviceIdList: string[],
   serviceList: Service[] | undefined,
   index: number
 ) {
   let duration = 0;
+  let income = 0;
 
   serviceIdList.forEach((id) => {
     const service = serviceList?.find(
@@ -25,9 +26,10 @@ function calculateRegDuration(
       duration +=
         service.duration[index] ||
         service.duration[0];
+      income += +service.price.split('/')[index];
     }
   });
-  return duration;
+  return { duration, income };
 }
 
 function calculateRegTimeList(
@@ -119,7 +121,7 @@ function isMastersCategoriesSame(
 }
 
 export {
-  calculateRegDuration,
+  calculateRegDurationAndIncome,
   calculateRegTimeList,
   filterServicesByMaster,
   filterServicesByGender,

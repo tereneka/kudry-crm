@@ -99,7 +99,7 @@ export default function RegCard({
               }
             )}`}
           </span>
-          <span>
+          {/* <span>
             {reg.serviceIdList.reduce(
               (res, currentId) =>
                 res +
@@ -109,7 +109,7 @@ export default function RegCard({
                 )?.price,
               0
             )}
-          </span>
+          </span> */}
         </li>
 
         <li className='reg-card__item'>

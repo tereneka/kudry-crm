@@ -16,6 +16,7 @@ import {
   useAddRegistrationMutation,
   useGetCategoryListQuery,
   useGetServiceListQuery,
+  useUpdateIncomeMutation,
 } from '../../reducers/apiSlice';
 import {
   setIsDateError,
@@ -29,7 +30,7 @@ import {
 } from '../../constants';
 import { useWatch } from 'antd/es/form/Form';
 import {
-  calculateRegDuration,
+  calculateRegDurationAndIncome,
   filterServicesByGender,
   filterServicesByMaster,
   hasMasterHairCategory,
@@ -37,12 +38,16 @@ import {
   isMastersCategoriesSame,
 } from '../../utils/reg';
 import plural from '../../utils/plural';
-import { Registration } from '../../types';
+import {
+  Income,
+  Registration,
+} from '../../types';
 import { classByCondition } from '../../utils/className';
 import {
   convertDateStrToDate,
   isDateBeforeToday,
 } from '../../utils/date';
+import { getDataById } from '../../utils/data';
 
 export default function RegForm() {
   const [form] = Form.useForm();
@@ -80,8 +85,16 @@ export default function RegForm() {
 
   const [
     addReg,
-    { isLoading, isError, isSuccess },
+    {
+      isLoading: isRegLoading,
+      isError,
+      isSuccess,
+    },
   ] = useAddRegistrationMutation();
+  const [
+    updateIncome,
+    { isLoading: isIncomeLoading },
+  ] = useUpdateIncomeMutation();
 
   const [isFormOpened, setIsFormOpened] =
     useState(false);
@@ -91,8 +104,7 @@ export default function RegForm() {
     isIndexSelectVisible,
     setIsIndexSelectVisible,
   ] = useState(false);
-  const [durationIndex, setDurationIndex] =
-    useState(0);
+  const [index, setIndex] = useState(0);
   const [
     isSubmitBtnClicked,
     setIsSubmitBtnClicked,
@@ -165,21 +177,50 @@ export default function RegForm() {
     userId: string;
     serviceIdList: string[];
   }) {
-    const body = {
+    const { userId, serviceIdList } = values;
+    const regBody = {
       ...regFormValues,
-      serviceIdList: values.serviceIdList,
-      userId: values.userId,
+      serviceIdList,
+      userId,
     } as Registration;
+    const incomeBodyList: Omit<Income, 'id'>[] =
+      [];
 
-    dispatch(setRegFormValues(body));
+    dispatch(setRegFormValues(regBody));
 
     if (
       !isDateIncorrect &&
       regFormValues.time &&
-      !isLoading
+      !isRegLoading &&
+      !isIncomeLoading
     ) {
-      // addReg(body);
-      console.log(body);
+      Promise.allSettled(
+        serviceIdList.map((serviceId, i) => {
+          const service = getDataById(
+            serviceList,
+            serviceId
+          );
+          incomeBodyList.push({
+            serviceId,
+            categoryId: service?.categoryId || '',
+            date: regFormValues.date,
+            sum: service
+              ? +service.price.split('/')[index]
+              : 0,
+          });
+          return updateIncome(incomeBodyList[i]);
+        })
+      ).then((results) => {
+        results.forEach((result, i) => {
+          console.log(result.status);
+
+          if (result.status === 'rejected') {
+            updateIncome(incomeBodyList[i]);
+          }
+        });
+      });
+
+      addReg(regBody);
     } else {
       setIsSubmitBtnClicked(true);
     }
@@ -220,22 +261,25 @@ export default function RegForm() {
   }, [currentMaster, date]);
 
   // определяем индекс для массива продолжительности
-  // услуги в зависимости от выбранной длины волос
+  // услуги и прайса в зависимости от выбранной длины волос
   useEffect(() => {
-    setDurationIndex(indexFormItemValue || 0);
+    setIndex(indexFormItemValue || 0);
   }, [indexFormItemValue]);
 
-  // вычисляем продолжительность регистрации
+  // вычисляем продолжительность регистрации и стоимость
   useEffect(() => {
     if (serviceIdListFormItemValue) {
+      const { duration, income } =
+        calculateRegDurationAndIncome(
+          serviceIdListFormItemValue,
+          serviceList,
+          index
+        );
       dispatch(
         setRegFormValues({
           ...regFormValues,
-          duration: calculateRegDuration(
-            serviceIdListFormItemValue,
-            serviceList,
-            durationIndex
-          ),
+          duration,
+          income,
         })
       );
     } else {
@@ -243,10 +287,11 @@ export default function RegForm() {
         setRegFormValues({
           ...regFormValues,
           duration: 0,
+          income: 0,
         })
       );
     }
-  }, [serviceIdListFormItemValue, durationIndex]);
+  }, [serviceIdListFormItemValue, index]);
 
   // валидация полей даты и времени
   useEffect(() => {
@@ -435,9 +480,7 @@ export default function RegForm() {
                   position: 'fixed',
                 }}
                 allowClear
-                onSelect={(v) =>
-                  setDurationIndex(v)
-                }
+                onSelect={(v) => setIndex(v)}
               />
             </Form.Item>
           )}
@@ -458,7 +501,9 @@ export default function RegForm() {
                 htmlType='submit'
                 type='primary'
                 className='reg-form__btn'
-                loading={isLoading}>
+                loading={
+                  isRegLoading || isIncomeLoading
+                }>
                 сохранить
               </Button>
             </div>

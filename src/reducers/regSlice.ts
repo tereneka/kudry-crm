@@ -12,6 +12,7 @@ interface RegFormValues {
   date: Date;
   time: string | undefined;
   duration: number;
+  income: number;
 }
 
 interface RegState {

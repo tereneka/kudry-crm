@@ -29,6 +29,7 @@ const INITIAL_REG_FORM_VALUES = {
   date: new Date(),
   time: undefined,
   duration: 0,
+  income: 0,
 };
 
 export {

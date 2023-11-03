@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 interface Master {
   id: string;
   categoryIdList: string[];
@@ -48,12 +50,21 @@ interface Registration {
   date: Date;
   time: string;
   duration: number;
+  income: number;
 }
 
 interface DbRegistration
   extends Omit<Registration, 'date'> {
   id: string;
-  date: { [key: string]: any };
+  date: Timestamp;
+}
+
+interface Income {
+  id: string;
+  serviceId: string;
+  categoryId: string;
+  date: Date;
+  sum: number;
 }
 
 interface RegistrationContext {
@@ -76,5 +87,6 @@ export type {
   Registration,
   RegistrationContext,
   DbRegistration,
+  Income,
   User,
 };

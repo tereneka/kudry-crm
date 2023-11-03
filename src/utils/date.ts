@@ -1,12 +1,12 @@
+import { Timestamp } from 'firebase/firestore';
+
 function convertDateStrToDate(dateStr: string) {
   return new Date(
     dateStr.split('.').reverse().join('.')
   );
 }
 
-function convertDbDateToStr(date: {
-  [key: string]: any;
-}) {
+function convertDbDateToStr(date: Timestamp) {
   return date.toDate().toLocaleDateString();
 }
 

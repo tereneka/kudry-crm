@@ -9,6 +9,11 @@ import {
   query,
   where,
   addDoc,
+  Timestamp,
+  writeBatch,
+  increment,
+  doc,
+  runTransaction,
 } from 'firebase/firestore';
 import {
   ref,
@@ -22,6 +27,7 @@ import {
 import {
   Category,
   DbRegistration,
+  Income,
   Master,
   Registration,
   Service,
@@ -29,7 +35,10 @@ import {
   User,
 } from '../types';
 import dayjs from 'dayjs';
-import { getEarlierDate } from '../utils/date';
+import {
+  convertDbDateToStr,
+  getEarlierDate,
+} from '../utils/date';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({
@@ -43,6 +52,7 @@ export const apiSlice = createApi({
     'Photo',
     'Service',
     'Registration',
+    'Income',
   ],
   endpoints: (builder) => ({
     getMasterList: builder.query<Master[], void>({
@@ -337,16 +347,13 @@ export const apiSlice = createApi({
       string,
       Omit<Registration, 'id'>
     >({
-      queryFn(body, api) {
+      queryFn(body) {
         const registrationRef = collection(
           db,
           'registrations'
         );
         return addDoc(registrationRef, body)
           .then((data) => {
-            // api.dispatch(
-            //   setFormValues({ id: data.id })
-            // );
             return data.id;
           })
           .catch((err) => err);
@@ -358,15 +365,64 @@ export const apiSlice = createApi({
       string,
       Omit<User, 'id'>
     >({
-      queryFn(body, api) {
+      async queryFn(body) {
         const userRef = collection(db, 'users');
-        return addDoc(userRef, body)
-          .then((data) => {
-            return data.id;
-          })
-          .catch((err) => err);
+        try {
+          const data = await addDoc(
+            userRef,
+            body
+          );
+
+          return { data: data.id };
+        } catch (error) {
+          return { error };
+        }
       },
       invalidatesTags: ['User'],
+    }),
+
+    updateIncome: builder.mutation<
+      void,
+      Omit<Income, 'id'>
+    >({
+      async queryFn(args) {
+        const {
+          serviceId,
+          categoryId,
+          date,
+          sum,
+        } = args;
+        const incomeId =
+          serviceId + date.toLocaleDateString();
+        const docRef = doc(
+          db,
+          'income',
+          incomeId
+        );
+        try {
+          const data = await runTransaction(
+            db,
+            async (transaction) => {
+              const incomeDoc =
+                await transaction.get(docRef);
+              if (!incomeDoc.exists()) {
+                transaction.set(docRef, {
+                  id: incomeId,
+                  ...args,
+                });
+              } else {
+                transaction.update(docRef, {
+                  sum: increment(sum),
+                });
+              }
+            }
+          );
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Income'],
     }),
   }),
 });
@@ -383,4 +439,5 @@ export const {
   useGetActualRegistrationListQuery,
   useAddRegistrationMutation,
   useAddUserMutation,
+  useUpdateIncomeMutation,
 } = apiSlice;
