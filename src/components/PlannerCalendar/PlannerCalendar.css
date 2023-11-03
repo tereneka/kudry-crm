@@ -37,6 +37,32 @@
   background: var(--accent-soft);
 }
 
+.planner__calendar-cell_type_event {
+  width: 38px;
+  height: 38px;
+  position: absolute;
+  top: -3px;
+  left: -7px;
+  border: 1px solid var(--accent-soft);
+  border-radius: 4px;
+  padding: 1px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.planner__badge {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--main-back);
+  background: var(--accent-bright);
+  border-radius: 2px;
+  padding: 1px 2px;
+}
+
 /* .planner-caledar__description-list-item:last-of-type {
   margin-bottom: 0;
 } */

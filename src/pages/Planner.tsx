@@ -60,9 +60,9 @@ export default function Planner() {
         currentMaster={currentMaster}
         onChange={handleMasterChange}
       />{' '}
+      <RegForm />
       <PlannerCalendar />
       <Todos />
-      <RegForm />
     </div>
   );
 }

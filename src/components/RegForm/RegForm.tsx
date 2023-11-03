@@ -406,9 +406,6 @@ export default function RegForm() {
                     label: item,
                   };
                 })}
-                dropdownStyle={{
-                  position: 'fixed',
-                }}
                 onChange={handleGenderChange}
               />
             </Form.Item>
@@ -434,9 +431,6 @@ export default function RegForm() {
                 };
               })}
               mode='multiple'
-              dropdownStyle={{
-                position: 'fixed',
-              }}
               showSearch
               allowClear
               optionFilterProp='children'
@@ -476,9 +470,6 @@ export default function RegForm() {
                     };
                   }
                 )}
-                dropdownStyle={{
-                  position: 'fixed',
-                }}
                 allowClear
                 onSelect={(v) => setIndex(v)}
               />

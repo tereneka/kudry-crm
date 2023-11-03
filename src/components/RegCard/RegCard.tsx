@@ -1,6 +1,4 @@
-import React from 'react';
 import './RegCard.css';
-import person from '../../images/person.svg';
 import phone from '../../images/phone.svg';
 import whatsapp from '../../images/whatsapp.svg';
 import {
@@ -10,12 +8,10 @@ import {
 import { TIME_LIST } from '../../constants';
 import { useGetServiceListQuery } from '../../reducers/apiSlice';
 import { getDataById } from '../../utils/data';
-import { Badge } from 'antd';
 import {
   numberFormat,
   plural,
 } from '../../utils/format';
-import { classByCondition } from '../../utils/className';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -34,7 +30,6 @@ export default function RegCard({
       className='reg-card'
       style={{
         height: reg.duration * 58 - 4,
-        //   +(reg.duration - 1) * 4,
         top:
           44 + TIME_LIST.indexOf(reg.time) * 58,
       }}
@@ -119,7 +114,9 @@ export default function RegCard({
             <ul className='reg-card__box reg-card__service-list'>
               {reg.serviceIdList.map(
                 (serviceId) => (
-                  <li className='reg-card__service'>
+                  <li
+                    className='reg-card__service'
+                    key={serviceId}>
                     {
                       getDataById(
                         serviceList,

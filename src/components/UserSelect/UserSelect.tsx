@@ -81,9 +81,7 @@ export default function UserSelect({
               })
         }
         onDropdownVisibleChange={closeForm}
-        dropdownStyle={{
-          position: 'fixed',
-        }}
+        listHeight={150}
         showSearch
         allowClear
         optionFilterProp='children'

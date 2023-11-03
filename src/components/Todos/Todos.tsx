@@ -40,12 +40,18 @@ export default function Todos() {
       (reg) =>
         convertDbDateToStr(reg.date) === date
     )
-    .map((reg, index) => {
+    .map((reg) => {
       const user = users?.find(
         (user) => user.id === reg.userId
       );
 
-      return <RegCard reg={reg} user={user} />;
+      return (
+        <RegCard
+          reg={reg}
+          user={user}
+          key={reg.id}
+        />
+      );
     });
 
   function toggleTimeSelectBtn() {
