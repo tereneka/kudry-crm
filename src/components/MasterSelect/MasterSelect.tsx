@@ -2,6 +2,7 @@ import { useGetMasterListQuery } from '../../reducers/apiSlice';
 import { Avatar, Select } from 'antd';
 import { Master } from '../../types';
 import { nanoid } from 'nanoid';
+import './MasterSelect.css';
 
 interface Props {
   isAllOption: boolean;

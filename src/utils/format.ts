@@ -7,7 +7,7 @@ interface Variants {
   two?: string;
 }
 
-export default function plural(
+function plural(
   value: number,
   variants: Variants = {},
   locale: string = 'ru-RU'
@@ -21,3 +21,16 @@ export default function plural(
   // Возвращаем вариант по ключу, если он есть
   return variants[key] || '';
 }
+
+function numberFormat(
+  value: number,
+  locale = 'ru-RU',
+  options = {}
+) {
+  return new Intl.NumberFormat(
+    locale,
+    options
+  ).format(value);
+}
+
+export { plural, numberFormat };

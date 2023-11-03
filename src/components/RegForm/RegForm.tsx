@@ -37,7 +37,6 @@ import {
   isIndexSelect,
   isMastersCategoriesSame,
 } from '../../utils/reg';
-import plural from '../../utils/plural';
 import {
   Income,
   Registration,
@@ -48,6 +47,7 @@ import {
   isDateBeforeToday,
 } from '../../utils/date';
 import { getDataById } from '../../utils/data';
+import { plural } from '../../utils/format';
 
 export default function RegForm() {
   const [form] = Form.useForm();

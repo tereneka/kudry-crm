@@ -11,7 +11,11 @@ import { TIME_LIST } from '../../constants';
 import { useGetServiceListQuery } from '../../reducers/apiSlice';
 import { getDataById } from '../../utils/data';
 import { Badge } from 'antd';
-import plural from '../../utils/plural';
+import {
+  numberFormat,
+  plural,
+} from '../../utils/format';
+import { classByCondition } from '../../utils/className';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -29,10 +33,10 @@ export default function RegCard({
     <div
       className='reg-card'
       style={{
-        height: reg.duration * 40 - 4,
+        height: reg.duration * 58 - 4,
         //   +(reg.duration - 1) * 4,
         top:
-          44 + TIME_LIST.indexOf(reg.time) * 40,
+          44 + TIME_LIST.indexOf(reg.time) * 58,
       }}
       key={reg.id}
       draggable={true}
@@ -43,11 +47,11 @@ export default function RegCard({
       //     );
       //       }}
     >
-      <ul className='reg-card__list'>
-        <li className='reg-card__item'>
+      <div className='reg-card__box'>
+        <p className='reg-card__name'>
           {user?.name}
-        </li>
-        <li className='reg-card__contacts'>
+        </p>
+        <div className='reg-card__contacts'>
           <span>{user?.phone}</span>
           <ul className='reg-card__link-list'>
             <li>
@@ -67,7 +71,8 @@ export default function RegCard({
                 target='_blank'
                 href={`https://wa.me/${user?.phone.slice(
                   1
-                )}`}>
+                )}`}
+                rel='noreferrer'>
                 <img
                   className='reg-card__link-icon'
                   src={whatsapp}
@@ -76,74 +81,57 @@ export default function RegCard({
               </a>
             </li>
           </ul>
-        </li>
-
-        <li className='reg-card__item'>
-          <span>
-            {`${
-              reg.serviceIdList.length
-            } ${plural(reg.serviceIdList.length, {
-              one: 'услуга',
-              few: 'услуги',
-              many: 'услуг',
-            })}`}
-          </span>
-
-          <span>
-            {`${reg.duration / 2} ${plural(
-              Math.floor(reg.duration / 2),
-              {
-                one: 'час',
-                few: 'часа',
-                many: 'часов',
-              }
-            )}`}
-          </span>
-          {/* <span>
-            {reg.serviceIdList.reduce(
-              (res, currentId) =>
-                res +
-                getDataById(
-                  serviceList,
-                  currentId
-                )?.price,
-              0
-            )}
-          </span> */}
-        </li>
-
-        <li className='reg-card__item'>
-          <ul className='reg-card__service-list'>
-            {reg.serviceIdList.map(
-              (serviceId) => (
-                <li>
-                  {
-                    getDataById(
-                      serviceList,
-                      serviceId
-                    )?.name
-                  }
-                </li>
-              )
-            )}
-          </ul>
-        </li>
-      </ul>
-      {/* <div className='reg-card__item'>
-        <img src={person} alt='' />
-        <p className='reg-card__paragraph'>
-          {user?.name}
-        </p>
+        </div>
       </div>
 
       {reg.duration > 1 && (
         <>
-          <div className='reg-card__item'>
-            <Badge
-              count={reg.serviceIdList.length}
-              size='small'
-            />
-            <p className='reg-card__paragraph'>
+          <div className='reg-card__box reg-card__number-list'>
+            <span className='reg-card__number'>
+              {`${
+                reg.serviceIdList.length
+              } ${plural(
+                reg.serviceIdList.length,
+                {
+                  one: 'услуга',
+                  few: 'услуги',
+                  many: 'услуг',
+                }
+              )}`}
+            </span>
+
+            <span className='reg-card__number'>
+              {`${reg.duration / 2} ${plural(
+                Math.floor(reg.duration / 2),
+                {
+                  one: 'час',
+                  few: 'часа',
+                  many: 'часов',
+                }
+              )}`}
+            </span>
+            <span className='reg-card__number'>
+              {numberFormat(reg.income)} &#8381;
+            </span>
+          </div>
+
+          {reg.duration > 2 ? (
+            <ul className='reg-card__box reg-card__service-list'>
+              {reg.serviceIdList.map(
+                (serviceId) => (
+                  <li className='reg-card__service'>
+                    {
+                      getDataById(
+                        serviceList,
+                        serviceId
+                      )?.name
+                    }
+                  </li>
+                )
+              )}
+            </ul>
+          ) : (
+            <p className='reg-card__box reg-card__services-paragraph'>
               {reg.serviceIdList
                 .map(
                   (serviceId) =>
@@ -154,15 +142,9 @@ export default function RegCard({
                 )
                 .join(', ')}
             </p>
-          </div>
-          <a
-            className='reg-card__item'
-            href={`tel:${user?.phone}`}>
-            <img src={phone} alt='' />
-            {user?.phone}
-          </a>
+          )}
         </>
-      )} */}
+      )}
     </div>
   );
 }
