@@ -12,6 +12,13 @@ import {
   numberFormat,
   plural,
 } from '../../utils/format';
+import {
+  useAppDispatch,
+  useAppSelector,
+} from '../../store';
+import { setDraggableReg } from '../../reducers/regSlice';
+import { classByCondition } from '../../utils/className';
+import { useEffect } from 'react';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -25,9 +32,26 @@ export default function RegCard({
   const { data: serviceList } =
     useGetServiceListQuery();
 
+  const { draggableReg } = useAppSelector(
+    (state) => state.regState
+  );
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setDraggableReg(null));
+  }, [reg]);
+
   return (
     <div
-      className='reg-card'
+      className={classByCondition(
+        'reg-card',
+        'invisible',
+        !!(
+          draggableReg &&
+          draggableReg.id === reg.id
+        )
+      )}
       style={{
         height: reg.duration * 58 - 4,
         top:
@@ -35,13 +59,9 @@ export default function RegCard({
       }}
       key={reg.id}
       draggable={true}
-      //   onDragStart={(e) => {
-      //     e.dataTransfer.setData(
-      //       'index',
-      //       index.toString()
-      //     );
-      //       }}
-    >
+      onDrag={() =>
+        dispatch(setDraggableReg(reg))
+      }>
       <div className='reg-card__box'>
         <p className='reg-card__name'>
           {user?.name}

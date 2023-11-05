@@ -14,6 +14,7 @@ import {
   increment,
   doc,
   runTransaction,
+  updateDoc,
 } from 'firebase/firestore';
 import {
   ref,
@@ -361,6 +362,31 @@ export const apiSlice = createApi({
       invalidatesTags: ['Registration'],
     }),
 
+    updateRegistration: builder.mutation<
+      void,
+      { id: string; body: Partial<Registration> }
+    >({
+      async queryFn({ id, body }) {
+        const registrationRef = doc(
+          db,
+          'registrations',
+          id
+        );
+
+        try {
+          const data = await updateDoc(
+            registrationRef,
+            body
+          );
+
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Registration'],
+    }),
+
     addUser: builder.mutation<
       string,
       Omit<User, 'id'>
@@ -438,6 +464,7 @@ export const {
   useGetPhotoListQuery,
   useGetActualRegistrationListQuery,
   useAddRegistrationMutation,
+  useUpdateRegistrationMutation,
   useAddUserMutation,
   useUpdateIncomeMutation,
 } = apiSlice;

@@ -3,14 +3,14 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { nanoid } from 'nanoid';
-import person from '../../images/person.svg';
-import phone from '../../images/phone.svg';
 import { Button, Tooltip } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { TIME_LIST } from '../../constants';
 import { useState } from 'react';
-import { useGetUserListQuery } from '../../reducers/apiSlice';
+import {
+  useGetUserListQuery,
+  useUpdateRegistrationMutation,
+} from '../../reducers/apiSlice';
 import { setRegFormValues } from '../../reducers/regSlice';
 import { classByCondition } from '../../utils/className';
 import RegCard from '../RegCard/RegCard';
@@ -26,7 +26,11 @@ export default function Todos() {
     masterRegList,
     regFormValues,
     isTimeError,
+    draggableReg,
   } = useAppSelector((state) => state.regState);
+
+  const [updateReg] =
+    useUpdateRegistrationMutation();
 
   const dispatch = useAppDispatch();
 
@@ -89,6 +93,15 @@ export default function Todos() {
     setIsTimeSelectAvailable(false);
   }
 
+  function handleTimeCellDrop(timeIndex: number) {
+    if (draggableReg) {
+      updateReg({
+        id: draggableReg?.id,
+        body: { time: TIME_LIST[timeIndex] },
+      });
+    }
+  }
+
   return (
     <div className='todos'>
       <Tooltip
@@ -110,7 +123,7 @@ export default function Todos() {
         />
       </Tooltip>
 
-      {TIME_LIST.map((time) => (
+      {TIME_LIST.map((time, index) => (
         <div
           className='todos__time-table-row'
           key={time}>
@@ -133,6 +146,10 @@ export default function Todos() {
             }
             onClick={handleTimeCellClick}
             data-time={time}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() =>
+              handleTimeCellDrop(index)
+            }
           />
           {/* <div className='todos__time-table-cell' /> */}
         </div>

@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+.reg-card_invisible {
+  display: none;
+}
+
 .reg-card__box {
   background: var(--main-back);
   margin-bottom: 4px;
