@@ -6,7 +6,10 @@ import {
   User,
 } from '../../types';
 import { TIME_LIST } from '../../constants';
-import { useGetServiceListQuery } from '../../reducers/apiSlice';
+import {
+  useDeleteRegistrationMutation,
+  useGetServiceListQuery,
+} from '../../reducers/apiSlice';
 import { getDataById } from '../../utils/data';
 import {
   numberFormat,
@@ -24,14 +27,16 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import { Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Button, Popconfirm } from 'antd';
+import {
+  CloseOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: User | undefined;
-  type?: string;
-  isMajor?: boolean;
+  type?: 'major' | 'copy';
   className?: string;
 }
 
@@ -39,7 +44,6 @@ export default function RegCard({
   reg,
   user,
   type = 'major',
-  isMajor,
   className,
 }: RegCardProps) {
   const { data: serviceList } =
@@ -51,6 +55,9 @@ export default function RegCard({
   } = useAppSelector(
     (state) => state.regCardState
   );
+
+  const [deleteReg] =
+    useDeleteRegistrationMutation();
 
   const dispatch = useAppDispatch();
 
@@ -92,6 +99,27 @@ export default function RegCard({
           dispatch(setDraggableRegCard(null));
         }
       }}>
+      {type === 'major' && (
+        <Popconfirm
+          title='Удалить запись?'
+          // description='Are you sure to delete this task?'
+          onConfirm={() => deleteReg(reg.id)}
+          // onCancel={cancel}
+          okText='да'
+          okButtonProps={{
+            danger: true,
+          }}
+          cancelText='нет'>
+          <Button
+            className='reg-card__trash-btn'
+            type='primary'
+            size='small'
+            danger
+            icon={<DeleteOutlined />}
+          />
+        </Popconfirm>
+      )}
+
       {type === 'copy' && (
         <Button
           className='reg-card__close-btn'

@@ -63,7 +63,6 @@ export default function Todos() {
         <RegCard
           reg={reg}
           user={user}
-          isMajor={true}
           key={reg.id}
         />
       );

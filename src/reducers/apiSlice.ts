@@ -15,6 +15,7 @@ import {
   doc,
   runTransaction,
   updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import {
   ref,
@@ -387,6 +388,30 @@ export const apiSlice = createApi({
       invalidatesTags: ['Registration'],
     }),
 
+    deleteRegistration: builder.mutation<
+      void,
+      string
+    >({
+      async queryFn(id) {
+        const registrationRef = doc(
+          db,
+          'registrations',
+          id
+        );
+
+        try {
+          const data = await deleteDoc(
+            registrationRef
+          );
+
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Registration'],
+    }),
+
     addUser: builder.mutation<
       string,
       Omit<User, 'id'>
@@ -465,6 +490,7 @@ export const {
   useGetActualRegistrationListQuery,
   useAddRegistrationMutation,
   useUpdateRegistrationMutation,
+  useDeleteRegistrationMutation,
   useAddUserMutation,
   useUpdateIncomeMutation,
 } = apiSlice;

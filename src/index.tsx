@@ -24,6 +24,7 @@ root.render(
         token: {
           colorPrimary: 'rgb(137, 175, 176)',
           colorError: '#c5776b',
+          colorWarning: '#c5776b',
           fontFamily:
             '"Source Code Pro", monospace',
           colorTextBase: 'rgb(60, 60, 60)',
