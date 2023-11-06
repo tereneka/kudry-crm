@@ -70,7 +70,13 @@ export default function PlannerCalendar() {
 
   return (
     <div className='planner-calendar'>
-      <Tooltip
+      <Calendar
+        dateCellRender={dateCellRender}
+        fullscreen={false}
+        onSelect={handleDateSelect}
+        value={dayjs(date, DATE_FORMAT)}
+      />
+      {/* <Tooltip
         title='некорректная дата для новой записи'
         open={isDateError}
         color='rgba(215, 142, 123)'
@@ -81,7 +87,7 @@ export default function PlannerCalendar() {
           onSelect={handleDateSelect}
           value={dayjs(date, DATE_FORMAT)}
         />
-      </Tooltip>
+      </Tooltip> */}
 
       <ul className='planner-calendar__description-list'>
         <li className='planner-caledar__description-list-item'>

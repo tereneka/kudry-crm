@@ -5,6 +5,7 @@ import {
   Form,
   Select,
   message,
+  notification,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import UserSelect from '../UserSelect/UserSelect';
@@ -67,6 +68,8 @@ export default function RegForm() {
 
   const [messageApi, errorMessage] =
     message.useMessage();
+  const [notificationApi, validationMessage] =
+    notification.useNotification();
 
   const { regFormValues } = useAppSelector(
     (state) => state.regState
@@ -105,10 +108,6 @@ export default function RegForm() {
     setIsIndexSelectVisible,
   ] = useState(false);
   const [index, setIndex] = useState(0);
-  const [
-    isSubmitBtnClicked,
-    setIsSubmitBtnClicked,
-  ] = useState(false);
 
   const isHairCategory = hasMasterHairCategory(
     currentMaster,
@@ -221,8 +220,13 @@ export default function RegForm() {
       });
 
       addReg(regBody);
-    } else {
-      setIsSubmitBtnClicked(true);
+    } else if (isDateIncorrect) {
+      openNotification(
+        'некорректная дата',
+        'date'
+      );
+    } else if (!regFormValues.time) {
+      openNotification('выберите время', 'time');
     }
   }
 
@@ -239,6 +243,22 @@ export default function RegForm() {
     dispatch(setIsTimeError(false));
     setIsFormOpened(false);
     setIsFormActive(false);
+    notificationApi.destroy('date');
+    notificationApi.destroy('time');
+  }
+
+  function openNotification(
+    message: string,
+    key: 'date' | 'time'
+  ) {
+    notificationApi.open({
+      message,
+      duration: 0,
+      type: 'error',
+      key,
+      placement: 'bottomRight',
+      className: 'reg-form__valid-message',
+    });
   }
 
   function showErrMessage() {
@@ -295,28 +315,13 @@ export default function RegForm() {
 
   // валидация полей даты и времени
   useEffect(() => {
-    if (
-      isSubmitBtnClicked &&
-      !regFormValues.time
-    ) {
-      dispatch(setIsTimeError(true));
-    } else if (
-      !isSubmitBtnClicked &&
-      regFormValues.time
-    ) {
-      dispatch(setIsTimeError(false));
+    if (!isDateIncorrect) {
+      notificationApi.destroy('date');
     }
-
-    if (isSubmitBtnClicked && isDateIncorrect) {
-      dispatch(setIsDateError(true));
-    } else if (
-      !isSubmitBtnClicked &&
-      !isDateIncorrect
-    ) {
-      dispatch(setIsDateError(false));
+    if (regFormValues.time) {
+      notificationApi.destroy('time');
     }
-    setIsSubmitBtnClicked(false);
-  }, [regFormValues, isSubmitBtnClicked]);
+  }, [isDateIncorrect, regFormValues]);
 
   // описываем действия при смене мастера
   useEffect(() => {
@@ -505,6 +510,7 @@ export default function RegForm() {
         </Form>
       </div>
       {errorMessage}
+      {validationMessage}
     </div>
   );
 }

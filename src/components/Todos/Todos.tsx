@@ -142,7 +142,16 @@ export default function Todos() {
 
   return (
     <div className='todos'>
-      <Tooltip
+      <Tooltip title='выбрать время'>
+        <Button
+          icon={<SelectOutlined />}
+          type='primary'
+          danger={!isTimeSelectAvailable}
+          size='small'
+          onClick={toggleTimeSelectBtn}
+        />
+      </Tooltip>
+      {/* <Tooltip
         title={
           isTimeError
             ? 'необходимо выбрать время'
@@ -159,7 +168,7 @@ export default function Todos() {
           size='small'
           onClick={toggleTimeSelectBtn}
         />
-      </Tooltip>
+      </Tooltip> */}
 
       {TIME_LIST.map((time, index) => (
         <div

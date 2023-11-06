@@ -96,6 +96,12 @@
   font-size: 11px;
 }
 
+.reg-form__valid-message {
+  padding: 4px;
+  width: 280px;
+  height: 35px;
+}
+
 @media screen and (min-width: 700px) {
   .reg-form {
     top: 20px;
