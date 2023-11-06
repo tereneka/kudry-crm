@@ -8,7 +8,7 @@ import {
 } from '../reducers/apiSlice';
 import MastersSelect from '../components/MasterSelect/MasterSelect';
 import { setDate } from '../features/Planner/plannerSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { filterRegListByMasterId } from '../reducers/regSlice';
 import {
@@ -18,6 +18,7 @@ import {
 import PlannerCalendar from '../components/PlannerCalendar/PlannerCalendar';
 import Todos from '../components/Todos/Todos';
 import RegForm from '../components/RegForm/RegForm';
+import RegCard from '../components/RegCard/RegCard';
 
 export default function Planner() {
   const { data: regList } =
@@ -28,6 +29,9 @@ export default function Planner() {
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
+
+  const { dateDraggableReg, draggableReg } =
+    useAppSelector((state) => state.regState);
 
   const dispatch = useAppDispatch();
 
@@ -55,6 +59,12 @@ export default function Planner() {
 
   return (
     <div className='planner'>
+      {dateDraggableReg && (
+        <RegCard
+          reg={dateDraggableReg}
+          className='planner__reg-card'
+        />
+      )}
       <MastersSelect
         isAllOption={false}
         currentMaster={currentMaster}

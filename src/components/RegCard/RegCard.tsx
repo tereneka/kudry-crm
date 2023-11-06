@@ -16,18 +16,25 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { setDraggableReg } from '../../reducers/regSlice';
+import {
+  setDateDraggableReg,
+  setDraggableReg,
+} from '../../reducers/regSlice';
 import { classByCondition } from '../../utils/className';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Button } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 
 interface RegCardProps {
   reg: DbRegistration;
-  user: User | undefined;
+  user?: User | undefined;
+  className?: string;
 }
 
 export default function RegCard({
   reg,
   user,
+  className,
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
@@ -44,14 +51,14 @@ export default function RegCard({
 
   return (
     <div
-      className={classByCondition(
+      className={`${classByCondition(
         'reg-card',
         'invisible',
         !!(
           draggableReg &&
           draggableReg.id === reg.id
         )
-      )}
+      )} ${className}`}
       style={{
         height: reg.duration * 58 - 4,
         top:
@@ -59,13 +66,24 @@ export default function RegCard({
       }}
       key={reg.id}
       draggable={true}
-      onDrag={() =>
-        dispatch(setDraggableReg(reg))
-      }>
+      // onDragStart={() =>
+      //   dispatch(setDateDraggableReg(reg))
+      // }
+      onDrag={() => {
+        dispatch(setDraggableReg(reg));
+      }}
+      onDragEnd={(e) => {
+        if (
+          e.dataTransfer.dropEffect === 'none'
+        ) {
+          dispatch(setDraggableReg(null));
+        }
+      }}>
       <div className='reg-card__box'>
         <p className='reg-card__name'>
           {user?.name}
         </p>
+
         <div className='reg-card__contacts'>
           <span>{user?.phone}</span>
           <ul className='reg-card__link-list'>

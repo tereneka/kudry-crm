@@ -9,13 +9,18 @@ import {
   useAppSelector,
 } from '../../store';
 import { setDate } from '../../reducers/calendarSlice';
+import { setDateDraggableReg } from '../../reducers/regSlice';
+
 export default function PlannerCalendar() {
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
 
-  const { masterRegList, isDateError } =
-    useAppSelector((state) => state.regState);
+  const {
+    masterRegList,
+    isDateError,
+    draggableReg,
+  } = useAppSelector((state) => state.regState);
 
   const dispatch = useAppDispatch();
 
@@ -38,17 +43,40 @@ export default function PlannerCalendar() {
       ).length;
 
       return (
-        <div className='planner__calendar-cell planner__calendar-cell_type_event'>
+        <div
+          className='planner__calendar-cell planner__calendar-cell_type_event'
+          data-date={date.format(DATE_FORMAT)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDateDragEnter}>
           <div className='planner__badge'>
             {regCount}
           </div>
         </div>
+      );
+    } else {
+      return (
+        <div
+          className='planner__calendar-cell'
+          data-date={date.format(DATE_FORMAT)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDateDragEnter}></div>
       );
     }
   };
 
   function handleDateSelect(value: Dayjs) {
     dispatch(setDate(value.format(DATE_FORMAT)));
+  }
+
+  function handleDateDragEnter(
+    e: React.DragEvent<HTMLDivElement>
+  ) {
+    dispatch(
+      setDate(
+        e.currentTarget.dataset.date as string
+      )
+    );
+    dispatch(setDateDraggableReg(draggableReg));
   }
 
   return (

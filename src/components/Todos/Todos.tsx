@@ -11,10 +11,16 @@ import {
   useGetUserListQuery,
   useUpdateRegistrationMutation,
 } from '../../reducers/apiSlice';
-import { setRegFormValues } from '../../reducers/regSlice';
+import {
+  setDateDraggableReg,
+  setRegFormValues,
+} from '../../reducers/regSlice';
 import { classByCondition } from '../../utils/className';
 import RegCard from '../RegCard/RegCard';
-import { convertDbDateToStr } from '../../utils/date';
+import {
+  convertDateStrToDate,
+  convertDbDateToStr,
+} from '../../utils/date';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -97,9 +103,13 @@ export default function Todos() {
     if (draggableReg) {
       updateReg({
         id: draggableReg?.id,
-        body: { time: TIME_LIST[timeIndex] },
+        body: {
+          time: TIME_LIST[timeIndex],
+          date: convertDateStrToDate(date),
+        },
       });
     }
+    dispatch(setDateDraggableReg(null));
   }
 
   return (

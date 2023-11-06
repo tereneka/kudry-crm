@@ -21,6 +21,7 @@ interface RegState {
   isTimeError: boolean;
   isDateError: boolean;
   draggableReg: DbRegistration | null;
+  dateDraggableReg: DbRegistration | null;
 }
 const initialState: RegState = {
   masterRegList: undefined,
@@ -28,6 +29,7 @@ const initialState: RegState = {
   isTimeError: false,
   isDateError: false,
   draggableReg: null,
+  dateDraggableReg: null,
 };
 
 const regSlice = createSlice({
@@ -76,6 +78,13 @@ const regSlice = createSlice({
     ) => {
       state.draggableReg = action.payload;
     },
+
+    setDateDraggableReg: (
+      state,
+      action: PayloadAction<DbRegistration | null>
+    ) => {
+      state.dateDraggableReg = action.payload;
+    },
   },
 });
 
@@ -85,6 +94,7 @@ export const {
   setIsTimeError,
   setIsDateError,
   setDraggableReg,
+  setDateDraggableReg,
 } = regSlice.actions;
 
 export default regSlice.reducer;
