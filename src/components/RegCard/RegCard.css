@@ -13,6 +13,10 @@
   display: none;
 }
 
+.reg-card_transparent {
+  opacity: 0.5;
+}
+
 .reg-card__box {
   background: var(--main-back);
   margin-bottom: 4px;

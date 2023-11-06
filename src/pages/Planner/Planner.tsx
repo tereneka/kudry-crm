@@ -1,24 +1,25 @@
+import './Planner.css';
 import {
   useAppDispatch,
   useAppSelector,
-} from '../store';
+} from '../../store';
 import {
   useGetActualRegistrationListQuery,
   useGetMasterListQuery,
-} from '../reducers/apiSlice';
-import MastersSelect from '../components/MasterSelect/MasterSelect';
-import { setDate } from '../features/Planner/plannerSlice';
-import { useEffect, useState } from 'react';
+} from '../../reducers/apiSlice';
+import MastersSelect from '../../components/MasterSelect/MasterSelect';
+import { setDate } from '../../features/Planner/plannerSlice';
+import { useEffect } from 'react';
 
-import { filterRegListByMasterId } from '../reducers/regSlice';
+import { filterRegListByMasterId } from '../../reducers/regSlice';
 import {
   setCurrentMaster,
   setPrevMaster,
-} from '../reducers/mastersSlice';
-import PlannerCalendar from '../components/PlannerCalendar/PlannerCalendar';
-import Todos from '../components/Todos/Todos';
-import RegForm from '../components/RegForm/RegForm';
-import RegCard from '../components/RegCard/RegCard';
+} from '../../reducers/mastersSlice';
+import PlannerCalendar from '../../components/PlannerCalendar/PlannerCalendar';
+import Todos from '../../components/Todos/Todos';
+import RegForm from '../../components/RegForm/RegForm';
+import RegCard from '../../components/RegCard/RegCard';
 
 export default function Planner() {
   const { data: regList } =
@@ -29,9 +30,13 @@ export default function Planner() {
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
-
-  const { dateDraggableReg, draggableReg } =
-    useAppSelector((state) => state.regState);
+  const {
+    regCardInfo,
+    regCardUser,
+    isRegCardCopyVisible,
+  } = useAppSelector(
+    (state) => state.regCardState
+  );
 
   const dispatch = useAppDispatch();
 
@@ -59,9 +64,10 @@ export default function Planner() {
 
   return (
     <div className='planner'>
-      {dateDraggableReg && (
+      {regCardInfo && isRegCardCopyVisible && (
         <RegCard
-          reg={dateDraggableReg}
+          reg={regCardInfo}
+          user={regCardUser || undefined}
           className='planner__reg-card'
         />
       )}

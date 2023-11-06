@@ -16,37 +16,41 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import {
-  setDateDraggableReg,
-  setDraggableReg,
-} from '../../reducers/regSlice';
 import { classByCondition } from '../../utils/className';
-import { useEffect, useState } from 'react';
-import { Button } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { useEffect } from 'react';
+import {
+  setDraggableRegCard,
+  setRegCardInfo,
+  setRegCardUser,
+} from '../../reducers/regCardSlice';
 
 interface RegCardProps {
   reg: DbRegistration;
-  user?: User | undefined;
+  user: User | undefined;
+  isMajor?: boolean;
   className?: string;
 }
 
 export default function RegCard({
   reg,
   user,
+  isMajor,
   className,
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
 
-  const { draggableReg } = useAppSelector(
-    (state) => state.regState
+  const {
+    draggableRegCard,
+    isRegCardCopyVisible,
+  } = useAppSelector(
+    (state) => state.regCardState
   );
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setDraggableReg(null));
+    dispatch(setDraggableRegCard(null));
   }, [reg]);
 
   return (
@@ -54,11 +58,14 @@ export default function RegCard({
       className={`${classByCondition(
         'reg-card',
         'invisible',
-        !!(
-          draggableReg &&
-          draggableReg.id === reg.id
-        )
-      )} ${className}`}
+        draggableRegCard === reg.id
+      )} ${
+        className ? className : ''
+      } ${classByCondition(
+        'reg-card',
+        'transparent',
+        !!(isRegCardCopyVisible && isMajor)
+      )}`}
       style={{
         height: reg.duration * 58 - 4,
         top:
@@ -66,17 +73,18 @@ export default function RegCard({
       }}
       key={reg.id}
       draggable={true}
-      // onDragStart={() =>
-      //   dispatch(setDateDraggableReg(reg))
-      // }
+      onDragStart={() => {
+        dispatch(setRegCardInfo(reg));
+        dispatch(setRegCardUser(user));
+      }}
       onDrag={() => {
-        dispatch(setDraggableReg(reg));
+        dispatch(setDraggableRegCard(reg.id));
       }}
       onDragEnd={(e) => {
         if (
           e.dataTransfer.dropEffect === 'none'
         ) {
-          dispatch(setDraggableReg(null));
+          dispatch(setDraggableRegCard(null));
         }
       }}>
       <div className='reg-card__box'>

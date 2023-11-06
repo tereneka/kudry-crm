@@ -20,16 +20,16 @@ interface RegState {
   regFormValues: RegFormValues;
   isTimeError: boolean;
   isDateError: boolean;
-  draggableReg: DbRegistration | null;
-  dateDraggableReg: DbRegistration | null;
+  // draggableReg: DbRegistration | null;
+  // dateDraggableReg: DbRegistration | null;
 }
 const initialState: RegState = {
   masterRegList: undefined,
   regFormValues: INITIAL_REG_FORM_VALUES,
   isTimeError: false,
   isDateError: false,
-  draggableReg: null,
-  dateDraggableReg: null,
+  // draggableReg: null,
+  // dateDraggableReg: null,
 };
 
 const regSlice = createSlice({
@@ -72,19 +72,19 @@ const regSlice = createSlice({
       state.isDateError = action.payload;
     },
 
-    setDraggableReg: (
-      state,
-      action: PayloadAction<DbRegistration | null>
-    ) => {
-      state.draggableReg = action.payload;
-    },
+    // setDraggableReg: (
+    //   state,
+    //   action: PayloadAction<DbRegistration | null>
+    // ) => {
+    //   state.draggableReg = action.payload;
+    // },
 
-    setDateDraggableReg: (
-      state,
-      action: PayloadAction<DbRegistration | null>
-    ) => {
-      state.dateDraggableReg = action.payload;
-    },
+    // setDateDraggableReg: (
+    //   state,
+    //   action: PayloadAction<DbRegistration | null>
+    // ) => {
+    //   state.dateDraggableReg = action.payload;
+    // },
   },
 });
 
@@ -93,8 +93,8 @@ export const {
   setRegFormValues,
   setIsTimeError,
   setIsDateError,
-  setDraggableReg,
-  setDateDraggableReg,
+  // setDraggableReg,
+  // setDateDraggableReg,
 } = regSlice.actions;
 
 export default regSlice.reducer;

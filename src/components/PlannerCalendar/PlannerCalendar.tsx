@@ -9,66 +9,55 @@ import {
   useAppSelector,
 } from '../../store';
 import { setDate } from '../../reducers/calendarSlice';
-import { setDateDraggableReg } from '../../reducers/regSlice';
+import { setIsRegCardCopyVisible } from '../../reducers/regCardSlice';
+import { classByCondition } from '../../utils/className';
 
 export default function PlannerCalendar() {
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
 
-  const {
-    masterRegList,
-    isDateError,
-    draggableReg,
-  } = useAppSelector((state) => state.regState);
+  const { masterRegList, isDateError } =
+    useAppSelector((state) => state.regState);
 
   const dispatch = useAppDispatch();
 
   const dateCellRender = (date: Dayjs) => {
-    if (
-      masterRegList?.some(
-        (reg) =>
-          reg.date
-            .toDate()
-            .toLocaleDateString() ===
-          date.format(DATE_FORMAT)
-      )
-    ) {
-      const regCount = masterRegList.filter(
-        (reg) =>
-          reg.date
-            .toDate()
-            .toLocaleDateString() ===
-          date.format(DATE_FORMAT)
-      ).length;
+    const isRegs = masterRegList?.some(
+      (reg) =>
+        reg.date.toDate().toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    );
+    const regCount = masterRegList?.filter(
+      (reg) =>
+        reg.date.toDate().toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    ).length;
 
-      return (
-        <div
-          className='planner__calendar-cell planner__calendar-cell_type_event'
-          data-date={date.format(DATE_FORMAT)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDateDragEnter}>
+    return (
+      <div
+        className={classByCondition(
+          'planner__calendar-cell',
+          'type_event',
+          !!isRegs
+        )}
+        data-date={date.format(DATE_FORMAT)}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDateDrop}>
+        {isRegs && (
           <div className='planner__badge'>
             {regCount}
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div
-          className='planner__calendar-cell'
-          data-date={date.format(DATE_FORMAT)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDateDragEnter}></div>
-      );
-    }
+        )}
+      </div>
+    );
   };
 
   function handleDateSelect(value: Dayjs) {
     dispatch(setDate(value.format(DATE_FORMAT)));
   }
 
-  function handleDateDragEnter(
+  function handleDateDrop(
     e: React.DragEvent<HTMLDivElement>
   ) {
     dispatch(
@@ -76,7 +65,7 @@ export default function PlannerCalendar() {
         e.currentTarget.dataset.date as string
       )
     );
-    dispatch(setDateDraggableReg(draggableReg));
+    dispatch(setIsRegCardCopyVisible(true));
   }
 
   return (

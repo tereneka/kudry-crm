@@ -6,6 +6,7 @@ import {
 import plannerReducer from './features/Planner/plannerSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
+import regCardReducer from './reducers/regCardSlice';
 import mastersReducer from './reducers/mastersSlice';
 import { apiSlice } from './reducers/apiSlice';
 import {
@@ -20,6 +21,7 @@ export const store = configureStore({
     plannerState: plannerReducer,
     calendarState: calendarReducer,
     regState: regReducer,
+    regCardState: regCardReducer,
     mastersState: mastersReducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Planner from '../../pages/Planner';
+import Planner from '../../pages/Planner/Planner';
 import { useGetMasterListQuery } from '../../reducers/apiSlice';
 import {
   useAppDispatch,

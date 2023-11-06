@@ -11,16 +11,18 @@ import {
   useGetUserListQuery,
   useUpdateRegistrationMutation,
 } from '../../reducers/apiSlice';
-import {
-  setDateDraggableReg,
-  setRegFormValues,
-} from '../../reducers/regSlice';
+import { setRegFormValues } from '../../reducers/regSlice';
 import { classByCondition } from '../../utils/className';
 import RegCard from '../RegCard/RegCard';
 import {
   convertDateStrToDate,
   convertDbDateToStr,
 } from '../../utils/date';
+import {
+  setIsRegCardCopyVisible,
+  setRegCardInfo,
+  setRegCardUser,
+} from '../../reducers/regCardSlice';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -32,8 +34,10 @@ export default function Todos() {
     masterRegList,
     regFormValues,
     isTimeError,
-    draggableReg,
   } = useAppSelector((state) => state.regState);
+  const { regCardInfo } = useAppSelector(
+    (state) => state.regCardState
+  );
 
   const [updateReg] =
     useUpdateRegistrationMutation();
@@ -59,6 +63,7 @@ export default function Todos() {
         <RegCard
           reg={reg}
           user={user}
+          isMajor={true}
           key={reg.id}
         />
       );
@@ -100,16 +105,18 @@ export default function Todos() {
   }
 
   function handleTimeCellDrop(timeIndex: number) {
-    if (draggableReg) {
+    if (regCardInfo) {
       updateReg({
-        id: draggableReg?.id,
+        id: regCardInfo.id,
         body: {
           time: TIME_LIST[timeIndex],
           date: convertDateStrToDate(date),
         },
       });
+      dispatch(setRegCardInfo(null));
+      dispatch(setRegCardUser(null));
+      dispatch(setIsRegCardCopyVisible(false));
     }
-    dispatch(setDateDraggableReg(null));
   }
 
   return (
