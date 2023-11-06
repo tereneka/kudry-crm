@@ -3,10 +3,10 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { TIME_LIST } from '../../constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useGetUserListQuery,
   useUpdateRegistrationMutation,
@@ -19,6 +19,7 @@ import {
   convertDbDateToStr,
 } from '../../utils/date';
 import {
+  setDraggableRegCard,
   setIsRegCardCopyVisible,
   setRegCardInfo,
   setRegCardUser,
@@ -39,7 +40,7 @@ export default function Todos() {
     (state) => state.regCardState
   );
 
-  const [updateReg] =
+  const [updateReg, { isError }] =
     useUpdateRegistrationMutation();
 
   const dispatch = useAppDispatch();
@@ -67,6 +68,17 @@ export default function Todos() {
         />
       );
     });
+
+  const [messageApi, errorMessage] =
+    message.useMessage();
+
+  function showErrMessage() {
+    messageApi.open({
+      type: 'error',
+      content: 'Произошла ошибка :(',
+      duration: 4,
+    });
+  }
 
   function toggleTimeSelectBtn() {
     setIsTimeSelectAvailable(
@@ -117,6 +129,16 @@ export default function Todos() {
       dispatch(setIsRegCardCopyVisible(false));
     }
   }
+
+  useEffect(() => {
+    if (isError) {
+      showErrMessage();
+      dispatch(setRegCardInfo(null));
+      dispatch(setRegCardUser(null));
+      dispatch(setIsRegCardCopyVisible(false));
+      dispatch(setDraggableRegCard(null));
+    }
+  }, [isError]);
 
   return (
     <div className='todos'>
@@ -171,6 +193,7 @@ export default function Todos() {
         </div>
       ))}
       {regList}
+      {errorMessage}
     </div>
   );
 }

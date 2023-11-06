@@ -27,7 +27,11 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import { Button, Popconfirm } from 'antd';
+import {
+  Button,
+  Popconfirm,
+  message,
+} from 'antd';
 import {
   CloseOutlined,
   DeleteOutlined,
@@ -56,14 +60,29 @@ export default function RegCard({
     (state) => state.regCardState
   );
 
-  const [deleteReg] =
+  const [deleteReg, { isError }] =
     useDeleteRegistrationMutation();
 
   const dispatch = useAppDispatch();
 
+  const [messageApi, errorMessage] =
+    message.useMessage();
+
+  function showErrMessage() {
+    messageApi.open({
+      type: 'error',
+      content: 'Произошла ошибка :(',
+      duration: 4,
+    });
+  }
+
   useEffect(() => {
     dispatch(setDraggableRegCard(null));
   }, [reg]);
+
+  useEffect(() => {
+    if (isError) showErrMessage();
+  }, [isError]);
 
   return (
     <div
@@ -236,6 +255,7 @@ export default function RegCard({
           )}
         </>
       )}
+      {errorMessage}
     </div>
   );
 }
