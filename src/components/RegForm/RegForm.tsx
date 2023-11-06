@@ -175,12 +175,14 @@ export default function RegForm() {
   function handleFormSubmit(values: {
     userId: string;
     serviceIdList: string[];
+    index?: number;
   }) {
     const { userId, serviceIdList } = values;
     const regBody = {
       ...regFormValues,
       serviceIdList,
       userId,
+      serviceIndex: index || 0,
     } as Registration;
     const incomeBodyList: Omit<Income, 'id'>[] =
       [];

@@ -30,6 +30,7 @@ const INITIAL_REG_FORM_VALUES = {
   time: undefined,
   duration: 0,
   income: 0,
+  serviceIndex: 0,
 };
 
 export {

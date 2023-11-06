@@ -51,6 +51,7 @@ interface Registration {
   time: string;
   duration: number;
   income: number;
+  serviceIndex: number;
 }
 
 interface DbRegistration

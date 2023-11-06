@@ -3,12 +3,14 @@ import phone from '../../images/phone.svg';
 import whatsapp from '../../images/whatsapp.svg';
 import {
   DbRegistration,
+  Income,
   User,
 } from '../../types';
 import { TIME_LIST } from '../../constants';
 import {
   useDeleteRegistrationMutation,
   useGetServiceListQuery,
+  useUpdateIncomeMutation,
 } from '../../reducers/apiSlice';
 import { getDataById } from '../../utils/data';
 import {
@@ -36,6 +38,7 @@ import {
   CloseOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+import { convertDbDateToStr } from '../../utils/date';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -60,8 +63,10 @@ export default function RegCard({
     (state) => state.regCardState
   );
 
-  const [deleteReg, { isError }] =
+  const [deleteReg, { isError, isSuccess }] =
     useDeleteRegistrationMutation();
+  const [updateIncome] =
+    useUpdateIncomeMutation();
 
   const dispatch = useAppDispatch();
 
@@ -76,6 +81,8 @@ export default function RegCard({
     });
   }
 
+  function handleDeleteBtnClick() {}
+
   useEffect(() => {
     dispatch(setDraggableRegCard(null));
   }, [reg]);
@@ -83,6 +90,41 @@ export default function RegCard({
   useEffect(() => {
     if (isError) showErrMessage();
   }, [isError]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      const incomeBodyList: Omit<Income, 'id'>[] =
+        [];
+
+      Promise.allSettled(
+        reg.serviceIdList.map((serviceId, i) => {
+          const service = getDataById(
+            serviceList,
+            serviceId
+          );
+          incomeBodyList.push({
+            serviceId,
+            categoryId: service?.categoryId || '',
+            date: reg.date.toDate(),
+            sum: service
+              ? -+service.price.split('/')[
+                  reg.serviceIndex
+                ] || 0
+              : 0,
+          });
+          return updateIncome(incomeBodyList[i]);
+        })
+      ).then((results) => {
+        results.forEach((result, i) => {
+          console.log(result.status);
+
+          if (result.status === 'rejected') {
+            updateIncome(incomeBodyList[i]);
+          }
+        });
+      });
+    }
+  }, [isSuccess]);
 
   return (
     <div
@@ -121,9 +163,7 @@ export default function RegCard({
       {type === 'major' && (
         <Popconfirm
           title='Удалить запись?'
-          // description='Are you sure to delete this task?'
           onConfirm={() => deleteReg(reg.id)}
-          // onCancel={cancel}
           okText='да'
           okButtonProps={{
             danger: true,
