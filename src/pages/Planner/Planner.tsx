@@ -68,6 +68,7 @@ export default function Planner() {
         <RegCard
           reg={regCardInfo}
           user={regCardUser || undefined}
+          type='copy'
           className='planner__reg-card'
         />
       )}

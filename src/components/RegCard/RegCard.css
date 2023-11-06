@@ -99,6 +99,13 @@
   white-space: nowrap;
 }
 
+.reg-card__close-btn {
+  color: var(--accent-bright);
+  position: absolute;
+  top: -21px;
+  left: -21px;
+}
+
 @media screen and (max-width: 350px) {
   .reg-card {
     font-size: 12px;

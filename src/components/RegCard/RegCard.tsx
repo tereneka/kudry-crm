@@ -20,13 +20,17 @@ import { classByCondition } from '../../utils/className';
 import { useEffect } from 'react';
 import {
   setDraggableRegCard,
+  setIsRegCardCopyVisible,
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
+import { Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: User | undefined;
+  type?: string;
   isMajor?: boolean;
   className?: string;
 }
@@ -34,6 +38,7 @@ interface RegCardProps {
 export default function RegCard({
   reg,
   user,
+  type = 'major',
   isMajor,
   className,
 }: RegCardProps) {
@@ -64,7 +69,7 @@ export default function RegCard({
       } ${classByCondition(
         'reg-card',
         'transparent',
-        !!(isRegCardCopyVisible && isMajor)
+        isRegCardCopyVisible && type === 'major'
       )}`}
       style={{
         height: reg.duration * 58 - 4,
@@ -87,6 +92,21 @@ export default function RegCard({
           dispatch(setDraggableRegCard(null));
         }
       }}>
+      {type === 'copy' && (
+        <Button
+          className='reg-card__close-btn'
+          type='text'
+          icon={<CloseOutlined />}
+          onClick={() => {
+            dispatch(setRegCardInfo(null));
+            dispatch(setRegCardUser(null));
+            dispatch(
+              setIsRegCardCopyVisible(false)
+            );
+          }}
+        />
+      )}
+
       <div className='reg-card__box'>
         <p className='reg-card__name'>
           {user?.name}
