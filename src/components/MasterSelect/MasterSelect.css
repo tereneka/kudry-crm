@@ -7,5 +7,17 @@
   .ant-select-selector {
   height: 50px;
   padding-top: 4px;
-  min-width: 160px;
+  min-width: 184px;
+}
+
+.master-select
+  :where(
+    .css-dev-only-do-not-override-xf1sj9
+  ).ant-select-single.ant-select-lg:not(
+    .ant-select-customize-input
+  )
+  .ant-select-selector {
+  height: 50px;
+  padding-top: 4px;
+  min-width: 184px;
 }

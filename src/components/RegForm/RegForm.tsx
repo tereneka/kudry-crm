@@ -344,7 +344,10 @@ export default function RegForm() {
   // обработка результата отправки формы регистрации
   useEffect(() => {
     if (isError) showErrMessage();
-    if (isSuccess) resetForm();
+    if (isSuccess) {
+      resetForm();
+      setIsIndexSelectVisible(false);
+    }
   }, [isError, isSuccess]);
 
   return (
