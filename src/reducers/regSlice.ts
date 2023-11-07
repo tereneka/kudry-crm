@@ -18,15 +18,13 @@ interface RegFormValues {
 
 interface RegState {
   masterRegList: DbRegistration[] | undefined;
+  isRegFormActive: boolean;
   regFormValues: RegFormValues;
-  isTimeError: boolean;
-  isDateError: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
+  isRegFormActive: false,
   regFormValues: INITIAL_REG_FORM_VALUES,
-  isTimeError: false,
-  isDateError: false,
 };
 
 const regSlice = createSlice({
@@ -48,34 +46,26 @@ const regSlice = createSlice({
       );
     },
 
+    setIsRegFormActive: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isRegFormActive = action.payload;
+    },
+
     setRegFormValues: (
       state,
       action: PayloadAction<RegFormValues>
     ) => {
       state.regFormValues = action.payload;
     },
-
-    setIsTimeError: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isTimeError = action.payload;
-    },
-
-    setIsDateError: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isDateError = action.payload;
-    },
   },
 });
 
 export const {
   filterRegListByMasterId,
+  setIsRegFormActive,
   setRegFormValues,
-  setIsTimeError,
-  setIsDateError,
 } = regSlice.actions;
 
 export default regSlice.reducer;

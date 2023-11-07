@@ -2,19 +2,27 @@
   width: calc((100% - 74px));
   position: absolute;
   left: 74px;
-  background: var(--accent-bright);
   border-radius: 4px;
   padding: 4px;
   font-size: 14px;
   box-sizing: border-box;
+  background: var(--accent-bright);
 }
 
 .reg-card_invisible {
   display: none;
 }
 
-.reg-card_transparent {
-  opacity: 0.5;
+.reg-card_type_copy {
+  width: 190px;
+  height: 88px !important;
+  margin-bottom: -88px;
+  font-size: 10px;
+  background: var(--accent-soft);
+  position: sticky;
+  top: 0px !important;
+  left: calc(100% - 190px) !important;
+  z-index: 10;
 }
 
 .reg-card__box {
@@ -38,7 +46,7 @@
   justify-content: space-between;
   align-items: center;
   color: var(--light-text);
-  width: 95%;
+  width: 80%;
 }
 
 .reg-card__link-list {
@@ -69,7 +77,6 @@
 .reg-card__number-list {
   display: flex;
   justify-content: space-between;
-
   font-weight: 600;
 }
 
@@ -101,14 +108,20 @@
   white-space: nowrap;
 }
 
-.reg-card__close-btn {
-  color: var(--accent-bright);
+.reg-card__btn-group {
   position: absolute;
-  top: -21px;
-  left: -21px;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
 }
 
-.reg-card__trash-btn {
+.reg-card__move-btn {
+  background: rgb(199, 119, 107) !important;
+  color: var(--main-back) !important;
+}
+
+.reg-card__close-btn {
   position: absolute;
   top: 0;
   right: 0;

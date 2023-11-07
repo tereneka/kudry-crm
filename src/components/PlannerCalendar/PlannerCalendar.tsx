@@ -9,7 +9,6 @@ import {
   useAppSelector,
 } from '../../store';
 import { setDate } from '../../reducers/calendarSlice';
-import { setIsRegCardCopyVisible } from '../../reducers/regCardSlice';
 import { classByCondition } from '../../utils/className';
 
 export default function PlannerCalendar() {
@@ -17,8 +16,9 @@ export default function PlannerCalendar() {
     (state) => state.calendarState
   );
 
-  const { masterRegList, isDateError } =
-    useAppSelector((state) => state.regState);
+  const { masterRegList } = useAppSelector(
+    (state) => state.regState
+  );
 
   const dispatch = useAppDispatch();
 
@@ -41,9 +41,7 @@ export default function PlannerCalendar() {
           'type_event',
           !!isRegs
         )}
-        data-date={date.format(DATE_FORMAT)}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDateDrop}>
+        data-date={date.format(DATE_FORMAT)}>
         {isRegs && (
           <div className='planner__badge'>
             {regCount}
@@ -57,17 +55,6 @@ export default function PlannerCalendar() {
     dispatch(setDate(value.format(DATE_FORMAT)));
   }
 
-  function handleDateDrop(
-    e: React.DragEvent<HTMLDivElement>
-  ) {
-    dispatch(
-      setDate(
-        e.currentTarget.dataset.date as string
-      )
-    );
-    dispatch(setIsRegCardCopyVisible(true));
-  }
-
   return (
     <div className='planner-calendar'>
       <Calendar
@@ -76,19 +63,6 @@ export default function PlannerCalendar() {
         onSelect={handleDateSelect}
         value={dayjs(date, DATE_FORMAT)}
       />
-      {/* <Tooltip
-        title='некорректная дата для новой записи'
-        open={isDateError}
-        color='rgba(215, 142, 123)'
-        placement='rightTop'>
-        <Calendar
-          dateCellRender={dateCellRender}
-          fullscreen={false}
-          onSelect={handleDateSelect}
-          value={dayjs(date, DATE_FORMAT)}
-        />
-      </Tooltip> */}
-
       <ul className='planner-calendar__description-list'>
         <li className='planner-caledar__description-list-item'>
           записи

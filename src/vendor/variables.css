@@ -3,7 +3,7 @@
   --main-text: rgb(60, 60, 60);
   --light-text: rgb(116, 116, 116);
   --accent-bright: rgba(215, 142, 123);
-  --accent-light-bright: rgba(215, 141, 123, 0.4);
+  --accent-light-bright: rgb(215, 142, 123, 0.8);
   --accent-soft: rgb(137, 175, 176);
   --accent-light-soft: rgb(137, 175, 176, 0.4);
   --disabled: rgb(217, 217, 217);

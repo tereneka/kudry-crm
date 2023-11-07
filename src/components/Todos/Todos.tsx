@@ -20,7 +20,6 @@ import {
 } from '../../utils/date';
 import {
   setDraggableRegCard,
-  setIsRegCardCopyVisible,
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
@@ -34,11 +33,10 @@ export default function Todos() {
   const {
     masterRegList,
     regFormValues,
-    isTimeError,
+    isRegFormActive,
   } = useAppSelector((state) => state.regState);
-  const { regCardInfo } = useAppSelector(
-    (state) => state.regCardState
-  );
+  const { regCardInfo, regCardUser } =
+    useAppSelector((state) => state.regCardState);
 
   const [updateReg, { isError }] =
     useUpdateRegistrationMutation();
@@ -49,6 +47,8 @@ export default function Todos() {
     isTimeSelectAvailable,
     setIsTimeSelectAvailable,
   ] = useState(false);
+  const [selectedTime, setSelectedTime] =
+    useState('');
 
   const regList = masterRegList
     ?.filter(
@@ -94,40 +94,40 @@ export default function Todos() {
   ) {
     const time = e.currentTarget.dataset.time;
 
+    setSelectedTime(time || '');
+
     if (isTimeSelectAvailable && time) {
-      if (time === regFormValues.time) {
-        dispatch(
-          setRegFormValues({
-            ...regFormValues,
-            time: undefined,
-          })
-        );
-      } else {
-        dispatch(
-          setRegFormValues({
-            ...regFormValues,
+      if (isRegFormActive) {
+        if (time === regFormValues.time) {
+          dispatch(
+            setRegFormValues({
+              ...regFormValues,
+              time: undefined,
+            })
+          );
+        } else {
+          dispatch(
+            setRegFormValues({
+              ...regFormValues,
+              time,
+            })
+          );
+        }
+      } else if (regCardInfo) {
+        updateReg({
+          id: regCardInfo.id,
+          body: {
             time,
-          })
-        );
+            date: convertDateStrToDate(date),
+          },
+        });
+        dispatch(setRegCardInfo(null));
+        dispatch(setRegCardUser(null));
+        setSelectedTime('');
       }
     }
 
     setIsTimeSelectAvailable(false);
-  }
-
-  function handleTimeCellDrop(timeIndex: number) {
-    if (regCardInfo) {
-      updateReg({
-        id: regCardInfo.id,
-        body: {
-          time: TIME_LIST[timeIndex],
-          date: convertDateStrToDate(date),
-        },
-      });
-      dispatch(setRegCardInfo(null));
-      dispatch(setRegCardUser(null));
-      dispatch(setIsRegCardCopyVisible(false));
-    }
   }
 
   useEffect(() => {
@@ -135,10 +135,15 @@ export default function Todos() {
       showErrMessage();
       dispatch(setRegCardInfo(null));
       dispatch(setRegCardUser(null));
-      dispatch(setIsRegCardCopyVisible(false));
       dispatch(setDraggableRegCard(null));
     }
   }, [isError]);
+
+  useEffect(() => {
+    if (!isRegFormActive) {
+      setSelectedTime('');
+    }
+  }, [isRegFormActive]);
 
   return (
     <div className='todos'>
@@ -151,26 +156,15 @@ export default function Todos() {
           onClick={toggleTimeSelectBtn}
         />
       </Tooltip>
-      {/* <Tooltip
-        title={
-          isTimeError
-            ? 'необходимо выбрать время'
-            : 'выбрать время'
-        }
-        open={isTimeError || undefined}
-        color={
-          isTimeError ? 'rgba(215, 142, 123)' : ''
-        }>
-        <Button
-          icon={<SelectOutlined />}
-          type='primary'
-          danger={!isTimeSelectAvailable}
-          size='small'
-          onClick={toggleTimeSelectBtn}
+      {regCardInfo && regCardUser && (
+        <RegCard
+          reg={regCardInfo}
+          user={regCardUser}
+          type='copy'
         />
-      </Tooltip> */}
+      )}
 
-      {TIME_LIST.map((time, index) => (
+      {TIME_LIST.map((time) => (
         <div
           className='todos__time-table-row'
           key={time}>
@@ -188,20 +182,16 @@ export default function Todos() {
               classByCondition(
                 'todos__time-table-cell',
                 'selected',
-                regFormValues.time === time
+                selectedTime === time
               )
             }
             onClick={handleTimeCellClick}
             data-time={time}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() =>
-              handleTimeCellDrop(index)
-            }
           />
-          {/* <div className='todos__time-table-cell' /> */}
         </div>
       ))}
-      {regList}
+      <div>{regList}</div>
+
       {errorMessage}
     </div>
   );

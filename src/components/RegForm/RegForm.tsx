@@ -20,8 +20,7 @@ import {
   useUpdateIncomeMutation,
 } from '../../reducers/apiSlice';
 import {
-  setIsDateError,
-  setIsTimeError,
+  setIsRegFormActive,
   setRegFormValues,
 } from '../../reducers/regSlice';
 import {
@@ -71,9 +70,8 @@ export default function RegForm() {
   const [notificationApi, validationMessage] =
     notification.useNotification();
 
-  const { regFormValues } = useAppSelector(
-    (state) => state.regState
-  );
+  const { isRegFormActive, regFormValues } =
+    useAppSelector((state) => state.regState);
 
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
@@ -100,8 +98,6 @@ export default function RegForm() {
   ] = useUpdateIncomeMutation();
 
   const [isFormOpened, setIsFormOpened] =
-    useState(false);
-  const [isFormActive, setIsFormActive] =
     useState(false);
   const [
     isIndexSelectVisible,
@@ -146,12 +142,13 @@ export default function RegForm() {
 
   function toggleFormBtn() {
     setIsFormOpened(!isFormOpened);
-    setIsFormActive(true);
+    dispatch(setIsRegFormActive(true));
     const isFormEmpty = !Object.values(
       form.getFieldsValue()
     ).some((value) => value);
-    if (isFormEmpty && isFormActive)
-      setIsFormActive(false);
+    if (isFormEmpty && isRegFormActive) {
+      dispatch(setIsRegFormActive(false));
+    }
   }
 
   function handleGenderChange() {
@@ -241,10 +238,10 @@ export default function RegForm() {
         date: convertDateStrToDate(date),
       })
     );
-    dispatch(setIsDateError(false));
-    dispatch(setIsTimeError(false));
+
+    dispatch(setIsRegFormActive(false));
     setIsFormOpened(false);
-    setIsFormActive(false);
+    setIsIndexSelectVisible(false);
     notificationApi.destroy('date');
     notificationApi.destroy('time');
   }
@@ -340,8 +337,6 @@ export default function RegForm() {
           time: undefined,
         })
       );
-      dispatch(setIsDateError(false));
-      dispatch(setIsTimeError(false));
     } else {
       setIsIndexSelectVisible(false);
       resetForm();
@@ -363,7 +358,7 @@ export default function RegForm() {
         className='reg-form__toggle-btn'
         type='primary'
         shape='circle'
-        danger={!isFormActive}
+        danger={!isRegFormActive}
         icon={
           <PlusOutlined
             className={classByCondition(

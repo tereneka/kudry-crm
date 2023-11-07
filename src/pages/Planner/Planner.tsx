@@ -19,7 +19,11 @@ import {
 import PlannerCalendar from '../../components/PlannerCalendar/PlannerCalendar';
 import Todos from '../../components/Todos/Todos';
 import RegForm from '../../components/RegForm/RegForm';
-import RegCard from '../../components/RegCard/RegCard';
+import {
+  setRegCardInfo,
+  setRegCardUser,
+  setDraggableRegCard,
+} from '../../reducers/regCardSlice';
 
 export default function Planner() {
   const { data: regList } =
@@ -30,12 +34,8 @@ export default function Planner() {
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
-  const {
-    regCardInfo,
-    regCardUser,
-    isRegCardCopyVisible,
-  } = useAppSelector(
-    (state) => state.regCardState
+  const { isRegFormActive } = useAppSelector(
+    (state) => state.regState
   );
 
   const dispatch = useAppDispatch();
@@ -62,16 +62,16 @@ export default function Planner() {
     }
   }, [regList, currentMaster]);
 
+  useEffect(() => {
+    if (isRegFormActive) {
+      dispatch(setRegCardInfo(null));
+      dispatch(setRegCardUser(null));
+      dispatch(setDraggableRegCard(null));
+    }
+  }, [isRegFormActive]);
+
   return (
     <div className='planner'>
-      {regCardInfo && isRegCardCopyVisible && (
-        <RegCard
-          reg={regCardInfo}
-          user={regCardUser || undefined}
-          type='copy'
-          className='planner__reg-card'
-        />
-      )}
       <MastersSelect
         isAllOption={false}
         currentMaster={currentMaster}

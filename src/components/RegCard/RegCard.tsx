@@ -21,11 +21,9 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { classByCondition } from '../../utils/className';
 import { useEffect } from 'react';
 import {
   setDraggableRegCard,
-  setIsRegCardCopyVisible,
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
@@ -37,30 +35,27 @@ import {
 import {
   CloseOutlined,
   DeleteOutlined,
+  ScheduleOutlined,
 } from '@ant-design/icons';
-import { convertDbDateToStr } from '../../utils/date';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: User | undefined;
   type?: 'major' | 'copy';
-  className?: string;
 }
 
 export default function RegCard({
   reg,
   user,
   type = 'major',
-  className,
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
 
-  const {
-    draggableRegCard,
-    isRegCardCopyVisible,
-  } = useAppSelector(
-    (state) => state.regCardState
+  const { draggableRegCard, regCardInfo } =
+    useAppSelector((state) => state.regCardState);
+  const { isRegFormActive } = useAppSelector(
+    (state) => state.regState
   );
 
   const [deleteReg, { isError, isSuccess }] =
@@ -73,6 +68,37 @@ export default function RegCard({
   const [messageApi, errorMessage] =
     message.useMessage();
 
+  const cardClassName = `reg-card ${
+    draggableRegCard === reg.id &&
+    type === 'major'
+      ? 'reg-card_invisible'
+      : ''
+  } ${
+    type === 'copy' ? 'reg-card_type_copy' : ''
+  }`;
+
+  const cardStyle = {
+    height: reg.duration * 58 - 4,
+    top: 44 + TIME_LIST.indexOf(reg.time) * 58,
+  };
+  const regServiceNameList =
+    reg.serviceIdList.map(
+      (serviceId) =>
+        getDataById(serviceList, serviceId)?.name
+    );
+
+  function handleMoveBtnClick() {
+    dispatch(setDraggableRegCard(reg.id));
+    dispatch(setRegCardInfo(reg));
+    dispatch(setRegCardUser(user));
+  }
+
+  function handleCloseBtnClick() {
+    dispatch(setRegCardInfo(null));
+    dispatch(setRegCardUser(null));
+    dispatch(setDraggableRegCard(null));
+  }
+
   function showErrMessage() {
     messageApi.open({
       type: 'error',
@@ -81,10 +107,10 @@ export default function RegCard({
     });
   }
 
-  function handleDeleteBtnClick() {}
-
   useEffect(() => {
-    dispatch(setDraggableRegCard(null));
+    if (!regCardInfo) {
+      dispatch(setDraggableRegCard(null));
+    }
   }, [reg]);
 
   useEffect(() => {
@@ -128,72 +154,48 @@ export default function RegCard({
 
   return (
     <div
-      className={`${classByCondition(
-        'reg-card',
-        'invisible',
-        draggableRegCard === reg.id
-      )} ${
-        className ? className : ''
-      } ${classByCondition(
-        'reg-card',
-        'transparent',
-        isRegCardCopyVisible && type === 'major'
-      )}`}
-      style={{
-        height: reg.duration * 58 - 4,
-        top:
-          44 + TIME_LIST.indexOf(reg.time) * 58,
-      }}
-      key={reg.id}
-      draggable={true}
-      onDragStart={() => {
-        dispatch(setRegCardInfo(reg));
-        dispatch(setRegCardUser(user));
-      }}
-      onDrag={() => {
-        dispatch(setDraggableRegCard(reg.id));
-      }}
-      onDragEnd={(e) => {
-        if (
-          e.dataTransfer.dropEffect === 'none'
-        ) {
-          dispatch(setDraggableRegCard(null));
-        }
-      }}>
+      className={cardClassName}
+      style={cardStyle}
+      key={reg.id}>
       {type === 'major' && (
-        <Popconfirm
-          title='Удалить запись?'
-          onConfirm={() => deleteReg(reg.id)}
-          okText='да'
-          okButtonProps={{
-            danger: true,
-          }}
-          cancelText='нет'>
+        <div className='reg-card__btn-group'>
           <Button
-            className='reg-card__trash-btn'
+            className='reg-card__move-btn'
             type='primary'
             size='small'
             danger
-            icon={<DeleteOutlined />}
+            disabled={isRegFormActive}
+            icon={<ScheduleOutlined />}
+            onClick={handleMoveBtnClick}
           />
-        </Popconfirm>
-      )}
 
+          <Popconfirm
+            title='Удалить запись?'
+            onConfirm={() => deleteReg(reg.id)}
+            okText='да'
+            okButtonProps={{
+              danger: true,
+            }}
+            cancelText='нет'>
+            <Button
+              type='primary'
+              size='small'
+              danger
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        </div>
+      )}
       {type === 'copy' && (
         <Button
           className='reg-card__close-btn'
-          type='text'
+          type='primary'
+          size='small'
+          danger
           icon={<CloseOutlined />}
-          onClick={() => {
-            dispatch(setRegCardInfo(null));
-            dispatch(setRegCardUser(null));
-            dispatch(
-              setIsRegCardCopyVisible(false)
-            );
-          }}
+          onClick={handleCloseBtnClick}
         />
       )}
-
       <div className='reg-card__box'>
         <p className='reg-card__name'>
           {user?.name}
@@ -201,38 +203,40 @@ export default function RegCard({
 
         <div className='reg-card__contacts'>
           <span>{user?.phone}</span>
-          <ul className='reg-card__link-list'>
-            <li>
-              <a
-                className='reg-card__link'
-                href={`tel:${user?.phone}`}>
-                <img
-                  className='reg-card__link-icon'
-                  src={phone}
-                  alt=''
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                className='reg-card__link'
-                target='_blank'
-                href={`https://wa.me/${user?.phone.slice(
-                  1
-                )}`}
-                rel='noreferrer'>
-                <img
-                  className='reg-card__link-icon'
-                  src={whatsapp}
-                  alt='whatsapp'
-                />
-              </a>
-            </li>
-          </ul>
+          {!(draggableRegCard === reg.id) && (
+            <ul className='reg-card__link-list'>
+              <li>
+                <a
+                  className='reg-card__link'
+                  href={`tel:${user?.phone}`}>
+                  <img
+                    className='reg-card__link-icon'
+                    src={phone}
+                    alt=''
+                  />
+                </a>
+              </li>
+              <li>
+                <a
+                  className='reg-card__link'
+                  target='_blank'
+                  href={`https://wa.me/${user?.phone.slice(
+                    1
+                  )}`}
+                  rel='noreferrer'>
+                  <img
+                    className='reg-card__link-icon'
+                    src={whatsapp}
+                    alt='whatsapp'
+                  />
+                </a>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
 
-      {reg.duration > 1 && (
+      {(reg.duration > 1 || type === 'copy') && (
         <>
           <div className='reg-card__box reg-card__number-list'>
             <span className='reg-card__number'>
@@ -262,35 +266,22 @@ export default function RegCard({
               {numberFormat(reg.income)} &#8381;
             </span>
           </div>
-
-          {reg.duration > 2 ? (
+          {reg.duration > 2 &&
+          type === 'major' ? (
             <ul className='reg-card__box reg-card__service-list'>
-              {reg.serviceIdList.map(
-                (serviceId) => (
+              {regServiceNameList.map(
+                (serviceName) => (
                   <li
                     className='reg-card__service'
-                    key={serviceId}>
-                    {
-                      getDataById(
-                        serviceList,
-                        serviceId
-                      )?.name
-                    }
+                    key={serviceName}>
+                    {serviceName}
                   </li>
                 )
               )}
             </ul>
           ) : (
             <p className='reg-card__box reg-card__services-paragraph'>
-              {reg.serviceIdList
-                .map(
-                  (serviceId) =>
-                    getDataById(
-                      serviceList,
-                      serviceId
-                    )?.name
-                )
-                .join(', ')}
+              {regServiceNameList.join(', ')}
             </p>
           )}
         </>

@@ -8,14 +8,12 @@ interface RegCardState {
   regCardInfo: DbRegistration | null;
   regCardUser: User | undefined | null;
   draggableRegCard: string | null;
-  isRegCardCopyVisible: boolean;
 }
 
 const initialState: RegCardState = {
   regCardInfo: null,
   regCardUser: null,
   draggableRegCard: null,
-  isRegCardCopyVisible: false,
 };
 
 const regCardSlice = createSlice({
@@ -44,13 +42,6 @@ const regCardSlice = createSlice({
     ) => {
       state.draggableRegCard = action.payload;
     },
-
-    setIsRegCardCopyVisible: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isRegCardCopyVisible = action.payload;
-    },
   },
 });
 
@@ -58,7 +49,6 @@ export const {
   setRegCardInfo,
   setRegCardUser,
   setDraggableRegCard,
-  setIsRegCardCopyVisible,
 } = regCardSlice.actions;
 
 export default regCardSlice.reducer;
