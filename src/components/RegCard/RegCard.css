@@ -7,6 +7,7 @@
   font-size: 14px;
   box-sizing: border-box;
   background: var(--accent-bright);
+  cursor: pointer;
 }
 
 .reg-card_invisible {
@@ -23,6 +24,7 @@
   top: 0px !important;
   left: calc(100% - 190px) !important;
   z-index: 10;
+  cursor: auto;
 }
 
 .reg-card__box {

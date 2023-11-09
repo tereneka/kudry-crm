@@ -24,6 +24,7 @@ import {
   setRegCardUser,
   setDraggableRegCard,
 } from '../../reducers/regCardSlice';
+import RegModal from '../../components/RegModal/RegModal';
 
 export default function Planner() {
   const { data: regList } =
@@ -31,12 +32,10 @@ export default function Planner() {
   const { data: masterList } =
     useGetMasterListQuery();
 
-  const { currentMaster } = useAppSelector(
-    (state) => state.mastersState
-  );
-  const { isRegFormActive } = useAppSelector(
-    (state) => state.regState
-  );
+  const { currentMaster, prevMaster } =
+    useAppSelector((state) => state.mastersState);
+  const { isRegFormActive, regFormValues } =
+    useAppSelector((state) => state.regState);
 
   const dispatch = useAppDispatch();
 
@@ -46,9 +45,6 @@ export default function Planner() {
     );
     dispatch(setPrevMaster(currentMaster));
     dispatch(setCurrentMaster(master));
-    dispatch(
-      setDate(new Date().toLocaleDateString())
-    );
   }
 
   useEffect(() => {
@@ -80,6 +76,7 @@ export default function Planner() {
       <RegForm />
       <PlannerCalendar />
       <Todos />
+      <RegModal />
     </div>
   );
 }

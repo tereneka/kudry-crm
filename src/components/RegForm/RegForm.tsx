@@ -72,7 +72,6 @@ export default function RegForm() {
 
   const { isRegFormActive, regFormValues } =
     useAppSelector((state) => state.regState);
-
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
   const { date } = useAppSelector(
@@ -110,7 +109,7 @@ export default function RegForm() {
     categoryList
   );
   const isDateIncorrect = isDateBeforeToday(
-    regFormValues.date
+    convertDateStrToDate(date)
   );
   const filteredServicesByMaster =
     filterServicesByMaster(
@@ -177,6 +176,8 @@ export default function RegForm() {
     const { userId, serviceIdList } = values;
     const regBody = {
       ...regFormValues,
+      masterId: currentMaster?.id,
+      date: convertDateStrToDate(date),
       serviceIdList,
       userId,
       serviceIndex: index || 0,
@@ -268,17 +269,6 @@ export default function RegForm() {
     });
   }
 
-  // вносим в форму данные выбранных мастера и даты
-  useEffect(() => {
-    dispatch(
-      setRegFormValues({
-        ...regFormValues,
-        masterId: currentMaster?.id,
-        date: convertDateStrToDate(date),
-      })
-    );
-  }, [currentMaster, date]);
-
   // определяем индекс для массива продолжительности
   // услуги и прайса в зависимости от выбранной длины волос
   useEffect(() => {
@@ -324,22 +314,24 @@ export default function RegForm() {
 
   // описываем действия при смене мастера
   useEffect(() => {
-    if (
-      isMastersCategoriesSame(
-        prevMaster,
-        currentMaster
-      )
-    ) {
-      dispatch(
-        setRegFormValues({
-          ...regFormValues,
-          masterId: currentMaster?.id,
-          time: undefined,
-        })
-      );
-    } else {
-      setIsIndexSelectVisible(false);
-      resetForm();
+    if (isRegFormActive) {
+      if (
+        isMastersCategoriesSame(
+          prevMaster,
+          currentMaster
+        )
+      ) {
+        dispatch(
+          setRegFormValues({
+            ...regFormValues,
+            masterId: currentMaster?.id,
+            time: undefined,
+          })
+        );
+      } else {
+        setIsIndexSelectVisible(false);
+        resetForm();
+      }
     }
   }, [currentMaster]);
 

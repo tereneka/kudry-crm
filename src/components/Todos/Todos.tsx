@@ -64,6 +64,9 @@ export default function Todos() {
         <RegCard
           reg={reg}
           user={user}
+          toggleTimeSelect={
+            setIsTimeSelectAvailable
+          }
           key={reg.id}
         />
       );
@@ -160,6 +163,9 @@ export default function Todos() {
         <RegCard
           reg={regCardInfo}
           user={regCardUser}
+          toggleTimeSelect={
+            setIsTimeSelectAvailable
+          }
           type='copy'
         />
       )}

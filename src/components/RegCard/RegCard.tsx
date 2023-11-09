@@ -36,18 +36,22 @@ import {
   CloseOutlined,
   DeleteOutlined,
   ScheduleOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
+import { setIsRegModalOpen } from '../../reducers/regSlice';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: User | undefined;
   type?: 'major' | 'copy';
+  toggleTimeSelect?: (bool: boolean) => void;
 }
 
 export default function RegCard({
   reg,
   user,
   type = 'major',
+  toggleTimeSelect = () => {},
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
@@ -91,12 +95,14 @@ export default function RegCard({
     dispatch(setDraggableRegCard(reg.id));
     dispatch(setRegCardInfo(reg));
     dispatch(setRegCardUser(user));
+    toggleTimeSelect(true);
   }
 
   function handleCloseBtnClick() {
     dispatch(setRegCardInfo(null));
     dispatch(setRegCardUser(null));
     dispatch(setDraggableRegCard(null));
+    toggleTimeSelect(false);
   }
 
   function showErrMessage() {
@@ -167,6 +173,18 @@ export default function RegCard({
             disabled={isRegFormActive}
             icon={<ScheduleOutlined />}
             onClick={handleMoveBtnClick}
+          />
+
+          <Button
+            // className='reg-card__move-btn'
+            type='primary'
+            size='small'
+            danger
+            disabled={isRegFormActive}
+            icon={<EyeOutlined />}
+            onClick={() =>
+              dispatch(setIsRegModalOpen(true))
+            }
           />
 
           <Popconfirm

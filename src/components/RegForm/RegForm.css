@@ -102,12 +102,11 @@
   height: 35px;
 }
 
-.reg-form__valid-message
-  :where(
+:where(
     .css-dev-only-do-not-override-xf1sj9
   ).ant-notification-notice
   .ant-notification-notice-close {
-  top: 4px;
+  top: 4px !important;
 }
 
 @media screen and (min-width: 700px) {
