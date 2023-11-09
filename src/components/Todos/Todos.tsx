@@ -23,6 +23,7 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
+import { isMastersCategoriesSame } from '../../utils/reg';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -37,6 +38,8 @@ export default function Todos() {
   } = useAppSelector((state) => state.regState);
   const { regCardInfo, regCardUser } =
     useAppSelector((state) => state.regCardState);
+  const { currentMaster, prevMaster } =
+    useAppSelector((state) => state.mastersState);
 
   const [updateReg, { isError }] =
     useUpdateRegistrationMutation();
@@ -122,6 +125,7 @@ export default function Todos() {
           body: {
             time,
             date: convertDateStrToDate(date),
+            masterId: currentMaster?.id,
           },
         });
         dispatch(setRegCardInfo(null));
@@ -133,11 +137,24 @@ export default function Todos() {
     setIsTimeSelectAvailable(false);
   }
 
+  // описываем действия при смене мастера во время переноса записи
+  useEffect(() => {
+    if (
+      regCardInfo &&
+      !isMastersCategoriesSame(
+        prevMaster,
+        currentMaster
+      )
+    ) {
+      dispatch(setRegCardInfo(null));
+      dispatch(setRegCardUser(null));
+      dispatch(setDraggableRegCard(null));
+    }
+  }, [currentMaster]);
+
   useEffect(() => {
     if (isError) {
       showErrMessage();
-      dispatch(setRegCardInfo(null));
-      dispatch(setRegCardUser(null));
       dispatch(setDraggableRegCard(null));
     }
   }, [isError]);

@@ -32,10 +32,12 @@ export default function Planner() {
   const { data: masterList } =
     useGetMasterListQuery();
 
-  const { currentMaster, prevMaster } =
-    useAppSelector((state) => state.mastersState);
-  const { isRegFormActive, regFormValues } =
-    useAppSelector((state) => state.regState);
+  const { currentMaster } = useAppSelector(
+    (state) => state.mastersState
+  );
+  const { isRegFormActive } = useAppSelector(
+    (state) => state.regState
+  );
 
   const dispatch = useAppDispatch();
 
