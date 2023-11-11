@@ -50,6 +50,7 @@ import {
 import { getDataById } from '../../utils/data';
 import { plural } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
+import { setIsError } from '../../reducers/appSlice';
 
 export default function RegForm() {
   const [form] = Form.useForm();
@@ -67,8 +68,6 @@ export default function RegForm() {
     form
   );
 
-  const [messageApi, errorMessage] =
-    message.useMessage();
   const [notificationApi, validationMessage] =
     notification.useNotification();
 
@@ -251,14 +250,6 @@ export default function RegForm() {
     });
   }
 
-  function showErrMessage() {
-    messageApi.open({
-      type: 'error',
-      content: 'Произошла ошибка :(',
-      duration: 4,
-    });
-  }
-
   // определяем индекс для массива продолжительности
   // услуги и прайса в зависимости от выбранной длины волос
   useEffect(() => {
@@ -327,7 +318,7 @@ export default function RegForm() {
 
   // обработка результата отправки формы регистрации
   useEffect(() => {
-    if (isError) showErrMessage();
+    dispatch(setIsError(isError));
     if (isSuccess) {
       resetForm();
       setIsIndexSelectVisible(false);
@@ -445,10 +436,7 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <UserSelect
-            showErrMessage={showErrMessage}
-            label='клиент'
-          />
+          <UserSelect label='клиент' />
 
           <Form.Item className='reg-form__btns-item'>
             <div className='reg-form__btn-group'>
@@ -471,7 +459,6 @@ export default function RegForm() {
           </Form.Item>
         </Form>
       </div>
-      {errorMessage}
       {validationMessage}
     </div>
   );

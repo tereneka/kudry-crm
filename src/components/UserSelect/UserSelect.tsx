@@ -23,16 +23,16 @@ import {
 } from 'react';
 import { phoneFormat } from '../../utils/format';
 import { classByCondition } from '../../utils/className';
+import { useAppDispatch } from '../../store';
+import { setIsError } from '../../reducers/appSlice';
 
 interface UserSelectProps {
-  showErrMessage: () => void;
   label?: string;
   suffixIcon?: ReactNode;
   classModifier?: string;
 }
 
 export default function UserSelect({
-  showErrMessage,
   label = '',
   suffixIcon = <DownOutlined rev={undefined} />,
   classModifier,
@@ -46,6 +46,8 @@ export default function UserSelect({
     addUser,
     { isLoading, isError, isSuccess },
   ] = useAddUserMutation();
+
+  const dispatch = useAppDispatch();
 
   const { Option } = Select;
 
@@ -83,7 +85,7 @@ export default function UserSelect({
 
   // обработка результата отправки формы регистрации
   useEffect(() => {
-    if (isError) showErrMessage();
+    dispatch(setIsError(isError));
     if (isSuccess) closeForm();
   }, [isError, isSuccess]);
 

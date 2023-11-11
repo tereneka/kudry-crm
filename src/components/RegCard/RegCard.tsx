@@ -1,9 +1,6 @@
 import './RegCard.css';
-import phone from '../../images/phone.svg';
-import whatsapp from '../../images/whatsapp.svg';
 import {
   DbRegistration,
-  Income,
   User,
 } from '../../types';
 import { TIME_LIST } from '../../constants';
@@ -28,11 +25,7 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import {
-  Button,
-  Popconfirm,
-  message,
-} from 'antd';
+import { Button, Popconfirm } from 'antd';
 import {
   CloseOutlined,
   DeleteOutlined,
@@ -42,6 +35,7 @@ import {
 import { setIsRegModalOpen } from '../../reducers/regSlice';
 import UserSocial from '../Social/UserSocial';
 import { changeIncome } from '../../utils/reg';
+import { setIsError } from '../../reducers/appSlice';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -71,9 +65,6 @@ export default function RegCard({
     useUpdateIncomeMutation();
 
   const dispatch = useAppDispatch();
-
-  const [messageApi, errorMessage] =
-    message.useMessage();
 
   const cardClassName = `reg-card ${
     draggableRegCard === reg.id &&
@@ -108,14 +99,6 @@ export default function RegCard({
     toggleTimeSelect(false);
   }
 
-  function showErrMessage() {
-    messageApi.open({
-      type: 'error',
-      content: 'Произошла ошибка :(',
-      duration: 4,
-    });
-  }
-
   useEffect(() => {
     if (!regCardInfo) {
       dispatch(setDraggableRegCard(null));
@@ -123,7 +106,7 @@ export default function RegCard({
   }, [reg, regCardInfo]);
 
   useEffect(() => {
-    if (isError) showErrMessage();
+    dispatch(setIsError(isError));
   }, [isError]);
 
   useEffect(() => {
@@ -266,7 +249,6 @@ export default function RegCard({
           )}
         </>
       )}
-      {errorMessage}
     </div>
   );
 }

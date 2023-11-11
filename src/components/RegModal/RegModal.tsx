@@ -28,6 +28,7 @@ import { TIME_LIST } from '../../constants';
 import { numberFormat } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { convertDateStrToDate } from '../../utils/date';
+import { setIsError } from '../../reducers/appSlice';
 
 interface RegModalProps {
   reg: DbRegistration | null;
@@ -52,11 +53,7 @@ export default function RegModal({
     useGetServiceListQuery();
   const [
     updateReg,
-    {
-      isError,
-      isSuccess,
-      isLoading: isUpdatingRegLoading,
-    },
+    { isError, isLoading: isUpdatingRegLoading },
   ] = useUpdateRegistrationMutation();
   const [
     updateIncome,
@@ -151,6 +148,10 @@ export default function RegModal({
     });
   }, [reg]);
 
+  useEffect(() => {
+    dispatch(setIsError(isError));
+  }, [isError]);
+
   return (
     <Modal
       className='reg-modal'
@@ -179,7 +180,6 @@ export default function RegModal({
         requiredMark={false}>
         <div className='reg-modal__box'>
           <UserSelect
-            showErrMessage={() => null}
             suffixIcon
             classModifier='place_reg-modal'
           />

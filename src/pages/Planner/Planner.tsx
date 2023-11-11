@@ -8,7 +8,6 @@ import {
   useGetMasterListQuery,
 } from '../../reducers/apiSlice';
 import MastersSelect from '../../components/MasterSelect/MasterSelect';
-import { setDate } from '../../features/Planner/plannerSlice';
 import { useEffect } from 'react';
 
 import { filterRegListByMasterId } from '../../reducers/regSlice';

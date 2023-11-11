@@ -3,7 +3,7 @@ import {
   ThunkAction,
   Action,
 } from '@reduxjs/toolkit';
-import plannerReducer from './features/Planner/plannerSlice';
+import appReducer from './reducers/appSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
 import regCardReducer from './reducers/regCardSlice';
@@ -18,7 +18,7 @@ import {
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    plannerState: plannerReducer,
+    appState: appReducer,
     calendarState: calendarReducer,
     regState: regReducer,
     regCardState: regCardReducer,

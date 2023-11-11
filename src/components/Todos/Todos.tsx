@@ -3,7 +3,7 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { Button, Tooltip, message } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { TIME_LIST } from '../../constants';
 import { useEffect, useState } from 'react';
@@ -29,6 +29,7 @@ import {
   changeIncome,
   isMastersCategoriesSame,
 } from '../../utils/reg';
+import { setIsError } from '../../reducers/appSlice';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
@@ -88,17 +89,6 @@ export default function Todos() {
         />
       );
     });
-
-  const [messageApi, errorMessage] =
-    message.useMessage();
-
-  function showErrMessage() {
-    messageApi.open({
-      type: 'error',
-      content: 'Произошла ошибка :(',
-      duration: 4,
-    });
-  }
 
   function toggleTimeSelectBtn() {
     setIsTimeSelectAvailable(
@@ -164,8 +154,8 @@ export default function Todos() {
   }, [currentMaster]);
 
   useEffect(() => {
+    dispatch(setIsError(isError));
     if (isError) {
-      showErrMessage();
       dispatch(setDraggableRegCard(null));
     }
   }, [isError]);
@@ -264,8 +254,6 @@ export default function Todos() {
         </div>
       ))}
       <div>{regList}</div>
-
-      {errorMessage}
     </div>
   );
 }
