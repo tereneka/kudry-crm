@@ -134,11 +134,8 @@ export default function RegModal({
             .then(() => {
               dispatch(setIsRegModalOpen(false));
             });
-          // form.resetFields();
-          // onCreate(v);
         }
-      )
-      .catch((info) => {});
+      );
   }
 
   useEffect(() => {
@@ -164,6 +161,7 @@ export default function RegModal({
       onOk={handleChangesSubmit}
       onCancel={() => {
         dispatch(setIsRegModalOpen(false));
+        form.resetFields();
       }}
       confirmLoading={
         isUpdatingRegLoading ||
@@ -178,6 +176,7 @@ export default function RegModal({
           serviceIdList: reg?.serviceIdList,
         }}
         requiredMark={false}>
+        <p className='reg-modal__date'>{date}</p>
         <div className='reg-modal__box'>
           <UserSelect
             suffixIcon
@@ -191,17 +190,17 @@ export default function RegModal({
         </div>
 
         <div className='reg-modal__box'>
-          <div>
-            <span>
+          <div className='reg-modal__numbers'>
+            <span className='reg-modal__time'>
               {reg?.time}
-              {'-'}
+              &mdash;
               {
                 TIME_LIST[
                   regFieldsValues.duration
                 ]
               }
             </span>{' '}
-            <span>
+            <span className='reg-modal__income'>
               {numberFormat(
                 regFieldsValues.income
               )}{' '}

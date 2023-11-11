@@ -1,21 +1,51 @@
 .reg-modal {
+  max-width: calc(100vw - 16px);
 }
 
 .reg-modal__form {
-  margin: 40px auto;
+  margin-bottom: 20px;
 }
 
 .reg-modal__box {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  /* justify-content: space-between;
-  align-items: flex-end; */
   padding: 16px;
-  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
   border-radius: 8px;
+  box-shadow: 0 0 10px 1px var(--accent-soft),
+    0 0 10px 4px var(--accent-bright);
+}
+
+.reg-modal__user-social {
+  align-self: flex-end;
+}
+
+.reg-modal__numbers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reg-modal__date {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+}
+
+.reg-modal__time {
+  font-size: 12px;
+}
+
+.reg-modal__income {
+  background: var(--accent-soft);
+  color: white;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.reg-modal .ant-modal-content {
+  padding: 20px 8px;
 }
 
 .reg-modal__box
@@ -23,9 +53,10 @@
     .css-dev-only-do-not-override-wdcn8v
   ).ant-form-item {
   margin-bottom: 0;
-  /* width: 80%; */
 }
 
-.reg-modal__user-social {
-  align-self: flex-end;
+@media screen and (min-width: 550px) {
+  .reg-modal .ant-modal-content {
+    padding: 20px 24px;
+  }
 }
