@@ -7,7 +7,6 @@
   font-size: 14px;
   box-sizing: border-box;
   background: var(--accent-bright);
-  cursor: pointer;
 }
 
 .reg-card_invisible {
@@ -51,7 +50,7 @@
   width: 80%;
 }
 
-.reg-card__link-list {
+/* .reg-card__link-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -74,7 +73,7 @@
   width: 20px;
   height: 20px;
   object-position: center;
-}
+} */
 
 .reg-card__number-list {
   display: flex;

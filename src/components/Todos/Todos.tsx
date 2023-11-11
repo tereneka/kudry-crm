@@ -8,7 +8,9 @@ import { SelectOutlined } from '@ant-design/icons';
 import { TIME_LIST } from '../../constants';
 import { useEffect, useState } from 'react';
 import {
+  useGetServiceListQuery,
   useGetUserListQuery,
+  useUpdateIncomeMutation,
   useUpdateRegistrationMutation,
 } from '../../reducers/apiSlice';
 import { setRegFormValues } from '../../reducers/regSlice';
@@ -23,10 +25,15 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import { isMastersCategoriesSame } from '../../utils/reg';
+import {
+  changeIncome,
+  isMastersCategoriesSame,
+} from '../../utils/reg';
 
 export default function Todos() {
   const { data: users } = useGetUserListQuery();
+  const { data: serviceList } =
+    useGetServiceListQuery();
 
   const { date } = useAppSelector(
     (state) => state.calendarState
@@ -36,13 +43,20 @@ export default function Todos() {
     regFormValues,
     isRegFormActive,
   } = useAppSelector((state) => state.regState);
-  const { regCardInfo, regCardUser } =
-    useAppSelector((state) => state.regCardState);
+  const {
+    regCardInfo,
+    regCardUser,
+    draggableRegCard,
+  } = useAppSelector(
+    (state) => state.regCardState
+  );
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
 
-  const [updateReg, { isError }] =
+  const [updateReg, { isError, isSuccess }] =
     useUpdateRegistrationMutation();
+  const [updateIncome] =
+    useUpdateIncomeMutation();
 
   const dispatch = useAppDispatch();
 
@@ -128,9 +142,6 @@ export default function Todos() {
             masterId: currentMaster?.id,
           },
         });
-        dispatch(setRegCardInfo(null));
-        dispatch(setRegCardUser(null));
-        setSelectedTime('');
       }
     }
 
@@ -160,6 +171,41 @@ export default function Todos() {
   }, [isError]);
 
   useEffect(() => {
+    if (
+      isSuccess &&
+      regCardInfo &&
+      convertDbDateToStr(regCardInfo?.date) !==
+        date
+    ) {
+      changeIncome(
+        regCardInfo.serviceIdList,
+        serviceList,
+        regCardInfo.date.toDate(),
+        regCardInfo.serviceIndex,
+        'minus',
+        updateIncome
+      ).then(() => {
+        changeIncome(
+          regCardInfo.serviceIdList,
+          serviceList,
+          convertDateStrToDate(date),
+          regCardInfo.serviceIndex,
+          'plus',
+          updateIncome
+        ).then(() => {
+          dispatch(setRegCardInfo(null));
+          dispatch(setRegCardUser(null));
+          setSelectedTime('');
+        });
+      });
+    } else if (isSuccess) {
+      dispatch(setRegCardInfo(null));
+      dispatch(setRegCardUser(null));
+      setSelectedTime('');
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
     if (!isRegFormActive) {
       setSelectedTime('');
     }
@@ -169,23 +215,27 @@ export default function Todos() {
     <div className='todos'>
       <Tooltip title='выбрать время'>
         <Button
-          icon={<SelectOutlined />}
+          icon={
+            <SelectOutlined rev={undefined} />
+          }
           type='primary'
           danger={!isTimeSelectAvailable}
           size='small'
           onClick={toggleTimeSelectBtn}
         />
       </Tooltip>
-      {regCardInfo && regCardUser && (
-        <RegCard
-          reg={regCardInfo}
-          user={regCardUser}
-          toggleTimeSelect={
-            setIsTimeSelectAvailable
-          }
-          type='copy'
-        />
-      )}
+      {regCardInfo &&
+        regCardUser &&
+        draggableRegCard && (
+          <RegCard
+            reg={regCardInfo}
+            user={regCardUser}
+            toggleTimeSelect={
+              setIsTimeSelectAvailable
+            }
+            type='copy'
+          />
+        )}
 
       {TIME_LIST.map((time) => (
         <div
@@ -198,14 +248,14 @@ export default function Todos() {
             className={
               classByCondition(
                 'todos__time-table-cell',
-                'active',
-                isTimeSelectAvailable
+                isTimeSelectAvailable,
+                'active'
               ) +
               ' ' +
               classByCondition(
                 'todos__time-table-cell',
-                'selected',
-                selectedTime === time
+                selectedTime === time,
+                'selected'
               )
             }
             onClick={handleTimeCellClick}

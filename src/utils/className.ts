@@ -1,7 +1,7 @@
 function classByCondition(
   className: string,
-  modifier: string,
-  condition: boolean
+  condition: boolean,
+  modifier?: string
 ) {
   return `${className} ${
     condition ? className + '_' + modifier : ''

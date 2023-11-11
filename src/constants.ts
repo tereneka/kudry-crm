@@ -31,6 +31,7 @@ const INITIAL_REG_FORM_VALUES = {
   duration: 0,
   income: 0,
   serviceIndex: 0,
+  gender: null,
 };
 
 export {

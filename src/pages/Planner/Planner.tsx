@@ -38,6 +38,8 @@ export default function Planner() {
   const { isRegFormActive } = useAppSelector(
     (state) => state.regState
   );
+  const { regCardInfo, regCardUser } =
+    useAppSelector((state) => state.regCardState);
 
   const dispatch = useAppDispatch();
 
@@ -78,7 +80,10 @@ export default function Planner() {
       <RegForm />
       <PlannerCalendar />
       <Todos />
-      <RegModal />
+      <RegModal
+        reg={regCardInfo}
+        user={regCardUser}
+      />
     </div>
   );
 }

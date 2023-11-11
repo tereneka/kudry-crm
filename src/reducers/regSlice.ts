@@ -14,6 +14,7 @@ interface RegFormValues {
   duration: number;
   income: number;
   serviceIndex: number;
+  gender: 'male' | 'female' | null;
 }
 
 interface RegState {

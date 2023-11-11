@@ -15,6 +15,7 @@ import {
 import { getDataById } from '../../utils/data';
 import {
   numberFormat,
+  phoneFormat,
   plural,
 } from '../../utils/format';
 import {
@@ -39,6 +40,8 @@ import {
   EyeOutlined,
 } from '@ant-design/icons';
 import { setIsRegModalOpen } from '../../reducers/regSlice';
+import UserSocial from '../Social/UserSocial';
+import { changeIncome } from '../../utils/reg';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -117,7 +120,7 @@ export default function RegCard({
     if (!regCardInfo) {
       dispatch(setDraggableRegCard(null));
     }
-  }, [reg]);
+  }, [reg, regCardInfo]);
 
   useEffect(() => {
     if (isError) showErrMessage();
@@ -125,36 +128,14 @@ export default function RegCard({
 
   useEffect(() => {
     if (isSuccess) {
-      const incomeBodyList: Omit<Income, 'id'>[] =
-        [];
-
-      Promise.allSettled(
-        reg.serviceIdList.map((serviceId, i) => {
-          const service = getDataById(
-            serviceList,
-            serviceId
-          );
-          incomeBodyList.push({
-            serviceId,
-            categoryId: service?.categoryId || '',
-            date: reg.date.toDate(),
-            sum: service
-              ? -+service.price.split('/')[
-                  reg.serviceIndex
-                ] || 0
-              : 0,
-          });
-          return updateIncome(incomeBodyList[i]);
-        })
-      ).then((results) => {
-        results.forEach((result, i) => {
-          console.log(result.status);
-
-          if (result.status === 'rejected') {
-            updateIncome(incomeBodyList[i]);
-          }
-        });
-      });
+      changeIncome(
+        reg.serviceIdList,
+        serviceList,
+        reg.date.toDate(),
+        reg.serviceIndex,
+        'minus',
+        updateIncome
+      );
     }
   }, [isSuccess]);
 
@@ -171,20 +152,22 @@ export default function RegCard({
             size='small'
             danger
             disabled={isRegFormActive}
-            icon={<ScheduleOutlined />}
+            icon={
+              <ScheduleOutlined rev={undefined} />
+            }
             onClick={handleMoveBtnClick}
           />
 
           <Button
-            // className='reg-card__move-btn'
             type='primary'
             size='small'
             danger
-            disabled={isRegFormActive}
-            icon={<EyeOutlined />}
-            onClick={() =>
-              dispatch(setIsRegModalOpen(true))
-            }
+            icon={<EyeOutlined rev={undefined} />}
+            onClick={() => {
+              dispatch(setIsRegModalOpen(true));
+              dispatch(setRegCardInfo(reg));
+              dispatch(setRegCardUser(user));
+            }}
           />
 
           <Popconfirm
@@ -199,7 +182,9 @@ export default function RegCard({
               type='primary'
               size='small'
               danger
-              icon={<DeleteOutlined />}
+              icon={
+                <DeleteOutlined rev={undefined} />
+              }
             />
           </Popconfirm>
         </div>
@@ -210,7 +195,7 @@ export default function RegCard({
           type='primary'
           size='small'
           danger
-          icon={<CloseOutlined />}
+          icon={<CloseOutlined rev={undefined} />}
           onClick={handleCloseBtnClick}
         />
       )}
@@ -220,36 +205,13 @@ export default function RegCard({
         </p>
 
         <div className='reg-card__contacts'>
-          <span>{user?.phone}</span>
+          <span>
+            {phoneFormat(user?.phone || '')}
+          </span>
           {!(draggableRegCard === reg.id) && (
-            <ul className='reg-card__link-list'>
-              <li>
-                <a
-                  className='reg-card__link'
-                  href={`tel:${user?.phone}`}>
-                  <img
-                    className='reg-card__link-icon'
-                    src={phone}
-                    alt=''
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  className='reg-card__link'
-                  target='_blank'
-                  href={`https://wa.me/${user?.phone.slice(
-                    1
-                  )}`}
-                  rel='noreferrer'>
-                  <img
-                    className='reg-card__link-icon'
-                    src={whatsapp}
-                    alt='whatsapp'
-                  />
-                </a>
-              </li>
-            </ul>
+            <UserSocial
+              phone={user?.phone || ''}
+            />
           )}
         </div>
       </div>

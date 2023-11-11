@@ -38,8 +38,8 @@ export default function PlannerCalendar() {
       <div
         className={classByCondition(
           'planner__calendar-cell',
-          'type_event',
-          !!isRegs
+          !!isRegs,
+          'type_event'
         )}
         data-date={date.format(DATE_FORMAT)}>
         {isRegs && (

@@ -1,0 +1,24 @@
+.user-social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-social li {
+  height: 20px;
+}
+
+.user-social__link {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.user-social__link-icon {
+  width: 20px;
+  height: 20px;
+  object-position: center;
+}

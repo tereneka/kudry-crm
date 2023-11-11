@@ -1,3 +1,4 @@
+import './UserSelect.css';
 import {
   Button,
   Divider,
@@ -12,16 +13,29 @@ import {
 import {
   PlusOutlined,
   CloseOutlined,
+  DownOutlined,
 } from '@ant-design/icons';
 import { User } from '../../types';
-import { useEffect, useState } from 'react';
+import {
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
+import { phoneFormat } from '../../utils/format';
+import { classByCondition } from '../../utils/className';
 
 interface UserSelectProps {
   showErrMessage: () => void;
+  label?: string;
+  suffixIcon?: ReactNode;
+  classModifier?: string;
 }
 
 export default function UserSelect({
   showErrMessage,
+  label = '',
+  suffixIcon = <DownOutlined rev={undefined} />,
+  classModifier,
 }: UserSelectProps) {
   const { data: users } = useGetUserListQuery();
 
@@ -32,6 +46,21 @@ export default function UserSelect({
     addUser,
     { isLoading, isError, isSuccess },
   ] = useAddUserMutation();
+
+  const { Option } = Select;
+
+  function renderOptionContent(user: User) {
+    return (
+      <div className='user-select__option'>
+        <span className='user-select__option-item user-select__option-item_name_name'>
+          {user.name}
+        </span>
+        <span className='user-select__option-item user-select__option-item_name_phone'>
+          {phoneFormat(user.phone)}
+        </span>
+      </div>
+    );
+  }
 
   function handleAddUserBtnClick() {
     setIsUserFormOpened(true);
@@ -61,7 +90,7 @@ export default function UserSelect({
   return (
     <Form.Item
       name='userId'
-      label='клиент'
+      label={label}
       rules={[
         {
           required: true,
@@ -69,28 +98,27 @@ export default function UserSelect({
         },
       ]}>
       <Select
+        className={classByCondition(
+          'user-select',
+          !!classModifier,
+          classModifier
+        )}
         notFoundContent={<></>}
-        options={
-          isUserFormOpened
-            ? []
-            : users?.map((user) => {
-                return {
-                  value: user.id,
-                  label: user.name,
-                };
-              })
-        }
+        optionLabelProp='label'
         onDropdownVisibleChange={closeForm}
         listHeight={150}
         showSearch
         allowClear
+        suffixIcon={suffixIcon}
         optionFilterProp='children'
-        filterOption={(input, option) =>
-          (
-            option?.label.toLocaleLowerCase() ??
-            ''
-          ).includes(input.toLocaleLowerCase())
-        }
+        filterOption={(input, option) => {
+          return !!users
+            ?.find(
+              (user) => user.id === option?.value
+            )
+            ?.name.toLowerCase()
+            .includes(input.toLowerCase());
+        }}
         dropdownRender={(menu) => (
           <>
             {menu}
@@ -102,7 +130,11 @@ export default function UserSelect({
                 />
                 <Button
                   type='text'
-                  icon={<CloseOutlined />}
+                  icon={
+                    <CloseOutlined
+                      rev={undefined}
+                    />
+                  }
                   onClick={closeForm}
                   style={{
                     color:
@@ -166,15 +198,30 @@ export default function UserSelect({
             {!isUserFormOpened && (
               <Button
                 type='primary'
-                icon={<PlusOutlined />}
+                icon={
+                  <PlusOutlined rev={undefined} />
+                }
                 onClick={handleAddUserBtnClick}
                 style={{ margin: 12 }}>
                 новый клиент
               </Button>
             )}
           </>
-        )}
-      />
+        )}>
+        {!isUserFormOpened &&
+          users?.map((user) => {
+            const content =
+              renderOptionContent(user);
+            return (
+              <Option
+                key={user.id}
+                value={user.id}
+                label={content}>
+                {content}
+              </Option>
+            );
+          })}
+      </Select>
     </Form.Item>
   );
 }

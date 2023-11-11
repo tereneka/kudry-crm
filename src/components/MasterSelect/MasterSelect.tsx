@@ -39,7 +39,7 @@ export default function MasterSelect({
         onChange={onChange}
         placeholder={'Выберите мастера'}
         optionLabelProp='label'
-        suffixIcon={<></>}>
+        suffixIcon>
         {isAllOption && (
           <Option
             key={nanoid()}

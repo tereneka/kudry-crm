@@ -1,0 +1,31 @@
+.reg-modal {
+}
+
+.reg-modal__form {
+  margin: 40px auto;
+}
+
+.reg-modal__box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* justify-content: space-between;
+  align-items: flex-end; */
+  padding: 16px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+.reg-modal__box
+  :where(
+    .css-dev-only-do-not-override-wdcn8v
+  ).ant-form-item {
+  margin-bottom: 0;
+  /* width: 80%; */
+}
+
+.reg-modal__user-social {
+  align-self: flex-end;
+}

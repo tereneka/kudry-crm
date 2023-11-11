@@ -33,4 +33,18 @@ function numberFormat(
   ).format(value);
 }
 
-export { plural, numberFormat };
+function phoneFormat(phone: string) {
+  return (
+    phone.slice(0, 2) +
+    '(' +
+    phone.slice(2, 5) +
+    ')' +
+    phone.slice(5, 8) +
+    '-' +
+    phone.slice(7, 9) +
+    '-' +
+    phone.slice(10)
+  );
+}
+
+export { plural, numberFormat, phoneFormat };

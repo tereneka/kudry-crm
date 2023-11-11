@@ -31,6 +31,7 @@ import {
 import { useWatch } from 'antd/es/form/Form';
 import {
   calculateRegDurationAndIncome,
+  changeIncome,
   filterServicesByGender,
   filterServicesByMaster,
   hasMasterHairCategory,
@@ -48,13 +49,14 @@ import {
 } from '../../utils/date';
 import { getDataById } from '../../utils/data';
 import { plural } from '../../utils/format';
+import ServicesSelect from '../ServicesSelect/ServicesSelect';
 
 export default function RegForm() {
   const [form] = Form.useForm();
 
   const genderFormItemValue:
-    | 'женский'
-    | 'мужской'
+    | 'male'
+    | 'female'
     | undefined = useWatch('gender', form);
   const serviceIdListFormItemValue = useWatch(
     'serviceIdList',
@@ -118,7 +120,7 @@ export default function RegForm() {
     );
   const indexSelectOptionList =
     genderFormItemValue
-      ? genderFormItemValue === 'женский'
+      ? genderFormItemValue === 'female'
         ? HAIR_LENGTH_LIST
         : MAILE_HAIRCAT_LIST
       : [];
@@ -172,8 +174,14 @@ export default function RegForm() {
     userId: string;
     serviceIdList: string[];
     index?: number;
+    gender?: 'male' | 'female';
   }) {
-    const { userId, serviceIdList } = values;
+    const {
+      userId,
+      serviceIdList,
+      index,
+      gender,
+    } = values;
     const regBody = {
       ...regFormValues,
       masterId: currentMaster?.id,
@@ -181,9 +189,9 @@ export default function RegForm() {
       serviceIdList,
       userId,
       serviceIndex: index || 0,
+      gender:
+        gender === undefined ? null : gender,
     } as Registration;
-    const incomeBodyList: Omit<Income, 'id'>[] =
-      [];
 
     dispatch(setRegFormValues(regBody));
 
@@ -193,32 +201,14 @@ export default function RegForm() {
       !isRegLoading &&
       !isIncomeLoading
     ) {
-      Promise.allSettled(
-        serviceIdList.map((serviceId, i) => {
-          const service = getDataById(
-            serviceList,
-            serviceId
-          );
-          incomeBodyList.push({
-            serviceId,
-            categoryId: service?.categoryId || '',
-            date: regFormValues.date,
-            sum: service
-              ? +service.price.split('/')[index]
-              : 0,
-          });
-          return updateIncome(incomeBodyList[i]);
-        })
-      ).then((results) => {
-        results.forEach((result, i) => {
-          console.log(result.status);
-
-          if (result.status === 'rejected') {
-            updateIncome(incomeBodyList[i]);
-          }
-        });
-      });
-
+      changeIncome(
+        serviceIdList,
+        serviceList,
+        convertDateStrToDate(date),
+        index || 0,
+        'plus',
+        updateIncome
+      );
       addReg(regBody);
     } else if (isDateIncorrect) {
       openNotification(
@@ -355,9 +345,10 @@ export default function RegForm() {
           <PlusOutlined
             className={classByCondition(
               'reg-form__toggle-btn-icon',
-              'opened',
-              isFormOpened
+              isFormOpened,
+              'opened'
             )}
+            rev={undefined}
           />
         }
         onClick={toggleFormBtn}
@@ -366,8 +357,8 @@ export default function RegForm() {
       <div
         className={classByCondition(
           'reg-form__container',
-          'opened',
-          isFormOpened
+          isFormOpened,
+          'opened'
         )}>
         <div className='reg-form__header'>
           <h3 className='reg-form__title'>
@@ -382,7 +373,8 @@ export default function RegForm() {
           form={form}
           name='reg'
           onFinish={handleFormSubmit}
-          layout='vertical'>
+          layout='vertical'
+          requiredMark={false}>
           {isHairCategory && (
             <Form.Item
               name='gender'
@@ -399,7 +391,10 @@ export default function RegForm() {
                   'мужской',
                 ].map((item) => {
                   return {
-                    value: item,
+                    value:
+                      item === 'мужской'
+                        ? 'male'
+                        : 'female',
                     label: item,
                   };
                 })}
@@ -408,47 +403,24 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <Form.Item
-            name='serviceIdList'
+          <ServicesSelect
+            serviceList={filterServicesByGender(
+              filteredServicesByMaster,
+              genderFormItemValue
+            )}
             label='услуги'
-            rules={[
-              {
-                required: true,
-                message: 'выберите услуги',
-              },
-            ]}>
-            <Select
-              options={filterServicesByGender(
-                filteredServicesByMaster,
-                genderFormItemValue
-              )?.map((service) => {
-                return {
-                  value: service.id,
-                  label: service.name,
-                };
-              })}
-              mode='multiple'
-              showSearch
-              allowClear
-              optionFilterProp='children'
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(
-                  input
-                )
-              }
-              onChange={handleServiceChange}
-              disabled={
-                isHairCategory &&
-                !!!genderFormItemValue
-              }
-            />
-          </Form.Item>
+            onChange={handleServiceChange}
+            disabled={
+              isHairCategory &&
+              !!!genderFormItemValue
+            }
+          />
 
           {isIndexSelectVisible && (
             <Form.Item
               name='index'
               label={
-                genderFormItemValue === 'женский'
+                genderFormItemValue === 'female'
                   ? 'длина волос'
                   : 'тип стрижки'
               }
@@ -475,6 +447,7 @@ export default function RegForm() {
 
           <UserSelect
             showErrMessage={showErrMessage}
+            label='клиент'
           />
 
           <Form.Item className='reg-form__btns-item'>

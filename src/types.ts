@@ -41,6 +41,7 @@ interface Service {
   index: number;
   isMale?: boolean;
   isFemale?: boolean;
+  priceDivider?: number;
 }
 
 interface Registration {
@@ -52,6 +53,7 @@ interface Registration {
   duration: number;
   income: number;
   serviceIndex: number;
+  gender: 'male' | 'female' | null;
 }
 
 interface DbRegistration

@@ -456,11 +456,15 @@ export const apiSlice = createApi({
             async (transaction) => {
               const incomeDoc =
                 await transaction.get(docRef);
+              const initialSum: number =
+                incomeDoc.data()?.sum;
               if (!incomeDoc.exists()) {
                 transaction.set(docRef, {
                   id: incomeId,
                   ...args,
                 });
+              } else if (initialSum + sum <= 0) {
+                transaction.delete(docRef);
               } else {
                 transaction.update(docRef, {
                   sum: increment(sum),
