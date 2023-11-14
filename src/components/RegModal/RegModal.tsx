@@ -5,7 +5,7 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { setIsRegModalOpen } from '../../reducers/regSlice';
+import { setIsRegModalOpened } from '../../reducers/regSlice';
 import {
   DbRegistration,
   User,
@@ -29,6 +29,10 @@ import { numberFormat } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { convertDateStrToDate } from '../../utils/date';
 import { setIsError } from '../../reducers/appSlice';
+import {
+  setRegCardInfo,
+  setRegCardUser,
+} from '../../reducers/regCardSlice';
 
 interface RegModalProps {
   reg: DbRegistration | null;
@@ -39,7 +43,7 @@ export default function RegModal({
   reg,
   user,
 }: RegModalProps) {
-  const { isRegModalOpen } = useAppSelector(
+  const { isRegModalOpened } = useAppSelector(
     (state) => state.regState
   );
   const { currentMaster } = useAppSelector(
@@ -132,10 +136,19 @@ export default function RegModal({
               );
             })
             .then(() => {
-              dispatch(setIsRegModalOpen(false));
+              dispatch(
+                setIsRegModalOpened(false)
+              );
             });
         }
       );
+  }
+
+  function handleCancelClick() {
+    dispatch(setIsRegModalOpened(false));
+    dispatch(setRegCardInfo(null));
+    dispatch(setRegCardUser(null));
+    form.resetFields();
   }
 
   useEffect(() => {
@@ -143,7 +156,11 @@ export default function RegModal({
       duration: reg?.duration || 0,
       income: reg?.income || 0,
     });
-  }, [reg]);
+    form.setFieldsValue({
+      userId: user?.id || '',
+      serviceIdList: reg?.serviceIdList || [],
+    });
+  }, [reg, user]);
 
   useEffect(() => {
     dispatch(setIsError(isError));
@@ -152,17 +169,15 @@ export default function RegModal({
   return (
     <Modal
       className='reg-modal'
-      open={isRegModalOpen}
+      classNames={{ footer: 'reg-modal__footer' }}
+      open={isRegModalOpened}
       okText='изменить'
       cancelText='отменить'
       cancelButtonProps={{
         style: { display: 'none' },
       }}
       onOk={handleChangesSubmit}
-      onCancel={() => {
-        dispatch(setIsRegModalOpen(false));
-        form.resetFields();
-      }}
+      onCancel={handleCancelClick}
       confirmLoading={
         isUpdatingRegLoading ||
         isUpdatingIncomeLoading
@@ -171,12 +186,22 @@ export default function RegModal({
         className='reg-modal__form'
         form={form}
         name=''
-        initialValues={{
-          userId: user?.id,
-          serviceIdList: reg?.serviceIdList,
-        }}
         requiredMark={false}>
-        <p className='reg-modal__date'>{date}</p>
+        <div className='reg-modal__date-time-container'>
+          <span>{date}</span>
+          <span>
+            {reg?.time}
+            &mdash;
+            {
+              TIME_LIST[
+                TIME_LIST.indexOf(
+                  reg?.time || ''
+                ) + regFieldsValues.duration
+              ]
+            }
+          </span>
+        </div>
+
         <div className='reg-modal__box'>
           <UserSelect
             suffixIcon
@@ -190,24 +215,6 @@ export default function RegModal({
         </div>
 
         <div className='reg-modal__box'>
-          <div className='reg-modal__numbers'>
-            <span className='reg-modal__time'>
-              {reg?.time}
-              &mdash;
-              {
-                TIME_LIST[
-                  regFieldsValues.duration
-                ]
-              }
-            </span>{' '}
-            <span className='reg-modal__income'>
-              {numberFormat(
-                regFieldsValues.income
-              )}{' '}
-              &#8381;
-            </span>
-          </div>
-
           <ServicesSelect
             serviceList={filterServicesByGender(
               filterServicesByMaster(
@@ -219,6 +226,10 @@ export default function RegModal({
             suffixIcon
             onChange={handleServiceChange}
           />
+          <span className='reg-modal__income'>
+            {numberFormat(regFieldsValues.income)}{' '}
+            &#8381;
+          </span>
         </div>
       </Form>
     </Modal>

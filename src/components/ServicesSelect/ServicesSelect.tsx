@@ -1,4 +1,4 @@
-import { Form, Select } from 'antd';
+import { Form, Select, Tag } from 'antd';
 import { ReactNode } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Service } from '../../types';
@@ -36,6 +36,7 @@ export default function ServicesSelect({
           };
         })}
         mode='multiple'
+        style={{ width: 320, maxWidth: '100%' }}
         showSearch
         allowClear
         suffixIcon={suffixIcon}

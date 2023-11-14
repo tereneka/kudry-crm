@@ -21,13 +21,13 @@ interface RegState {
   masterRegList: DbRegistration[] | undefined;
   isRegFormActive: boolean;
   regFormValues: RegFormValues;
-  isRegModalOpen: boolean;
+  isRegModalOpened: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
   isRegFormActive: false,
   regFormValues: INITIAL_REG_FORM_VALUES,
-  isRegModalOpen: false,
+  isRegModalOpened: false,
 };
 
 const regSlice = createSlice({
@@ -63,11 +63,11 @@ const regSlice = createSlice({
       state.regFormValues = action.payload;
     },
 
-    setIsRegModalOpen: (
+    setIsRegModalOpened: (
       state,
       action: PayloadAction<boolean>
     ) => {
-      state.isRegModalOpen = action.payload;
+      state.isRegModalOpened = action.payload;
     },
   },
 });
@@ -76,7 +76,7 @@ export const {
   filterRegListByMasterId,
   setIsRegFormActive,
   setRegFormValues,
-  setIsRegModalOpen,
+  setIsRegModalOpened,
 } = regSlice.actions;
 
 export default regSlice.reducer;

@@ -109,6 +109,7 @@ export default function UserSelect({
         optionLabelProp='label'
         onDropdownVisibleChange={closeForm}
         listHeight={150}
+        style={{ width: 320, maxWidth: '100%' }}
         showSearch
         allowClear
         suffixIcon={suffixIcon}

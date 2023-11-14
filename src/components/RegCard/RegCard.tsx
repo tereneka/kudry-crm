@@ -29,11 +29,10 @@ import { Button, Popconfirm } from 'antd';
 import {
   CloseOutlined,
   DeleteOutlined,
-  ScheduleOutlined,
   EyeOutlined,
   DragOutlined,
 } from '@ant-design/icons';
-import { setIsRegModalOpen } from '../../reducers/regSlice';
+import { setIsRegModalOpened } from '../../reducers/regSlice';
 import UserSocial from '../Social/UserSocial';
 import { changeIncome } from '../../utils/reg';
 import { setIsError } from '../../reducers/appSlice';
@@ -146,9 +145,9 @@ export default function RegCard({
             size='small'
             icon={<EyeOutlined rev={undefined} />}
             onClick={() => {
-              dispatch(setIsRegModalOpen(true));
               dispatch(setRegCardInfo(reg));
               dispatch(setRegCardUser(user));
+              dispatch(setIsRegModalOpened(true));
             }}
           />
 
