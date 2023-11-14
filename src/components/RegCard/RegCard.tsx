@@ -31,6 +31,7 @@ import {
   DeleteOutlined,
   ScheduleOutlined,
   EyeOutlined,
+  DragOutlined,
 } from '@ant-design/icons';
 import { setIsRegModalOpen } from '../../reducers/regSlice';
 import UserSocial from '../Social/UserSocial';
@@ -131,20 +132,18 @@ export default function RegCard({
         <div className='reg-card__btn-group'>
           <Button
             className='reg-card__move-btn'
-            type='primary'
+            type='text'
             size='small'
-            danger
             disabled={isRegFormActive}
             icon={
-              <ScheduleOutlined rev={undefined} />
+              <DragOutlined rev={undefined} />
             }
             onClick={handleMoveBtnClick}
           />
 
           <Button
-            type='primary'
+            type='text'
             size='small'
-            danger
             icon={<EyeOutlined rev={undefined} />}
             onClick={() => {
               dispatch(setIsRegModalOpen(true));
@@ -162,9 +161,8 @@ export default function RegCard({
             }}
             cancelText='нет'>
             <Button
-              type='primary'
+              type='text'
               size='small'
-              danger
               icon={
                 <DeleteOutlined rev={undefined} />
               }
@@ -175,9 +173,8 @@ export default function RegCard({
       {type === 'copy' && (
         <Button
           className='reg-card__close-btn'
-          type='primary'
+          type='text'
           size='small'
-          danger
           icon={<CloseOutlined rev={undefined} />}
           onClick={handleCloseBtnClick}
         />

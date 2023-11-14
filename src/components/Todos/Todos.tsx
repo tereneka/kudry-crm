@@ -73,6 +73,7 @@ export default function Todos() {
       (reg) =>
         convertDbDateToStr(reg.date) === date
     )
+    .sort((a, b) => a.time.localeCompare(b.time))
     .map((reg) => {
       const user = users?.find(
         (user) => user.id === reg.userId
