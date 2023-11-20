@@ -58,7 +58,7 @@ export default function PlannerCalendar() {
   return (
     <div className='planner-calendar'>
       <Calendar
-        dateCellRender={dateCellRender}
+        cellRender={dateCellRender}
         fullscreen={false}
         onSelect={handleDateSelect}
         value={dayjs(date, DATE_FORMAT)}

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import './RegForm.css';
 import {
+  Badge,
   Button,
+  DatePicker,
+  Drawer,
   Form,
   Select,
   message,
@@ -24,9 +27,11 @@ import {
   setRegFormValues,
 } from '../../reducers/regSlice';
 import {
+  DATE_FORMAT,
   HAIR_LENGTH_LIST,
   INITIAL_REG_FORM_VALUES,
   MAILE_HAIRCAT_LIST,
+  TIME_LIST,
 } from '../../constants';
 import { useWatch } from 'antd/es/form/Form';
 import {
@@ -51,6 +56,8 @@ import { getDataById } from '../../utils/data';
 import { plural } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
+import dayjs, { Dayjs } from 'dayjs';
+import useFormInstance from 'antd/es/form/hooks/useFormInstance';
 
 export default function RegForm() {
   const [form] = Form.useForm();
@@ -67,9 +74,6 @@ export default function RegForm() {
     'index',
     form
   );
-
-  const [notificationApi, validationMessage] =
-    notification.useNotification();
 
   const { isRegFormActive, regFormValues } =
     useAppSelector((state) => state.regState);
@@ -104,13 +108,12 @@ export default function RegForm() {
     setIsIndexSelectVisible,
   ] = useState(false);
   const [index, setIndex] = useState(0);
+  const [dateTimeError, setDateTimeError] =
+    useState('');
 
   const isHairCategory = hasMasterHairCategory(
     currentMaster,
     categoryList
-  );
-  const isDateIncorrect = isDateBeforeToday(
-    convertDateStrToDate(date)
   );
   const filteredServicesByMaster =
     filterServicesByMaster(
@@ -140,13 +143,18 @@ export default function RegForm() {
 
   const dispatch = useAppDispatch();
 
-  function toggleFormBtn() {
-    setIsFormOpened(!isFormOpened);
+  function openForm() {
+    setIsFormOpened(true);
     dispatch(setIsRegFormActive(true));
-    const isFormEmpty = !Object.values(
-      form.getFieldsValue()
-    ).some((value) => value);
-    if (isFormEmpty && isRegFormActive) {
+  }
+
+  function closeForm() {
+    const isFormEmpty =
+      Object.values(form.getFieldsValue()).filter(
+        (field) => field
+      ).length < 2;
+    setIsFormOpened(false);
+    if (isFormEmpty) {
       dispatch(setIsRegFormActive(false));
     }
   }
@@ -195,8 +203,8 @@ export default function RegForm() {
     dispatch(setRegFormValues(regBody));
 
     if (
-      !isDateIncorrect &&
       regFormValues.time &&
+      regFormValues.date &&
       !isRegLoading &&
       !isIncomeLoading
     ) {
@@ -209,13 +217,13 @@ export default function RegForm() {
         updateIncome
       );
       addReg(regBody);
-    } else if (isDateIncorrect) {
-      openNotification(
-        'некорректная дата',
-        'date'
+    } else if (
+      !regFormValues.time ||
+      !regFormValues.date
+    ) {
+      setDateTimeError(
+        '← выберите дату и время в планере'
       );
-    } else if (!regFormValues.time) {
-      openNotification('выберите время', 'time');
     }
   }
 
@@ -232,22 +240,7 @@ export default function RegForm() {
     dispatch(setIsRegFormActive(false));
     setIsFormOpened(false);
     setIsIndexSelectVisible(false);
-    notificationApi.destroy('date');
-    notificationApi.destroy('time');
-  }
-
-  function openNotification(
-    message: string,
-    key: 'date' | 'time'
-  ) {
-    notificationApi.open({
-      message,
-      duration: 0,
-      type: 'error',
-      key,
-      placement: 'bottomRight',
-      className: 'reg-form__valid-message',
-    });
+    setDateTimeError('');
   }
 
   // определяем индекс для массива продолжительности
@@ -283,15 +276,23 @@ export default function RegForm() {
     }
   }, [serviceIdListFormItemValue, index]);
 
-  // валидация полей даты и времени
+  // изменение и валидация полей даты и времени
   useEffect(() => {
-    if (!isDateIncorrect) {
-      notificationApi.destroy('date');
-    }
     if (regFormValues.time) {
-      notificationApi.destroy('time');
+      setDateTimeError('');
+      form.setFieldValue(
+        'time',
+        regFormValues.time
+      );
     }
-  }, [isDateIncorrect, regFormValues]);
+  }, [regFormValues]);
+
+  useEffect(() => {
+    form.setFieldValue(
+      'date',
+      dayjs(date, DATE_FORMAT)
+    );
+  }, [date]);
 
   // описываем действия при смене мастера
   useEffect(() => {
@@ -327,45 +328,52 @@ export default function RegForm() {
 
   return (
     <div className='reg-form'>
-      <Button
-        className='reg-form__toggle-btn'
-        type='primary'
-        shape='circle'
-        danger={!isRegFormActive}
-        icon={
-          <PlusOutlined
-            className={classByCondition(
-              'reg-form__toggle-btn-icon',
-              isFormOpened,
-              'opened'
-            )}
-            rev={undefined}
-          />
+      <Badge
+        count={
+          isRegFormActive
+            ? regFormValues.duration / 2 + 'ч.'
+            : 0
         }
-        onClick={toggleFormBtn}
-      />
+        showZero={false}
+        size='small'
+        offset={[-20, 0]}>
+        <Button
+          type='primary'
+          danger={!isRegFormActive}
+          onClick={openForm}>
+          новая запись
+        </Button>
+      </Badge>
 
-      <div
-        className={classByCondition(
-          'reg-form__container',
-          isFormOpened,
-          'opened'
-        )}>
-        <div className='reg-form__header'>
-          <h3 className='reg-form__title'>
-            новая запись
-          </h3>
-          <p className='reg-form__duration'>
-            {durationCounterText}
-          </p>
-        </div>
-
+      <Drawer
+        title={
+          <div className='reg-form__header'>
+            <h3 className='reg-form__title'>
+              новая запись
+            </h3>
+            <p className='reg-form__duration'>
+              {durationCounterText}
+            </p>
+          </div>
+        }
+        open={isFormOpened}
+        onClose={closeForm}>
         <Form
           form={form}
           name='reg'
           onFinish={handleFormSubmit}
+          onFinishFailed={() => {
+            if (!regFormValues.time) {
+              setDateTimeError(
+                '← выберите дату и время в планере'
+              );
+            }
+          }}
           layout='vertical'
-          requiredMark={false}>
+          requiredMark={false}
+          initialValues={{
+            date: dayjs(date, DATE_FORMAT),
+          }}>
           {isHairCategory && (
             <Form.Item
               name='gender'
@@ -438,28 +446,53 @@ export default function RegForm() {
 
           <UserSelect label='клиент' />
 
-          <Form.Item className='reg-form__btns-item'>
-            <div className='reg-form__btn-group'>
-              <Button
-                onClick={resetForm}
-                className='reg-form__btn'>
-                отменить
-              </Button>
+          <div className='reg-form__date-time-container'>
+            <Form.Item name='date' label='дата'>
+              <DatePicker
+                format={DATE_FORMAT}
+                disabled
+              />
+            </Form.Item>
 
-              <Button
-                htmlType='submit'
-                type='primary'
-                className='reg-form__btn'
-                loading={
-                  isRegLoading || isIncomeLoading
-                }>
-                сохранить
-              </Button>
-            </div>
+            <Form.Item
+              name='time'
+              label='время'
+              style={{ minWidth: 100 }}>
+              <Select
+                options={TIME_LIST.map((item) => {
+                  return {
+                    value: item,
+                    label: item,
+                  };
+                })}
+                disabled
+              />
+            </Form.Item>
+          </div>
+
+          <div className='reg-form__date-time-error'>
+            {dateTimeError}
+          </div>
+
+          <Form.Item className='reg-form__btn-group'>
+            <Button
+              onClick={resetForm}
+              className='reg-form__btn'>
+              отменить
+            </Button>
+
+            <Button
+              htmlType='submit'
+              type='primary'
+              className='reg-form__btn'
+              loading={
+                isRegLoading || isIncomeLoading
+              }>
+              сохранить
+            </Button>
           </Form.Item>
         </Form>
-      </div>
-      {validationMessage}
+      </Drawer>
     </div>
   );
 }
