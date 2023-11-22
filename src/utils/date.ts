@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 
 function convertDateStrToDate(dateStr: string) {
   return new Date(
-    dateStr.split('.').reverse().join('.')
+    dateStr.split('.').reverse().join('-')
   );
 }
 
