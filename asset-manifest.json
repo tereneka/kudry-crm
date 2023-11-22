@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/kudry-crm/static/css/main.2d90ac8f.css",
+    "main.js": "/kudry-crm/static/js/main.f0f98fad.js",
+    "static/media/whatsapp.svg": "/kudry-crm/static/media/whatsapp.89b5bf1fcaf0e5eeafa941840e3fd407.svg",
+    "static/media/phone.svg": "/kudry-crm/static/media/phone.798729183da754b0834dda05adaaa1d9.svg",
+    "index.html": "/kudry-crm/index.html",
+    "main.2d90ac8f.css.map": "/kudry-crm/static/css/main.2d90ac8f.css.map",
+    "main.f0f98fad.js.map": "/kudry-crm/static/js/main.f0f98fad.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2d90ac8f.css",
+    "static/js/main.f0f98fad.js"
+  ]
+}
