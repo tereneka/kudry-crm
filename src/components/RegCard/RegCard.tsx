@@ -1,7 +1,7 @@
 import './RegCard.css';
 import {
   DbRegistration,
-  User,
+  RegUser,
 } from '../../types';
 import { TIME_LIST } from '../../constants';
 import {
@@ -39,7 +39,7 @@ import { setIsError } from '../../reducers/appSlice';
 
 interface RegCardProps {
   reg: DbRegistration;
-  user: User | undefined;
+  user: RegUser | undefined;
   type?: 'major' | 'copy';
   toggleTimeSelect?: (bool: boolean) => void;
 }

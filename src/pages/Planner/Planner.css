@@ -1,12 +1,9 @@
 .planner {
   position: relative;
-  /* touch-action: none; */
 }
 
-.planner__reg-card {
-  top: 390px !important;
-  left: calc(100% - 250px) !important;
-  z-index: 10;
-  width: 250px !important;
-  display: block !important;
+.planner__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

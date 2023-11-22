@@ -1,17 +1,24 @@
 import { useEffect } from 'react';
-import Planner from '../../pages/Planner/Planner';
-import {
-  useGetMasterListQuery,
-  useUpdateRegistrationMutation,
-} from '../../reducers/apiSlice';
+import { useGetMasterListQuery } from '../../reducers/apiSlice';
 import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
 import { setCurrentMaster } from '../../reducers/mastersSlice';
 import { message } from 'antd';
+import RouterApp from '../RouterApp/RouterApp';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../db/firebaseConfig';
+import { setCurrentAccount } from '../../reducers/appSlice';
+import {
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 function App() {
+  const navigate = useNavigate();
+  const { pathname: location } = useLocation();
+
   const { data: masters } =
     useGetMasterListQuery();
 
@@ -35,6 +42,18 @@ function App() {
     });
   }
 
+  onAuthStateChanged(auth, (account) => {
+    dispatch(setCurrentAccount(account));
+    if (account && location !== '/') {
+      navigate('/');
+    } else if (
+      !account &&
+      location !== '/sign-in'
+    ) {
+      navigate('/sign-in');
+    }
+  });
+
   useEffect(() => {
     if (masters && !currentMaster) {
       dispatch(setCurrentMaster(masters[0]));
@@ -49,7 +68,7 @@ function App() {
 
   return (
     <div className=''>
-      <Planner />
+      <RouterApp />
       {errorMessage}
     </div>
   );

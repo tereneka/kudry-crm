@@ -8,7 +8,7 @@ import {
 import { setIsRegModalOpened } from '../../reducers/regSlice';
 import {
   DbRegistration,
-  User,
+  RegUser,
 } from '../../types';
 import UserSelect from '../UserSelect/UserSelect';
 import UserSocial from '../Social/UserSocial';
@@ -36,7 +36,7 @@ import {
 
 interface RegModalProps {
   reg: DbRegistration | null;
-  user: User | undefined | null;
+  user: RegUser | undefined | null;
 }
 
 export default function RegModal({

@@ -15,7 +15,6 @@ import {
   CloseOutlined,
   DownOutlined,
 } from '@ant-design/icons';
-import { User } from '../../types';
 import {
   ReactNode,
   useEffect,
@@ -25,6 +24,7 @@ import { phoneFormat } from '../../utils/format';
 import { classByCondition } from '../../utils/className';
 import { useAppDispatch } from '../../store';
 import { setIsError } from '../../reducers/appSlice';
+import { RegUser } from '../../types';
 
 interface UserSelectProps {
   label?: string;
@@ -51,7 +51,7 @@ export default function UserSelect({
 
   const { Option } = Select;
 
-  function renderOptionContent(user: User) {
+  function renderOptionContent(user: RegUser) {
     return (
       <div className='user-select__option'>
         <span className='user-select__option-item user-select__option-item_name_name'>
@@ -73,7 +73,7 @@ export default function UserSelect({
   }
 
   function handleFormSubmit(
-    values: Omit<User, 'id'>
+    values: Omit<RegUser, 'id'>
   ) {
     if (!isLoading) {
       addUser({

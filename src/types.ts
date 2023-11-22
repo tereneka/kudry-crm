@@ -76,7 +76,7 @@ interface RegistrationContext {
   registrationList: Registration[] | undefined;
 }
 
-interface User {
+interface RegUser {
   id: string;
   name: string;
   phone: string;
@@ -91,5 +91,5 @@ export type {
   RegistrationContext,
   DbRegistration,
   Income,
-  User,
+  RegUser,
 };

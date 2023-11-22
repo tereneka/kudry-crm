@@ -24,6 +24,10 @@ import {
   setDraggableRegCard,
 } from '../../reducers/regCardSlice';
 import RegModal from '../../components/RegModal/RegModal';
+import { Button } from 'antd';
+import { Link } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../db/firebaseConfig';
 
 export default function Planner() {
   const { data: regList } =
@@ -71,11 +75,21 @@ export default function Planner() {
 
   return (
     <div className='planner'>
-      <MastersSelect
-        isAllOption={false}
-        currentMaster={currentMaster}
-        onChange={handleMasterChange}
-      />{' '}
+      <div className='planner__container'>
+        <MastersSelect
+          isAllOption={false}
+          currentMaster={currentMaster}
+          onChange={handleMasterChange}
+        />
+        <Button type='primary'>
+          <Link
+            to={'/sign-in'}
+            onClick={() => signOut(auth)}>
+            выйти
+          </Link>
+        </Button>
+      </div>
+
       <RegForm />
       <PlannerCalendar />
       <Todos />

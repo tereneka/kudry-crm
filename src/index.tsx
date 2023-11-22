@@ -8,6 +8,7 @@ import { ConfigProvider } from 'antd';
 import ruRU from 'antd/locale/ru_RU';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
+import { BrowserRouter } from 'react-router-dom';
 // import reportWebVitals from './reportWebVitals';
 
 dayjs.locale('ru-ru');
@@ -30,8 +31,16 @@ root.render(
           colorTextBase: 'rgb(60, 60, 60)',
           fontSize: 16,
         },
+        components: {
+          Result: {
+            iconFontSize: 40,
+            titleFontSize: 16,
+          },
+        },
       }}>
-      <App />{' '}
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ConfigProvider>
   </Provider>
 

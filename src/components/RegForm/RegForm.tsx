@@ -7,10 +7,7 @@ import {
   Drawer,
   Form,
   Select,
-  message,
-  notification,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import UserSelect from '../UserSelect/UserSelect';
 import {
   useAppDispatch,
@@ -43,21 +40,12 @@ import {
   isIndexSelect,
   isMastersCategoriesSame,
 } from '../../utils/reg';
-import {
-  Income,
-  Registration,
-} from '../../types';
-import { classByCondition } from '../../utils/className';
-import {
-  convertDateStrToDate,
-  isDateBeforeToday,
-} from '../../utils/date';
-import { getDataById } from '../../utils/data';
+import { Registration } from '../../types';
+import { convertDateStrToDate } from '../../utils/date';
 import { plural } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
-import dayjs, { Dayjs } from 'dayjs';
-import useFormInstance from 'antd/es/form/hooks/useFormInstance';
+import dayjs from 'dayjs';
 
 export default function RegForm() {
   const [form] = Form.useForm();

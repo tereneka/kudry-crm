@@ -23,6 +23,7 @@ import {
   list,
 } from 'firebase/storage';
 import {
+  auth,
   db,
   storage,
 } from '../db/firebaseConfig';
@@ -31,16 +32,20 @@ import {
   DbRegistration,
   Income,
   Master,
+  RegUser,
   Registration,
   Service,
   SubCategory,
-  User,
 } from '../types';
 import dayjs from 'dayjs';
 import {
   convertDbDateToStr,
   getEarlierDate,
 } from '../utils/date';
+import {
+  User,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 // import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({
@@ -55,6 +60,7 @@ export const apiSlice = createApi({
     'Service',
     'Registration',
     'Income',
+    'Account',
   ],
   endpoints: (builder) => ({
     getMasterList: builder.query<Master[], void>({
@@ -82,7 +88,7 @@ export const apiSlice = createApi({
       providesTags: ['Master'],
     }),
 
-    getUserList: builder.query<User[], void>({
+    getUserList: builder.query<RegUser[], void>({
       async queryFn() {
         try {
           const usersQuery = query(
@@ -414,7 +420,7 @@ export const apiSlice = createApi({
 
     addUser: builder.mutation<
       string,
-      Omit<User, 'id'>
+      Omit<RegUser, 'id'>
     >({
       async queryFn(body) {
         const userRef = collection(db, 'users');
@@ -479,6 +485,28 @@ export const apiSlice = createApi({
       },
       invalidatesTags: ['Income'],
     }),
+
+    signin: builder.mutation<
+      User,
+      { email: string; password: string }
+    >({
+      async queryFn(body) {
+        const { email, password } = body;
+        try {
+          const userCredential =
+            await signInWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+
+          return { data: userCredential.user };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Account'],
+    }),
   }),
 });
 
@@ -497,4 +525,5 @@ export const {
   useDeleteRegistrationMutation,
   useAddUserMutation,
   useUpdateIncomeMutation,
+  useSigninMutation,
 } = apiSlice;
