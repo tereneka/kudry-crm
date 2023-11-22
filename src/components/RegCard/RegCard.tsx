@@ -154,6 +154,7 @@ export default function RegCard({
           <Popconfirm
             title='Удалить запись?'
             onConfirm={() => deleteReg(reg.id)}
+            placement='topLeft'
             okText='да'
             okButtonProps={{
               danger: true,

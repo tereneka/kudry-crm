@@ -54,7 +54,7 @@ export default function Todos() {
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
 
-  const [updateReg, { isError, isSuccess }] =
+  const [updateReg, { isError, isLoading }] =
     useUpdateRegistrationMutation();
   const [updateIncome] =
     useUpdateIncomeMutation();
@@ -97,17 +97,12 @@ export default function Todos() {
     );
   }
 
-  function handleTimeCellClick(
-    e: React.MouseEvent<
-      HTMLDivElement,
-      MouseEvent
-    >
-  ) {
-    const time = e.currentTarget.dataset.time;
-
-    setSelectedTime(time || '');
-
-    if (isTimeSelectAvailable && time) {
+  function handleTimeCellClick(time: string) {
+    // const time = e.currentTarget.dataset.time;
+    if (isTimeSelectAvailable) {
+      selectedTime && time === selectedTime
+        ? setSelectedTime('')
+        : setSelectedTime(time);
       if (isRegFormActive) {
         if (time === regFormValues.time) {
           dispatch(
@@ -159,11 +154,12 @@ export default function Todos() {
     if (isError) {
       dispatch(setDraggableRegCard(null));
     }
+    setSelectedTime('');
   }, [isError]);
 
   useEffect(() => {
     if (
-      isSuccess &&
+      !isLoading &&
       regCardInfo &&
       convertDbDateToStr(regCardInfo?.date) !==
         date
@@ -189,12 +185,12 @@ export default function Todos() {
           setSelectedTime('');
         });
       });
-    } else if (isSuccess) {
+    } else if (!isLoading) {
       dispatch(setRegCardInfo(null));
       dispatch(setRegCardUser(null));
       setSelectedTime('');
     }
-  }, [isSuccess]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!isRegFormActive) {
@@ -249,7 +245,9 @@ export default function Todos() {
                 'selected'
               )
             }
-            onClick={handleTimeCellClick}
+            onClick={() =>
+              handleTimeCellClick(time)
+            }
             data-time={time}
           />
         </div>
