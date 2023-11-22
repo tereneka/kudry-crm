@@ -213,7 +213,12 @@ export default function Todos() {
         <div>
           {JSON.stringify(updateBody) +
             ' ' +
-            e.message}
+            e.message +
+            ' ' +
+            date +
+            JSON.stringify(
+              convertDateStrToDate(date)
+            )}
         </div>
       )}
       <Tooltip title='выбрать время'>
