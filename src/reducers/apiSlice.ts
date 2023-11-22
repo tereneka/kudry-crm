@@ -370,7 +370,7 @@ export const apiSlice = createApi({
     }),
 
     updateRegistration: builder.mutation<
-      void,
+      any,
       { id: string; body: Partial<Registration> }
     >({
       async queryFn({ id, body }) {
@@ -387,7 +387,7 @@ export const apiSlice = createApi({
           );
 
           return { data };
-        } catch (error) {
+        } catch (error: any) {
           return { error };
         }
       },
