@@ -54,10 +54,8 @@ export default function Todos() {
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
 
-  const [
-    updateReg,
-    { isError, isLoading, error },
-  ] = useUpdateRegistrationMutation();
+  const [updateReg, { isError, isLoading }] =
+    useUpdateRegistrationMutation();
   const [updateIncome] =
     useUpdateIncomeMutation();
 
@@ -69,8 +67,6 @@ export default function Todos() {
   ] = useState(false);
   const [selectedTime, setSelectedTime] =
     useState('');
-  const [updateBody, setUpdateBody] =
-    useState<any>({});
 
   const regList = masterRegList
     ?.filter(
@@ -124,11 +120,6 @@ export default function Todos() {
           );
         }
       } else if (regCardInfo) {
-        setUpdateBody({
-          time,
-          date: convertDateStrToDate(date),
-          masterId: currentMaster?.id,
-        });
         updateReg({
           id: regCardInfo.id,
           body: {
@@ -206,21 +197,9 @@ export default function Todos() {
       setSelectedTime('');
     }
   }, [isRegFormActive]);
-  const e = error as any;
+
   return (
     <div className='todos'>
-      {isError && (
-        <div>
-          {JSON.stringify(updateBody) +
-            ' ' +
-            e.message +
-            ' ' +
-            date +
-            JSON.stringify(
-              convertDateStrToDate(date)
-            )}
-        </div>
-      )}
       <Tooltip title='выбрать время'>
         <Button
           icon={

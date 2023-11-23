@@ -66,6 +66,40 @@ function App() {
     }
   }, [isError]);
 
+  const disableIosTextFieldZoom = () => {
+    const element = document.querySelector(
+      'meta[name=viewport]'
+    );
+
+    if (element !== null) {
+      let content =
+        element.getAttribute('content');
+      let regexp = /maximum\-scale=[0-9\.]+/g;
+
+      if (content && regexp.test(content)) {
+        content = content.replace(
+          regexp,
+          'maximum-scale=1.0'
+        );
+      } else {
+        content = [
+          content,
+          'maximum-scale=1.0',
+        ].join(', ');
+      }
+
+      element.setAttribute('content', content);
+    }
+  };
+
+  const checkIsIOS = () =>
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // && !window.MSStream;
+
+  if (checkIsIOS()) {
+    disableIosTextFieldZoom();
+  }
+
   return (
     <div className=''>
       <RouterApp />
