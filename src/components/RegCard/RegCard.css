@@ -23,8 +23,8 @@
 
 .reg-card_type_copy {
   width: 190px;
-  height: 88px !important;
-  margin-bottom: -88px;
+  height: 100px !important;
+  margin-bottom: -100px;
   font-size: 10px;
   background: var(--accent-soft);
   position: sticky;
@@ -94,11 +94,45 @@
 }
 
 .reg-card__btn-group {
-  position: absolute;
-  top: 0;
-  right: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   gap: 4px;
+  border-radius: 4px;
+}
+
+.reg-card__btn-group_type_even {
+  background: var(--accent-soft);
+}
+
+.reg-card__btn-group_type_odd {
+  background: var(--accent-bright);
+}
+
+.reg-card__memu-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.reg-card:nth-child(odd) .reg-card__memu-btn {
+  background: var(--accent-bright);
+}
+
+.reg-card:nth-child(odd)
+  .reg-card__memu-btn:active {
+  background: var(--accent-bright);
+}
+
+.reg-card__icon {
+  color: var(--main-back);
+}
+
+.reg-card__social-icon {
+  width: 20px;
+  height: 20px;
+  padding-top: 2px;
 }
 
 .reg-card__move-btn {

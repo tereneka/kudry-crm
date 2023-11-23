@@ -1,8 +1,7 @@
 import React from 'react';
 import './UserSocial.css';
-import phoneIcon from '../../images/phone.svg';
-import whatsapp from '../../images/whatsapp.svg';
-import { classByCondition } from '../../utils/className';
+import phoneIcon from '../../images/phone-green.svg';
+import whatsapp from '../../images/whatsapp-green.svg';
 
 interface UserSocialProps {
   phone: string;

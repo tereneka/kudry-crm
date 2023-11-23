@@ -74,7 +74,7 @@ export default function Todos() {
         convertDbDateToStr(reg.date) === date
     )
     .sort((a, b) => a.time.localeCompare(b.time))
-    .map((reg) => {
+    .map((reg, index) => {
       const user = users?.find(
         (user) => user.id === reg.userId
       );
@@ -83,6 +83,7 @@ export default function Todos() {
         <RegCard
           reg={reg}
           user={user}
+          index={index}
           toggleTimeSelect={
             setIsTimeSelectAvailable
           }

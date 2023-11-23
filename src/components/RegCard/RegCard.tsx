@@ -25,22 +25,27 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import { Button, Popconfirm } from 'antd';
+import { Button, MenuProps } from 'antd';
 import {
   CloseOutlined,
   DeleteOutlined,
   EyeOutlined,
   DragOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
 import { setIsRegModalOpened } from '../../reducers/regSlice';
-import UserSocial from '../Social/UserSocial';
 import { changeIncome } from '../../utils/reg';
 import { setIsError } from '../../reducers/appSlice';
+import { Dropdown } from 'antd/lib';
+import React from 'react';
+import phoneIcon from '../../images/phone.svg';
+import whatsappIcon from '../../images/whatsapp.svg';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: RegUser | undefined;
   type?: 'major' | 'copy';
+  index?: number;
   toggleTimeSelect?: (bool: boolean) => void;
 }
 
@@ -48,6 +53,7 @@ export default function RegCard({
   reg,
   user,
   type = 'major',
+  index,
   toggleTimeSelect = () => {},
 }: RegCardProps) {
   const { data: serviceList } =
@@ -85,6 +91,95 @@ export default function RegCard({
         getDataById(serviceList, serviceId)?.name
     );
 
+  const btnGroup: MenuProps['items'] = [
+    {
+      label: (
+        <Button
+          size='large'
+          type='text'
+          href={`tel:${user?.phone}`}
+          icon={
+            <img
+              className='reg-card__social-icon'
+              src={phoneIcon}
+              alt=''
+            />
+          }
+        />
+      ),
+      key: '1',
+    },
+    {
+      label: (
+        <Button
+          size='large'
+          type='text'
+          href={`https://wa.me/${user?.phone.slice(
+            1
+          )}`}
+          icon={
+            <img
+              className='reg-card__social-icon'
+              src={whatsappIcon}
+              alt='whatsapp'
+            />
+          }
+        />
+      ),
+      key: '2',
+    },
+    {
+      label: (
+        <Button
+          className='reg-card__move-btn'
+          size='large'
+          type='text'
+          disabled={isRegFormActive}
+          icon={
+            <DragOutlined
+              rev={undefined}
+              className='reg-card__icon'
+            />
+          }
+          onClick={handleMoveBtnClick}
+        />
+      ),
+      key: '3',
+    },
+    {
+      label: (
+        <Button
+          size='large'
+          type='text'
+          icon={
+            <EyeOutlined
+              rev={undefined}
+              className='reg-card__icon'
+            />
+          }
+          onClick={handleViewBtnClick}
+        />
+      ),
+      key: '4',
+    },
+    {
+      label: (
+        <Button
+          size='large'
+          type='text'
+          icon={
+            <DeleteOutlined
+              rev={undefined}
+              className='reg-card__icon'
+            />
+          }
+          onClick={() => deleteReg(reg.id)}
+        />
+      ),
+      key: '5',
+    },
+  ];
+
   function handleMoveBtnClick() {
     dispatch(setDraggableRegCard(reg.id));
     dispatch(setRegCardInfo(reg));
@@ -97,6 +192,12 @@ export default function RegCard({
     dispatch(setRegCardUser(null));
     dispatch(setDraggableRegCard(null));
     toggleTimeSelect(false);
+  }
+
+  function handleViewBtnClick() {
+    dispatch(setRegCardInfo(reg));
+    dispatch(setRegCardUser(user));
+    dispatch(setIsRegModalOpened(true));
   }
 
   useEffect(() => {
@@ -128,47 +229,34 @@ export default function RegCard({
       style={cardStyle}
       key={reg.id}>
       {type === 'major' && (
-        <div className='reg-card__btn-group'>
+        <Dropdown
+          menu={{ items: btnGroup }}
+          trigger={['click']}
+          placement='topRight'
+          dropdownRender={(menu) => (
+            <>
+              {React.cloneElement(
+                menu as React.ReactElement,
+                {
+                  class: `reg-card__btn-group ${
+                    index !== undefined &&
+                    index % 2 === 0
+                      ? 'reg-card__btn-group_type_odd'
+                      : 'reg-card__btn-group_type_even'
+                  }`,
+                }
+              )}
+            </>
+          )}>
           <Button
-            className='reg-card__move-btn'
-            type='text'
+            className='reg-card__memu-btn'
             size='small'
-            disabled={isRegFormActive}
+            type='primary'
             icon={
-              <DragOutlined rev={undefined} />
+              <MenuOutlined rev={undefined} />
             }
-            onClick={handleMoveBtnClick}
           />
-
-          <Button
-            type='text'
-            size='small'
-            icon={<EyeOutlined rev={undefined} />}
-            onClick={() => {
-              dispatch(setRegCardInfo(reg));
-              dispatch(setRegCardUser(user));
-              dispatch(setIsRegModalOpened(true));
-            }}
-          />
-
-          <Popconfirm
-            title='Удалить запись?'
-            onConfirm={() => deleteReg(reg.id)}
-            placement='topLeft'
-            okText='да'
-            okButtonProps={{
-              danger: true,
-            }}
-            cancelText='нет'>
-            <Button
-              type='text'
-              size='small'
-              icon={
-                <DeleteOutlined rev={undefined} />
-              }
-            />
-          </Popconfirm>
-        </div>
+        </Dropdown>
       )}
       {type === 'copy' && (
         <Button
@@ -188,14 +276,8 @@ export default function RegCard({
           <span>
             {phoneFormat(user?.phone || '')}
           </span>
-          {!(draggableRegCard === reg.id) && (
-            <UserSocial
-              phone={user?.phone || ''}
-            />
-          )}
         </div>
       </div>
-
       {(reg.duration > 1 || type === 'copy') && (
         <>
           <div className='reg-card__box reg-card__number-list'>
