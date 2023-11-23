@@ -2,5 +2,12 @@
 
 @import url(./vendor/variables.css);
 
+.root {
+  margin: 10px;
+}
+
 @media screen and (min-width: 700px) {
+  .root {
+    margin: 20px;
+  }
 }

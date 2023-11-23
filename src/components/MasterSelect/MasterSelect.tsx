@@ -23,8 +23,8 @@ export default function MasterSelect({
   const optionContent = (master: Master) => (
     <div>
       <Avatar
+        className='master-select__avatar'
         size='large'
-        style={{ background: '#10899e' }}
         src={master.photoUrl}
         alt='фото мастера'
       />{' '}
@@ -34,6 +34,7 @@ export default function MasterSelect({
   return (
     <div className='master-select'>
       <Select
+        className='master-select__select'
         size='large'
         value={currentMaster?.id}
         onChange={onChange}

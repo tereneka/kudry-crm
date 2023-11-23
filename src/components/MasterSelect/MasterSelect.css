@@ -1,23 +1,14 @@
-.master-select
-  :where(
-    .css-dev-only-do-not-override-5dcebe
-  ).ant-select-single:not(
-    .ant-select-customize-input
-  )
-  .ant-select-selector {
-  height: 50px;
-  padding-top: 4px;
-  min-width: 184px;
+.master-select__select {
+  height: 55px !important;
+  min-width: 200px;
 }
 
-.master-select
-  :where(
-    .css-dev-only-do-not-override-xf1sj9
-  ).ant-select-single.ant-select-lg:not(
-    .ant-select-customize-input
-  )
-  .ant-select-selector {
+.master-select__select div {
+  font-weight: 600;
+}
+
+.master-select__avatar {
+  background: var(--accent-soft);
+  width: 50px;
   height: 50px;
-  padding-top: 4px;
-  min-width: 184px;
 }
