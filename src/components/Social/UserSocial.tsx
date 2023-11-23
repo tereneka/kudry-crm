@@ -1,7 +1,8 @@
 import React from 'react';
 import './UserSocial.css';
 import phoneIcon from '../../images/phone-green.svg';
-import whatsapp from '../../images/whatsapp-green.svg';
+import whatsappIcon from '../../images/whatsapp-green.svg';
+import { Button } from 'antd';
 
 interface UserSocialProps {
   phone: string;
@@ -18,28 +19,32 @@ export default function UserSocial({
         className || ''
       }`}>
       <li>
-        <a
-          className='user-social__link'
-          href={`tel:${phone}`}>
-          <img
-            className='user-social__link-icon'
-            src={phoneIcon}
-            alt=''
-          />
-        </a>
+        <Button
+          size='large'
+          type='text'
+          href={`tel:${phone}`}
+          icon={
+            <img
+              className='user-social__icon'
+              src={phoneIcon}
+              alt=''
+            />
+          }
+        />
       </li>
       <li>
-        <a
-          className='user-social__link'
-          target='_blank'
+        <Button
+          size='large'
+          type='text'
           href={`https://wa.me/${phone.slice(1)}`}
-          rel='noreferrer'>
-          <img
-            className='user-social__link-icon'
-            src={whatsapp}
-            alt='whatsapp'
-          />
-        </a>
+          icon={
+            <img
+              className='user-social__icon'
+              src={whatsappIcon}
+              alt='whatsapp'
+            />
+          }
+        />
       </li>
     </ul>
   );

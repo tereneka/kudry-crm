@@ -33,6 +33,7 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
+import { useWatch } from 'antd/es/form/Form';
 
 interface RegModalProps {
   reg: DbRegistration | null;
@@ -73,6 +74,12 @@ export default function RegModal({
       duration: 0,
       income: 0,
     });
+
+  const endTime: string | undefined =
+    TIME_LIST[
+      TIME_LIST.indexOf(reg?.time || '') +
+        regFieldsValues.duration
+    ];
 
   function handleServiceChange(
     selectedServiceIdList: string[]
@@ -192,21 +199,25 @@ export default function RegModal({
           <span>
             {reg?.time}
             &mdash;
-            {
-              TIME_LIST[
-                TIME_LIST.indexOf(
-                  reg?.time || ''
-                ) + regFieldsValues.duration
-              ]
-            }
+            {endTime ? endTime : '00:00...'}
           </span>
         </div>
 
         <div className='reg-modal__box'>
-          <UserSelect
-            suffixIcon
-            classModifier='place_reg-modal'
-          />
+          <Form.Item
+            className='reg-modal__form-item'
+            name='userId'
+            rules={[
+              {
+                required: true,
+                message: 'выберите клиента',
+              },
+            ]}>
+            <UserSelect
+              value={user?.id}
+              suffixIcon
+            />
+          </Form.Item>
 
           <UserSocial
             phone={user?.phone || ''}
@@ -215,17 +226,29 @@ export default function RegModal({
         </div>
 
         <div className='reg-modal__box'>
-          <ServicesSelect
-            serviceList={filterServicesByGender(
-              filterServicesByMaster(
-                serviceList,
-                currentMaster
-              ),
-              reg?.gender
-            )}
-            suffixIcon
-            onChange={handleServiceChange}
-          />
+          <Form.Item
+            className='reg-modal__form-item'
+            name='serviceIdList'
+            rules={[
+              {
+                required: true,
+                message: 'выберите услуги',
+              },
+            ]}>
+            <ServicesSelect
+              serviceList={filterServicesByGender(
+                filterServicesByMaster(
+                  serviceList,
+                  currentMaster
+                ),
+                reg?.gender
+              )}
+              value={reg?.serviceIdList}
+              suffixIcon
+              onChange={handleServiceChange}
+            />
+          </Form.Item>
+
           <span className='reg-modal__income'>
             {numberFormat(regFieldsValues.income)}{' '}
             &#8381;

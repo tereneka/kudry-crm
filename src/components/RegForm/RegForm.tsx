@@ -390,18 +390,27 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <ServicesSelect
-            serviceList={filterServicesByGender(
-              filteredServicesByMaster,
-              genderFormItemValue
-            )}
+          <Form.Item
+            name='serviceIdList'
             label='услуги'
-            onChange={handleServiceChange}
-            disabled={
-              isHairCategory &&
-              !!!genderFormItemValue
-            }
-          />
+            rules={[
+              {
+                required: true,
+                message: 'выберите услуги',
+              },
+            ]}>
+            <ServicesSelect
+              serviceList={filterServicesByGender(
+                filteredServicesByMaster,
+                genderFormItemValue
+              )}
+              onChange={handleServiceChange}
+              disabled={
+                isHairCategory &&
+                !!!genderFormItemValue
+              }
+            />
+          </Form.Item>
 
           {isIndexSelectVisible && (
             <Form.Item
@@ -432,7 +441,17 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <UserSelect label='клиент' />
+          <Form.Item
+            name='userId'
+            label='клиент'
+            rules={[
+              {
+                required: true,
+                message: 'выберите клиента',
+              },
+            ]}>
+            <UserSelect />
+          </Form.Item>
 
           <div className='reg-form__date-time-container'>
             <Form.Item name='date' label='дата'>

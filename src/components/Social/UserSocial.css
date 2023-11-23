@@ -4,7 +4,7 @@
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  min-height: 40px;
 }
 
 .user-social li {
@@ -17,7 +17,7 @@
   height: 20px;
 }
 
-.user-social__link-icon {
+.user-social__icon {
   width: 20px;
   height: 20px;
   object-position: center;

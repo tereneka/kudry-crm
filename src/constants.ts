@@ -1,9 +1,11 @@
 const DATE_FORMAT = 'DD.MM.YYYY';
 
-const TIME_LIST = ['11:00'];
-for (let i = 0; i < 20; i++) {
+const TIME_LIST = ['09:00'];
+for (let i = 0; i < 30; i++) {
   const time =
-    i % 2
+    i === 29
+      ? '00:00'
+      : i % 2
       ? parseInt(TIME_LIST[i]) + 1 + ':00'
       : TIME_LIST[i].slice(0, 3) + '30';
 

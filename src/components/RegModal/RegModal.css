@@ -8,6 +8,12 @@
   margin: 20px auto;
 }
 
+.reg-modal__form-item {
+  width: 320px;
+  max-width: 100%;
+  margin: 0;
+}
+
 .reg-modal__footer {
   width: 320px;
   max-width: 100%;
@@ -32,6 +38,7 @@
 
 .reg-modal__user-social {
   align-self: flex-end;
+  margin-right: -10px !important;
 }
 
 .reg-modal__numbers {
@@ -82,5 +89,12 @@
 
   .reg-modal .ant-modal-content {
     padding: 20px 24px;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .reg-modal__user-social {
+    margin-top: -10px !important;
+    margin-bottom: -5px !important;
   }
 }
