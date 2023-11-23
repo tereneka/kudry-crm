@@ -1,15 +1,18 @@
 {
   "files": {
-    "main.css": "/kudry-crm/static/css/main.2d90ac8f.css",
-    "main.js": "/kudry-crm/static/js/main.067f8b26.js",
-    "static/media/whatsapp.svg": "/kudry-crm/static/media/whatsapp.89b5bf1fcaf0e5eeafa941840e3fd407.svg",
-    "static/media/phone.svg": "/kudry-crm/static/media/phone.798729183da754b0834dda05adaaa1d9.svg",
+    "main.css": "/kudry-crm/static/css/main.3e2767c2.css",
+    "main.js": "/kudry-crm/static/js/main.0dd1b268.js",
+    "static/media/whatsapp-green.svg": "/kudry-crm/static/media/whatsapp-green.1a42b58cd4f0bca6c7fb01f961e70231.svg",
+    "static/media/whatsapp.svg": "/kudry-crm/static/media/whatsapp.bc3b24e3380b2829f8d3afd58b6db3aa.svg",
+    "static/media/index.cjs": "/kudry-crm/static/media/index.42119833dddefe38a9fa.cjs",
+    "static/media/phone-green.svg": "/kudry-crm/static/media/phone-green.9147972b8214ae9e4a9ded936fb55ff2.svg",
+    "static/media/phone.svg": "/kudry-crm/static/media/phone.25031cb76b40bac07792f077f710b9b2.svg",
     "index.html": "/kudry-crm/index.html",
-    "main.2d90ac8f.css.map": "/kudry-crm/static/css/main.2d90ac8f.css.map",
-    "main.067f8b26.js.map": "/kudry-crm/static/js/main.067f8b26.js.map"
+    "main.3e2767c2.css.map": "/kudry-crm/static/css/main.3e2767c2.css.map",
+    "main.0dd1b268.js.map": "/kudry-crm/static/js/main.0dd1b268.js.map"
   },
   "entrypoints": [
-    "static/css/main.2d90ac8f.css",
-    "static/js/main.067f8b26.js"
+    "static/css/main.3e2767c2.css",
+    "static/js/main.0dd1b268.js"
   ]
 }
