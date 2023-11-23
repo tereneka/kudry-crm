@@ -14,6 +14,7 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+import { disableIosTextFieldZoom } from '../../utils/format';
 
 function App() {
   const navigate = useNavigate();
@@ -66,39 +67,7 @@ function App() {
     }
   }, [isError]);
 
-  const disableIosTextFieldZoom = () => {
-    const element = document.querySelector(
-      'meta[name=viewport]'
-    );
-
-    if (element !== null) {
-      let content =
-        element.getAttribute('content');
-      let regexp = /maximum\-scale=[0-9\.]+/g;
-
-      if (content && regexp.test(content)) {
-        content = content.replace(
-          regexp,
-          'maximum-scale=1.0'
-        );
-      } else {
-        content = [
-          content,
-          'maximum-scale=1.0',
-        ].join(', ');
-      }
-
-      element.setAttribute('content', content);
-    }
-  };
-
-  const checkIsIOS = () =>
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
-  // && !window.MSStream;
-
-  if (checkIsIOS()) {
-    disableIosTextFieldZoom();
-  }
+  disableIosTextFieldZoom();
 
   return (
     <div className=''>

@@ -47,4 +47,40 @@ function phoneFormat(phone: string) {
   );
 }
 
-export { plural, numberFormat, phoneFormat };
+const disableIosTextFieldZoom = () => {
+  const isIOS = /iPad|iPhone|iPod/.test(
+    navigator.userAgent
+  );
+  if (isIOS) {
+    const element = document.querySelector(
+      'meta[name=viewport]'
+    );
+
+    if (element !== null) {
+      let content =
+        element.getAttribute('content');
+      const regexp = /maximum\-scale=[0-9\.]+/g;
+
+      if (content && regexp.test(content)) {
+        content = content.replace(
+          regexp,
+          'maximum-scale=1.0'
+        );
+      } else {
+        content = [
+          content,
+          'maximum-scale=1.0',
+        ].join(', ');
+      }
+
+      element.setAttribute('content', content);
+    }
+  }
+};
+
+export {
+  plural,
+  numberFormat,
+  phoneFormat,
+  disableIosTextFieldZoom,
+};
