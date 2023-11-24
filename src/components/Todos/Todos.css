@@ -38,3 +38,32 @@
 .todos__time-table-cell_selected {
   background: var(--accent-soft);
 }
+
+.todos__btn-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: var(--disabled);
+  margin-bottom: 4px;
+  padding: 4px;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.todos__radio-btn {
+  padding: 0;
+}
+
+.todos__radio-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  line-height: 0.5;
+  min-width: 70px;
+  padding: 3px 0;
+}

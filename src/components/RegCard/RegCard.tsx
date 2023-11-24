@@ -83,7 +83,7 @@ export default function RegCard({
 
   const cardStyle = {
     height: reg.duration * 58 - 4,
-    top: 44 + TIME_LIST.indexOf(reg.time) * 58,
+    top: TIME_LIST.indexOf(reg.time) * 58,
   };
   const regServiceNameList =
     reg.serviceIdList.map(
@@ -102,7 +102,7 @@ export default function RegCard({
             <img
               className='reg-card__social-icon'
               src={phoneIcon}
-              alt=''
+              alt='phone'
             />
           }
         />

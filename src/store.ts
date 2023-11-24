@@ -4,6 +4,7 @@ import {
   Action,
 } from '@reduxjs/toolkit';
 import appReducer from './reducers/appSlice';
+import plannerReducer from './reducers/plannerSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
 import regCardReducer from './reducers/regCardSlice';
@@ -19,6 +20,7 @@ export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     appState: appReducer,
+    plannerState: plannerReducer,
     calendarState: calendarReducer,
     regState: regReducer,
     regCardState: regCardReducer,

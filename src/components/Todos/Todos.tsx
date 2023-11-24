@@ -3,61 +3,20 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { Button, Tooltip } from 'antd';
+import { Button, Radio, Tooltip } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
-import { TIME_LIST } from '../../constants';
-import { useEffect, useState } from 'react';
-import {
-  useGetServiceListQuery,
-  useGetUserListQuery,
-  useUpdateIncomeMutation,
-  useUpdateRegistrationMutation,
-} from '../../reducers/apiSlice';
-import { setRegFormValues } from '../../reducers/regSlice';
-import { classByCondition } from '../../utils/className';
-import RegCard from '../RegCard/RegCard';
-import {
-  convertDateStrToDate,
-  convertDbDateToStr,
-} from '../../utils/date';
-import {
-  setDraggableRegCard,
-  setRegCardInfo,
-  setRegCardUser,
-} from '../../reducers/regCardSlice';
-import {
-  changeIncome,
-  isMastersCategoriesSame,
-} from '../../utils/reg';
-import { setIsError } from '../../reducers/appSlice';
+import { useState } from 'react';
+import personIconBlack from '../../images/person-lines-black.svg';
+import notesIconBlack from '../../images/notes-black.svg';
+import personIconWhite from '../../images/person-lines-white.svg';
+import notesIconWhite from '../../images/notes-white.svg';
+import { setCurrentTodoListName } from '../../reducers/plannerSlice';
+import RegTodos from '../RegTodos/RegTodos';
 
 export default function Todos() {
-  const { data: users } = useGetUserListQuery();
-  const { data: serviceList } =
-    useGetServiceListQuery();
-
-  const { date } = useAppSelector(
-    (state) => state.calendarState
+  const { currentTodoListName } = useAppSelector(
+    (state) => state.plannerState
   );
-  const {
-    masterRegList,
-    regFormValues,
-    isRegFormActive,
-  } = useAppSelector((state) => state.regState);
-  const {
-    regCardInfo,
-    regCardUser,
-    draggableRegCard,
-  } = useAppSelector(
-    (state) => state.regCardState
-  );
-  const { currentMaster, prevMaster } =
-    useAppSelector((state) => state.mastersState);
-
-  const [updateReg, { isError, isLoading }] =
-    useUpdateRegistrationMutation();
-  const [updateIncome] =
-    useUpdateIncomeMutation();
 
   const dispatch = useAppDispatch();
 
@@ -65,32 +24,6 @@ export default function Todos() {
     isTimeSelectAvailable,
     setIsTimeSelectAvailable,
   ] = useState(false);
-  const [selectedTime, setSelectedTime] =
-    useState('');
-
-  const regList = masterRegList
-    ?.filter(
-      (reg) =>
-        convertDbDateToStr(reg.date) === date
-    )
-    .sort((a, b) => a.time.localeCompare(b.time))
-    .map((reg, index) => {
-      const user = users?.find(
-        (user) => user.id === reg.userId
-      );
-
-      return (
-        <RegCard
-          reg={reg}
-          user={user}
-          index={index}
-          toggleTimeSelect={
-            setIsTimeSelectAvailable
-          }
-          key={reg.id}
-        />
-      );
-    });
 
   function toggleTimeSelectBtn() {
     setIsTimeSelectAvailable(
@@ -98,162 +31,77 @@ export default function Todos() {
     );
   }
 
-  function handleTimeCellClick(time: string) {
-    // const time = e.currentTarget.dataset.time;
-    if (isTimeSelectAvailable) {
-      selectedTime && time === selectedTime
-        ? setSelectedTime('')
-        : setSelectedTime(time);
-      if (isRegFormActive) {
-        if (time === regFormValues.time) {
-          dispatch(
-            setRegFormValues({
-              ...regFormValues,
-              time: undefined,
-            })
-          );
-        } else {
-          dispatch(
-            setRegFormValues({
-              ...regFormValues,
-              time,
-            })
-          );
-        }
-      } else if (regCardInfo) {
-        updateReg({
-          id: regCardInfo.id,
-          body: {
-            time,
-            date: convertDateStrToDate(date),
-            masterId: currentMaster?.id,
-          },
-        });
-      }
-    }
-
-    setIsTimeSelectAvailable(false);
+  function handleTodoListChange(
+    todoListName: 'reg' | 'notes'
+  ) {
+    dispatch(
+      setCurrentTodoListName(todoListName)
+    );
   }
-
-  // описываем действия при смене мастера во время переноса записи
-  useEffect(() => {
-    if (
-      regCardInfo &&
-      !isMastersCategoriesSame(
-        prevMaster,
-        currentMaster
-      )
-    ) {
-      dispatch(setRegCardInfo(null));
-      dispatch(setRegCardUser(null));
-      dispatch(setDraggableRegCard(null));
-    }
-  }, [currentMaster]);
-
-  useEffect(() => {
-    dispatch(setIsError(isError));
-    if (isError) {
-      dispatch(setDraggableRegCard(null));
-    }
-    setSelectedTime('');
-  }, [isError]);
-
-  useEffect(() => {
-    if (
-      !isLoading &&
-      regCardInfo &&
-      convertDbDateToStr(regCardInfo?.date) !==
-        date
-    ) {
-      changeIncome(
-        regCardInfo.serviceIdList,
-        serviceList,
-        regCardInfo.date.toDate(),
-        regCardInfo.serviceIndex,
-        'minus',
-        updateIncome
-      ).then(() => {
-        changeIncome(
-          regCardInfo.serviceIdList,
-          serviceList,
-          convertDateStrToDate(date),
-          regCardInfo.serviceIndex,
-          'plus',
-          updateIncome
-        ).then(() => {
-          dispatch(setRegCardInfo(null));
-          dispatch(setRegCardUser(null));
-          setSelectedTime('');
-        });
-      });
-    } else if (!isLoading) {
-      dispatch(setRegCardInfo(null));
-      dispatch(setRegCardUser(null));
-      setSelectedTime('');
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (!isRegFormActive) {
-      setSelectedTime('');
-    }
-  }, [isRegFormActive]);
 
   return (
     <div className='todos'>
-      <Tooltip title='выбрать время'>
-        <Button
-          icon={
-            <SelectOutlined rev={undefined} />
-          }
-          type='primary'
-          danger={!isTimeSelectAvailable}
-          size='small'
-          onClick={toggleTimeSelectBtn}
-        />
-      </Tooltip>
-      {regCardInfo &&
-        regCardUser &&
-        draggableRegCard && (
-          <RegCard
-            reg={regCardInfo}
-            user={regCardUser}
-            toggleTimeSelect={
-              setIsTimeSelectAvailable
-            }
-            type='copy'
-          />
+      <div className='todos__btn-group'>
+        {currentTodoListName === 'reg' && (
+          <Tooltip title='выбрать время'>
+            <Button
+              icon={
+                <SelectOutlined rev={undefined} />
+              }
+              type='primary'
+              danger={!isTimeSelectAvailable}
+              onClick={toggleTimeSelectBtn}
+            />
+          </Tooltip>
         )}
-
-      {TIME_LIST.map((time) => (
-        <div
-          className='todos__time-table-row'
-          key={time}>
-          <div className='todos__time-table-cell'>
-            {time}
-          </div>
-          <div
-            className={
-              classByCondition(
-                'todos__time-table-cell',
-                isTimeSelectAvailable,
-                'active'
-              ) +
-              ' ' +
-              classByCondition(
-                'todos__time-table-cell',
-                selectedTime === time,
-                'selected'
-              )
-            }
-            onClick={() =>
-              handleTimeCellClick(time)
-            }
-            data-time={time}
-          />
-        </div>
-      ))}
-      <div>{regList}</div>
+        <Radio.Group
+          defaultValue={currentTodoListName}
+          buttonStyle='solid'
+          onChange={(e) =>
+            handleTodoListChange(e.target.value)
+          }>
+          <Radio.Button
+            className='todos__radio-btn'
+            value={'reg'}>
+            <div className='todos__radio-content'>
+              <img
+                src={
+                  currentTodoListName === 'reg'
+                    ? personIconWhite
+                    : personIconBlack
+                }
+                alt=''
+              />
+              <span>записи</span>
+            </div>
+          </Radio.Button>
+          <Radio.Button
+            value={'notes'}
+            className='todos__radio-btn'>
+            <div className='todos__radio-content'>
+              <img
+                src={
+                  currentTodoListName === 'notes'
+                    ? notesIconWhite
+                    : notesIconBlack
+                }
+                alt=''
+              />
+              <span>напоминалки</span>
+            </div>
+          </Radio.Button>
+        </Radio.Group>
+      </div>
+      {currentTodoListName === 'reg' && (
+        <RegTodos
+          isTimeSelectAvailable={
+            isTimeSelectAvailable
+          }
+          setIsTimeSelectAvailable={
+            setIsTimeSelectAvailable
+          }
+        />
+      )}
     </div>
   );
 }
