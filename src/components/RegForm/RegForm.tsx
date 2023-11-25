@@ -6,6 +6,7 @@ import {
   DatePicker,
   Drawer,
   Form,
+  Input,
   Select,
 } from 'antd';
 import UserSelect from '../UserSelect/UserSelect';
@@ -21,12 +22,11 @@ import {
 } from '../../reducers/apiSlice';
 import {
   setIsRegFormActive,
-  setRegFormValues,
+  setRegFormTime,
 } from '../../reducers/regSlice';
 import {
   DATE_FORMAT,
   HAIR_LENGTH_LIST,
-  INITIAL_REG_FORM_VALUES,
   MAILE_HAIRCAT_LIST,
   TIME_LIST,
 } from '../../constants';
@@ -62,8 +62,12 @@ export default function RegForm() {
     'index',
     form
   );
+  const durationFormItemValue = useWatch(
+    'duration',
+    form
+  );
 
-  const { isRegFormActive, regFormValues } =
+  const { isRegFormActive, regFormTime } =
     useAppSelector((state) => state.regState);
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
@@ -98,6 +102,8 @@ export default function RegForm() {
   const [index, setIndex] = useState(0);
   const [dateTimeError, setDateTimeError] =
     useState('');
+  const [caculatedIncome, setCaculatedIncome] =
+    useState(0);
 
   const isHairCategory = hasMasterHairCategory(
     currentMaster,
@@ -114,20 +120,6 @@ export default function RegForm() {
         ? HAIR_LENGTH_LIST
         : MAILE_HAIRCAT_LIST
       : [];
-
-  const durationCounterText = `${
-    regFormValues.duration / 2
-  } 
-            ${plural(
-              Math.floor(
-                regFormValues.duration / 2
-              ),
-              {
-                one: 'час',
-                few: 'часа',
-                many: 'часов',
-              }
-            )}`;
 
   const dispatch = useAppDispatch();
 
@@ -152,7 +144,7 @@ export default function RegForm() {
     setIsIndexSelectVisible(false);
   }
 
-  function handleServiceChange(
+  function handleServicesChange(
     selectedServiceList: string[]
   ) {
     if (isHairCategory) {
@@ -168,31 +160,36 @@ export default function RegForm() {
   function handleFormSubmit(values: {
     userId: string;
     serviceIdList: string[];
+    duration: number;
+    income: number;
     index?: number;
     gender?: 'male' | 'female';
   }) {
     const {
       userId,
       serviceIdList,
+      duration,
+      income,
       index,
       gender,
     } = values;
-    const regBody = {
-      ...regFormValues,
+    const body = {
+      userId,
+      serviceIdList,
       masterId: currentMaster?.id,
       date: convertDateStrToDate(date),
-      serviceIdList,
-      userId,
+      time: regFormTime,
+      duration,
+      income,
+      priceCorrection: income / caculatedIncome,
       serviceIndex: index || 0,
       gender:
         gender === undefined ? null : gender,
     } as Registration;
 
-    dispatch(setRegFormValues(regBody));
-
     if (
-      regFormValues.time &&
-      regFormValues.date &&
+      regFormTime &&
+      date &&
       !isRegLoading &&
       !isIncomeLoading
     ) {
@@ -201,14 +198,12 @@ export default function RegForm() {
         serviceList,
         convertDateStrToDate(date),
         index || 0,
+        income / caculatedIncome,
         'plus',
         updateIncome
       );
-      addReg(regBody);
-    } else if (
-      !regFormValues.time ||
-      !regFormValues.date
-    ) {
+      addReg(body);
+    } else if (!regFormTime || !date) {
       setDateTimeError(
         '← выберите дату и время в планере'
       );
@@ -217,14 +212,7 @@ export default function RegForm() {
 
   function resetForm() {
     form.resetFields();
-    dispatch(
-      setRegFormValues({
-        ...INITIAL_REG_FORM_VALUES,
-        masterId: currentMaster?.id,
-        date: convertDateStrToDate(date),
-      })
-    );
-
+    dispatch(setRegFormTime(''));
     dispatch(setIsRegFormActive(false));
     setIsFormOpened(false);
     setIsIndexSelectVisible(false);
@@ -246,34 +234,28 @@ export default function RegForm() {
           serviceList,
           index
         );
-      dispatch(
-        setRegFormValues({
-          ...regFormValues,
-          duration,
-          income,
-        })
-      );
+      form.setFieldsValue({
+        duration: duration,
+        income,
+      });
+      setCaculatedIncome(income);
     } else {
-      dispatch(
-        setRegFormValues({
-          ...regFormValues,
-          duration: 0,
-          income: 0,
-        })
-      );
+      form.setFieldsValue({
+        duration: 0,
+        income: 0,
+      });
+      setCaculatedIncome(0);
     }
+    form.validateFields(['duration', 'income']);
   }, [serviceIdListFormItemValue, index]);
 
   // изменение и валидация полей даты и времени
   useEffect(() => {
-    if (regFormValues.time) {
+    if (regFormTime) {
       setDateTimeError('');
-      form.setFieldValue(
-        'time',
-        regFormValues.time
-      );
+      form.setFieldValue('time', regFormTime);
     }
-  }, [regFormValues]);
+  }, [regFormTime]);
 
   useEffect(() => {
     form.setFieldValue(
@@ -291,13 +273,7 @@ export default function RegForm() {
           currentMaster
         )
       ) {
-        dispatch(
-          setRegFormValues({
-            ...regFormValues,
-            masterId: currentMaster?.id,
-            time: undefined,
-          })
-        );
+        dispatch(setRegFormTime(''));
       } else {
         setIsIndexSelectVisible(false);
         resetForm();
@@ -319,7 +295,7 @@ export default function RegForm() {
       <Badge
         count={
           isRegFormActive
-            ? regFormValues.duration / 2 + 'ч.'
+            ? durationFormItemValue + 'ч.'
             : 0
         }
         showZero={false}
@@ -334,16 +310,7 @@ export default function RegForm() {
       </Badge>
 
       <Drawer
-        title={
-          <div className='reg-form__header'>
-            <h3 className='reg-form__title'>
-              новая запись
-            </h3>
-            <p className='reg-form__duration'>
-              {durationCounterText}
-            </p>
-          </div>
-        }
+        title='НОВАЯ ЗАПИСЬ'
         open={isFormOpened}
         onClose={closeForm}>
         <Form
@@ -351,7 +318,7 @@ export default function RegForm() {
           name='reg'
           onFinish={handleFormSubmit}
           onFinishFailed={() => {
-            if (!regFormValues.time) {
+            if (!regFormTime) {
               setDateTimeError(
                 '← выберите дату и время в планере'
               );
@@ -361,6 +328,8 @@ export default function RegForm() {
           requiredMark={false}
           initialValues={{
             date: dayjs(date, DATE_FORMAT),
+            duration: 0,
+            income: 0,
           }}>
           {isHairCategory && (
             <Form.Item
@@ -404,7 +373,7 @@ export default function RegForm() {
                 filteredServicesByMaster,
                 genderFormItemValue
               )}
-              onChange={handleServiceChange}
+              onChange={handleServicesChange}
               disabled={
                 isHairCategory &&
                 !!!genderFormItemValue
@@ -440,6 +409,39 @@ export default function RegForm() {
               />
             </Form.Item>
           )}
+
+          <Form.Item
+            name='duration'
+            label='продолжительность'
+            rules={[
+              {
+                required: true,
+                message: 'заполните поле',
+              },
+            ]}>
+            <Input
+              addonAfter={plural(
+                Math.floor(durationFormItemValue),
+                {
+                  one: 'час',
+                  few: 'часа',
+                  many: 'часов',
+                }
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name='income'
+            label='стоимость'
+            rules={[
+              {
+                required: true,
+                message: 'заполните поле',
+              },
+            ]}>
+            <Input addonAfter='₽' />
+          </Form.Item>
 
           <Form.Item
             name='userId'

@@ -6,11 +6,15 @@ import {
 import {
   useGetActualRegistrationListQuery,
   useGetMasterListQuery,
+  useGetNoteListQuery,
 } from '../../reducers/apiSlice';
 import MastersSelect from '../../components/MasterSelect/MasterSelect';
 import { useEffect } from 'react';
 
-import { filterRegListByMasterId } from '../../reducers/regSlice';
+import {
+  filterRegListByMasterId,
+  setIsRegFormActive,
+} from '../../reducers/regSlice';
 import {
   setCurrentMaster,
   setPrevMaster,
@@ -28,15 +32,22 @@ import { Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../db/firebaseConfig';
+import NoteForm from '../../components/NoteForm/NoteForm';
+import { setIsNoteFormActive } from '../../reducers/notesSlice';
 
 export default function Planner() {
   const { data: regList } =
     useGetActualRegistrationListQuery();
+  const { data: noteList } =
+    useGetNoteListQuery(1);
   const { data: masterList } =
     useGetMasterListQuery();
 
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
+  );
+  const { currentTodoListName } = useAppSelector(
+    (state) => state.plannerState
   );
   const { isRegFormActive } = useAppSelector(
     (state) => state.regState
@@ -53,6 +64,14 @@ export default function Planner() {
     dispatch(setPrevMaster(currentMaster));
     dispatch(setCurrentMaster(master));
   }
+
+  useEffect(() => {
+    if (currentTodoListName === 'notes') {
+      dispatch(setIsRegFormActive(false));
+    } else {
+      dispatch(setIsNoteFormActive(false));
+    }
+  }, [currentTodoListName]);
 
   useEffect(() => {
     if (currentMaster && regList) {
@@ -90,13 +109,21 @@ export default function Planner() {
         </Button>
       </div>
 
-      <RegForm />
       <PlannerCalendar />
       <Todos />
-      <RegModal
-        reg={regCardInfo}
-        user={regCardUser}
-      />
+
+      {currentTodoListName === 'reg' && (
+        <>
+          <RegForm />
+          <RegModal
+            reg={regCardInfo}
+            user={regCardUser}
+          />
+        </>
+      )}
+      {currentTodoListName === 'notes' && (
+        <NoteForm />
+      )}
     </div>
   );
 }

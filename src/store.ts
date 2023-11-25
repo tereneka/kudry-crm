@@ -7,6 +7,7 @@ import appReducer from './reducers/appSlice';
 import plannerReducer from './reducers/plannerSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
+import notesReducer from './reducers/notesSlice';
 import regCardReducer from './reducers/regCardSlice';
 import mastersReducer from './reducers/mastersSlice';
 import { apiSlice } from './reducers/apiSlice';
@@ -23,6 +24,7 @@ export const store = configureStore({
     plannerState: plannerReducer,
     calendarState: calendarReducer,
     regState: regReducer,
+    notesState: notesReducer,
     regCardState: regCardReducer,
     mastersState: mastersReducer,
   },

@@ -138,6 +138,7 @@ function changeIncome(
   serviceList: Service[] | undefined,
   date: Date,
   index: number,
+  priceCorrection: number,
   operation: 'plus' | 'minus',
   updateIncome: (
     arg: Omit<Income, 'id'>
@@ -167,7 +168,8 @@ function changeIncome(
         serviceId
       );
       const currentServicePrice = service
-        ? +service.price.split('/')[index || 0]
+        ? +service.price.split('/')[index || 0] *
+          priceCorrection
         : 0;
       const sum = service?.priceDivider
         ? currentServicePrice /
@@ -192,31 +194,6 @@ function changeIncome(
   });
 }
 
-function getServiceIdListsForUpdating(
-  oldServiceIdList: string[] | undefined,
-  newServiceIdList: string[]
-) {
-  const addedServiceIdList: string[] = [];
-  const deletedServiceIdList: string[] = [];
-
-  oldServiceIdList?.forEach((serviceId) => {
-    if (!newServiceIdList.includes(serviceId)) {
-      deletedServiceIdList.push(serviceId);
-    }
-  });
-
-  newServiceIdList.forEach((serviceId) => {
-    if (!oldServiceIdList?.includes(serviceId)) {
-      addedServiceIdList.push(serviceId);
-    }
-  });
-
-  return {
-    addedServiceIdList,
-    deletedServiceIdList,
-  };
-}
-
 export {
   calculateRegDurationAndIncome,
   calculateRegTimeList,
@@ -226,5 +203,4 @@ export {
   isIndexSelect,
   isMastersCategoriesSame,
   changeIncome,
-  getServiceIdListsForUpdating,
 };

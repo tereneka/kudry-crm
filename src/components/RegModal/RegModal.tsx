@@ -1,5 +1,5 @@
 import './RegModal.css';
-import { Form, Modal } from 'antd';
+import { Form, Input, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import {
   useAppDispatch,
@@ -22,10 +22,9 @@ import {
   changeIncome,
   filterServicesByGender,
   filterServicesByMaster,
-  getServiceIdListsForUpdating,
 } from '../../utils/reg';
 import { TIME_LIST } from '../../constants';
-import { numberFormat } from '../../utils/format';
+import { plural } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { convertDateStrToDate } from '../../utils/date';
 import { setIsError } from '../../reducers/appSlice';
@@ -67,21 +66,23 @@ export default function RegModal({
 
   const [form] = Form.useForm();
 
+  const durationFormItemValue = useWatch(
+    'duration',
+    form
+  );
+
   const dispatch = useAppDispatch();
 
-  const [regFieldsValues, setRegFieldsValues] =
-    useState({
-      duration: 0,
-      income: 0,
-    });
+  const [caculatedIncome, setCaculatedIncome] =
+    useState(0);
 
   const endTime: string | undefined =
     TIME_LIST[
       TIME_LIST.indexOf(reg?.time || '') +
-        regFieldsValues.duration
+        durationFormItemValue * 2
     ];
 
-  function handleServiceChange(
+  function handleServicesChange(
     selectedServiceIdList: string[]
   ) {
     const { duration, income } =
@@ -90,7 +91,19 @@ export default function RegModal({
         serviceList,
         reg?.serviceIndex || 0
       );
-    setRegFieldsValues({ duration, income });
+    if (selectedServiceIdList.length > 0) {
+      form.setFieldsValue({
+        duration: duration,
+        income,
+      });
+      setCaculatedIncome(income);
+    } else {
+      form.setFieldsValue({
+        duration: 0,
+        income: 0,
+      });
+      setCaculatedIncome(0);
+    }
   }
 
   function handleChangesSubmit() {
@@ -100,20 +113,16 @@ export default function RegModal({
         (formValues: {
           userId: string;
           serviceIdList: string[];
+          duration: number;
+          income: number;
         }) => {
           const {
             userId,
             serviceIdList: newServiceIdList,
+            duration,
+            income,
           } = formValues;
-          const { duration, income } =
-            regFieldsValues;
-          const {
-            addedServiceIdList,
-            deletedServiceIdList,
-          } = getServiceIdListsForUpdating(
-            reg?.serviceIdList,
-            newServiceIdList
-          );
+
           updateReg({
             id: reg?.id || '',
             body: {
@@ -121,23 +130,27 @@ export default function RegModal({
               serviceIdList: newServiceIdList,
               duration,
               income,
+              priceCorrection:
+                income / caculatedIncome,
             },
           })
             .then(() => {
               changeIncome(
-                addedServiceIdList,
+                newServiceIdList,
                 serviceList,
                 convertDateStrToDate(date),
                 reg?.serviceIndex || 0,
+                income / caculatedIncome,
                 'plus',
                 updateIncome
               );
 
               changeIncome(
-                deletedServiceIdList,
+                reg?.serviceIdList || [],
                 serviceList,
                 convertDateStrToDate(date),
                 reg?.serviceIndex || 0,
+                reg?.priceCorrection || 1,
                 'minus',
                 updateIncome
               );
@@ -159,10 +172,6 @@ export default function RegModal({
   }
 
   useEffect(() => {
-    setRegFieldsValues({
-      duration: reg?.duration || 0,
-      income: reg?.income || 0,
-    });
     form.setFieldsValue({
       userId: user?.id || '',
       serviceIdList: reg?.serviceIdList || [],
@@ -180,6 +189,7 @@ export default function RegModal({
       open={isRegModalOpened}
       okText='изменить'
       cancelText='отменить'
+      width={600}
       cancelButtonProps={{
         style: { display: 'none' },
       }}
@@ -192,6 +202,10 @@ export default function RegModal({
       <Form
         className='reg-modal__form'
         form={form}
+        initialValues={{
+          duration: reg?.duration,
+          income: reg?.income,
+        }}
         name=''
         requiredMark={false}>
         <div className='reg-modal__date-time-container'>
@@ -205,7 +219,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__form-item'
+            className='reg-modal__form-item  reg-modal__form-item_type_wide'
             name='userId'
             rules={[
               {
@@ -227,7 +241,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__form-item'
+            className='reg-modal__form-item reg-modal__form-item_type_wide'
             name='serviceIdList'
             rules={[
               {
@@ -245,14 +259,48 @@ export default function RegModal({
               )}
               value={reg?.serviceIdList}
               suffixIcon
-              onChange={handleServiceChange}
+              onChange={handleServicesChange}
             />
           </Form.Item>
 
-          <span className='reg-modal__income'>
-            {numberFormat(regFieldsValues.income)}{' '}
-            &#8381;
-          </span>
+          <div className='reg-modal__duration-income-container'>
+            <Form.Item
+              className='reg-modal__form-item reg-modal__form-item_type_slim'
+              name='duration'
+              label=''
+              rules={[
+                {
+                  required: true,
+                  message: 'заполните поле',
+                },
+              ]}>
+              <Input
+                addonAfter={plural(
+                  Math.floor(
+                    durationFormItemValue
+                  ),
+                  {
+                    one: 'час',
+                    few: 'часа',
+                    many: 'часов',
+                  }
+                )}
+              />
+            </Form.Item>
+
+            <Form.Item
+              className='reg-modal__form-item reg-modal__form-item_type_slim'
+              name='income'
+              label=''
+              rules={[
+                {
+                  required: true,
+                  message: 'заполните поле',
+                },
+              ]}>
+              <Input addonAfter='₽' />
+            </Form.Item>
+          </div>
         </div>
       </Form>
     </Modal>

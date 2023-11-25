@@ -52,6 +52,7 @@ interface Registration {
   time: string;
   duration: number;
   income: number;
+  priceCorrection: number;
   serviceIndex: number;
   gender: 'male' | 'female' | null;
 }
@@ -82,6 +83,19 @@ interface RegUser {
   phone: string;
 }
 
+interface Note {
+  text: string;
+  userId: string | null;
+  masterId: string;
+  date: Date;
+  time: string;
+}
+
+interface DbNote extends Omit<Note, 'date'> {
+  id: string;
+  date: Timestamp;
+}
+
 export type {
   Master,
   Category,
@@ -92,4 +106,6 @@ export type {
   DbRegistration,
   Income,
   RegUser,
+  Note,
+  DbNote,
 };

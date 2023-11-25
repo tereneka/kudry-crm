@@ -9,9 +9,16 @@
 }
 
 .reg-modal__form-item {
+  margin: 0;
+}
+
+.reg-modal__form-item_type_wide {
   width: 320px;
   max-width: 100%;
-  margin: 0;
+}
+
+.reg-modal__form-item_type_slim {
+  width: 150px;
 }
 
 .reg-modal__footer {
@@ -52,6 +59,11 @@
   justify-content: space-between;
   padding: 0 16px;
   font-size: 12px;
+}
+
+.reg-modal__duration-income-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .reg-modal__income {

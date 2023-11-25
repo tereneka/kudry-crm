@@ -29,9 +29,11 @@ import {
 } from '../db/firebaseConfig';
 import {
   Category,
+  DbNote,
   DbRegistration,
   Income,
   Master,
+  Note,
   RegUser,
   Registration,
   Service,
@@ -46,7 +48,6 @@ import {
   User,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-// import { setFormValues } from '../registration/RegistrationSlice';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
@@ -59,6 +60,7 @@ export const apiSlice = createApi({
     'Photo',
     'Service',
     'Registration',
+    'Note',
     'Income',
     'Account',
   ],
@@ -139,83 +141,6 @@ export const apiSlice = createApi({
         }
       },
       providesTags: ['Category'],
-    }),
-
-    getRegCategoryList: builder.query<
-      Category[],
-      void
-    >({
-      async queryFn() {
-        try {
-          const categoresQuery = query(
-            collection(db, 'categores'),
-            where('regAvailable', '==', true)
-          );
-          const querySnaphot = await getDocs(
-            categoresQuery
-          );
-          let categores: any[] = [];
-          querySnaphot?.forEach((doc) => {
-            categores.push({
-              id: doc.id,
-              ...doc.data(),
-            });
-          });
-          return {
-            data: categores.sort(
-              (a, b) => a.index - b.index
-            ),
-          };
-        } catch (error) {
-          return { error };
-        }
-      },
-      providesTags: ['Category'],
-    }),
-
-    getSubCategoryList: builder.query<
-      SubCategory[],
-      string | void
-    >({
-      async queryFn(categoryId) {
-        try {
-          let subCategoresQuery;
-          if (categoryId) {
-            subCategoresQuery = query(
-              collection(db, 'subCategores'),
-              where(
-                'categoryId',
-                '==',
-                categoryId
-              )
-            );
-          } else {
-            subCategoresQuery = query(
-              collection(db, 'subCategores'),
-              orderBy('index')
-            );
-          }
-
-          const querySnaphot = await getDocs(
-            subCategoresQuery
-          );
-          let subCategores: any[] = [];
-          querySnaphot?.forEach((doc) => {
-            subCategores.push({
-              id: doc.id,
-              ...doc.data(),
-            });
-          });
-          return {
-            data: subCategores.sort(
-              (a, b) => a.index - b.index
-            ),
-          };
-        } catch (error) {
-          return { error };
-        }
-      },
-      providesTags: ['SubCategory'],
     }),
 
     getServiceList: builder.query<
@@ -418,6 +343,55 @@ export const apiSlice = createApi({
       invalidatesTags: ['Registration'],
     }),
 
+    getNoteList: builder.query<
+      DbNote[],
+      number | void
+    >({
+      async queryFn(num) {
+        try {
+          const notesQuery =
+            typeof num === 'number'
+              ? query(
+                  collection(db, 'notes'),
+                  where(
+                    'date',
+                    '>=',
+                    getEarlierDate(num)
+                  )
+                )
+              : query(collection(db, 'notes'));
+          const querySnaphot = await getDocs(
+            notesQuery
+          );
+          let notes: any[] = [];
+          querySnaphot?.forEach((doc) => {
+            notes.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          return {
+            data: notes,
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ['Note'],
+    }),
+
+    addNote: builder.mutation<string, Note>({
+      queryFn(body) {
+        const noteRef = collection(db, 'notes');
+        return addDoc(noteRef, body)
+          .then((data) => {
+            return data.id;
+          })
+          .catch((err) => err);
+      },
+      invalidatesTags: ['Note'],
+    }),
+
     addUser: builder.mutation<
       string,
       Omit<RegUser, 'id'>
@@ -514,8 +488,6 @@ export const {
   useGetMasterListQuery,
   useGetUserListQuery,
   useGetCategoryListQuery,
-  useGetRegCategoryListQuery,
-  useGetSubCategoryListQuery,
   useGetServiceListQuery,
   useGetPhotoQuery,
   useGetPhotoListQuery,
@@ -523,6 +495,8 @@ export const {
   useAddRegistrationMutation,
   useUpdateRegistrationMutation,
   useDeleteRegistrationMutation,
+  useGetNoteListQuery,
+  useAddNoteMutation,
   useAddUserMutation,
   useUpdateIncomeMutation,
   useSigninMutation,

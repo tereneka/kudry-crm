@@ -82,7 +82,7 @@ export default function RegCard({
   }`;
 
   const cardStyle = {
-    height: reg.duration * 58 - 4,
+    height: reg.duration * 2 * 58 - 4,
     top: TIME_LIST.indexOf(reg.time) * 58,
   };
   const regServiceNameList =
@@ -217,6 +217,7 @@ export default function RegCard({
         serviceList,
         reg.date.toDate(),
         reg.serviceIndex,
+        reg.priceCorrection,
         'minus',
         updateIncome
       );
@@ -278,7 +279,8 @@ export default function RegCard({
           </span>
         </div>
       </div>
-      {(reg.duration > 1 || type === 'copy') && (
+      {(reg.duration * 2 > 1 ||
+        type === 'copy') && (
         <>
           <div className='reg-card__box reg-card__number-list'>
             <span className='reg-card__number'>
@@ -295,8 +297,8 @@ export default function RegCard({
             </span>
 
             <span className='reg-card__number'>
-              {`${reg.duration / 2} ${plural(
-                Math.floor(reg.duration / 2),
+              {`${reg.duration} ${plural(
+                Math.floor(reg.duration),
                 {
                   one: 'час',
                   few: 'часа',
@@ -308,7 +310,7 @@ export default function RegCard({
               {numberFormat(reg.income)} &#8381;
             </span>
           </div>
-          {reg.duration > 2 &&
+          {reg.duration * 2 > 2 &&
           type === 'major' ? (
             <ul className='reg-card__box reg-card__service-list'>
               {regServiceNameList.map(

@@ -1,7 +1,5 @@
 .reg-todos {
   position: relative;
-  /* padding: 20px 0; */
-  max-width: 500px;
 }
 
 .reg-todos__time-table-row {

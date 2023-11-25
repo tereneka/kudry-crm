@@ -3,30 +3,17 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 import { DbRegistration } from '../types';
-import { INITIAL_REG_FORM_VALUES } from '../constants';
-
-interface RegFormValues {
-  userId: string | undefined;
-  serviceIdList: string[] | undefined;
-  masterId: string | undefined;
-  date: Date;
-  time: string | undefined;
-  duration: number;
-  income: number;
-  serviceIndex: number;
-  gender: 'male' | 'female' | null;
-}
 
 interface RegState {
   masterRegList: DbRegistration[] | undefined;
   isRegFormActive: boolean;
-  regFormValues: RegFormValues;
+  regFormTime: string;
   isRegModalOpened: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
   isRegFormActive: false,
-  regFormValues: INITIAL_REG_FORM_VALUES,
+  regFormTime: '',
   isRegModalOpened: false,
 };
 
@@ -56,11 +43,11 @@ const regSlice = createSlice({
       state.isRegFormActive = action.payload;
     },
 
-    setRegFormValues: (
+    setRegFormTime: (
       state,
-      action: PayloadAction<RegFormValues>
+      action: PayloadAction<string>
     ) => {
-      state.regFormValues = action.payload;
+      state.regFormTime = action.payload;
     },
 
     setIsRegModalOpened: (
@@ -75,7 +62,7 @@ const regSlice = createSlice({
 export const {
   filterRegListByMasterId,
   setIsRegFormActive,
-  setRegFormValues,
+  setRegFormTime,
   setIsRegModalOpened,
 } = regSlice.actions;
 

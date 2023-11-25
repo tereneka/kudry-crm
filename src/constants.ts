@@ -24,16 +24,12 @@ const MAILE_HAIRCAT_LIST = [
   'модельная',
 ];
 
-const INITIAL_REG_FORM_VALUES = {
-  userId: undefined,
-  serviceIdList: undefined,
-  masterId: undefined,
+const INITIAL_NOTE_FORM_VALUES = {
+  text: '',
+  userId: null,
+  masterId: '',
   date: new Date(),
-  time: undefined,
-  duration: 0,
-  income: 0,
-  serviceIndex: 0,
-  gender: null,
+  time: '',
 };
 
 export {
@@ -41,5 +37,5 @@ export {
   TIME_LIST,
   HAIR_LENGTH_LIST,
   MAILE_HAIRCAT_LIST,
-  INITIAL_REG_FORM_VALUES,
+  INITIAL_NOTE_FORM_VALUES,
 };

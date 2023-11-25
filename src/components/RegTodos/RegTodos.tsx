@@ -10,7 +10,6 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import { setRegFormValues } from '../../reducers/regSlice';
 import {
   convertDateStrToDate,
   convertDbDateToStr,
@@ -31,6 +30,7 @@ import {
   isMastersCategoriesSame,
   changeIncome,
 } from '../../utils/reg';
+import { setRegFormTime } from '../../reducers/regSlice';
 
 interface RegTodosProps {
   isTimeSelectAvailable: boolean;
@@ -57,8 +57,8 @@ export default function RegTodos({
   );
   const {
     masterRegList,
-    regFormValues,
     isRegFormActive,
+    regFormTime,
   } = useAppSelector((state) => state.regState);
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
@@ -106,20 +106,10 @@ export default function RegTodos({
         ? setSelectedTime('')
         : setSelectedTime(time);
       if (isRegFormActive) {
-        if (time === regFormValues.time) {
-          dispatch(
-            setRegFormValues({
-              ...regFormValues,
-              time: undefined,
-            })
-          );
+        if (time === regFormTime) {
+          dispatch(setRegFormTime(''));
         } else {
-          dispatch(
-            setRegFormValues({
-              ...regFormValues,
-              time,
-            })
-          );
+          dispatch(setRegFormTime(time));
         }
       } else if (regCardInfo) {
         updateReg({
@@ -173,6 +163,7 @@ export default function RegTodos({
         serviceList,
         regCardInfo.date.toDate(),
         regCardInfo.serviceIndex,
+        regCardInfo.priceCorrection,
         'minus',
         updateIncome
       ).then(() => {
@@ -181,6 +172,7 @@ export default function RegTodos({
           serviceList,
           convertDateStrToDate(date),
           regCardInfo.serviceIndex,
+          regCardInfo.priceCorrection,
           'plus',
           updateIncome
         ).then(() => {
