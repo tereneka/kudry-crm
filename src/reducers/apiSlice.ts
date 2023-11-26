@@ -401,6 +401,42 @@ export const apiSlice = createApi({
       invalidatesTags: ['Note'],
     }),
 
+    updateNote: builder.mutation<
+      any,
+      { id: string; body: Partial<Note> }
+    >({
+      async queryFn({ id, body }) {
+        const noteRef = doc(db, 'notes', id);
+
+        try {
+          const data = await updateDoc(
+            noteRef,
+            body
+          );
+
+          return { data };
+        } catch (error: any) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Note'],
+    }),
+
+    deleteNote: builder.mutation<void, string>({
+      async queryFn(id) {
+        const noteRef = doc(db, 'notes', id);
+
+        try {
+          const data = await deleteDoc(noteRef);
+
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Note'],
+    }),
+
     addUser: builder.mutation<
       string,
       Omit<RegUser, 'id'>
@@ -509,6 +545,8 @@ export const {
   useDeleteRegistrationMutation,
   useGetNoteListQuery,
   useAddNoteMutation,
+  useUpdateNoteMutation,
+  useDeleteNoteMutation,
   useAddUserMutation,
   useUpdateIncomeMutation,
   useSigninMutation,

@@ -33,7 +33,10 @@ import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../db/firebaseConfig';
 import NoteForm from '../../components/NoteForm/NoteForm';
-import { setIsNoteFormActive } from '../../reducers/notesSlice';
+import {
+  filterNoteListByMasterId,
+  setIsNoteFormActive,
+} from '../../reducers/notesSlice';
 
 export default function Planner() {
   const { data: regList } =
@@ -52,6 +55,7 @@ export default function Planner() {
   const { isRegFormActive } = useAppSelector(
     (state) => state.regState
   );
+
   const { regCardInfo, regCardUser } =
     useAppSelector((state) => state.regCardState);
 
@@ -83,6 +87,17 @@ export default function Planner() {
       );
     }
   }, [regList, currentMaster]);
+
+  useEffect(() => {
+    if (currentMaster && noteList) {
+      dispatch(
+        filterNoteListByMasterId({
+          masterId: currentMaster.id,
+          noteList,
+        })
+      );
+    }
+  }, [noteList, currentMaster]);
 
   useEffect(() => {
     if (isRegFormActive) {
@@ -122,7 +137,10 @@ export default function Planner() {
         </>
       )}
       {currentTodoListName === 'notes' && (
-        <NoteForm />
+        <>
+          <NoteForm isOpenBtn={true} />
+          <NoteForm />
+        </>
       )}
     </div>
   );

@@ -2,20 +2,17 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import { DbNote, Note } from '../types';
-import { INITIAL_NOTE_FORM_VALUES } from '../constants';
+import { DbNote } from '../types';
 
 interface NotesState {
   masterNoteList: DbNote[] | undefined;
   isNoteFormActive: boolean;
-  noteFormValues: Note;
-  isNoteModalOpened: boolean;
+  openedNoteForm: '' | 'add' | 'edit';
 }
 const initialState: NotesState = {
   masterNoteList: undefined,
   isNoteFormActive: false,
-  noteFormValues: INITIAL_NOTE_FORM_VALUES,
-  isNoteModalOpened: false,
+  openedNoteForm: '',
 };
 
 const notesSlice = createSlice({
@@ -44,18 +41,11 @@ const notesSlice = createSlice({
       state.isNoteFormActive = action.payload;
     },
 
-    setNoteFormValues: (
+    setOpenedNoteForm: (
       state,
-      action: PayloadAction<Note>
+      action: PayloadAction<'' | 'add' | 'edit'>
     ) => {
-      state.noteFormValues = action.payload;
-    },
-
-    setIsNoteModalOpened: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isNoteModalOpened = action.payload;
+      state.openedNoteForm = action.payload;
     },
   },
 });
@@ -63,8 +53,7 @@ const notesSlice = createSlice({
 export const {
   filterNoteListByMasterId,
   setIsNoteFormActive,
-  setNoteFormValues,
-  setIsNoteModalOpened,
+  setOpenedNoteForm,
 } = notesSlice.actions;
 
 export default notesSlice.reducer;

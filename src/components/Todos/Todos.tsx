@@ -12,6 +12,7 @@ import personIconWhite from '../../images/person-lines-white.svg';
 import notesIconWhite from '../../images/notes-white.svg';
 import { setCurrentTodoListName } from '../../reducers/plannerSlice';
 import RegTodos from '../RegTodos/RegTodos';
+import NotesTodos from '../NotesTodos/NotesTodos';
 
 export default function Todos() {
   const { currentTodoListName } = useAppSelector(
@@ -101,6 +102,9 @@ export default function Todos() {
             setIsTimeSelectAvailable
           }
         />
+      )}
+      {currentTodoListName === 'notes' && (
+        <NotesTodos />
       )}
     </div>
   );

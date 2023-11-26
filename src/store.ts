@@ -9,6 +9,7 @@ import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
 import notesReducer from './reducers/notesSlice';
 import regCardReducer from './reducers/regCardSlice';
+import noteCardReducer from './reducers/noteCardSlice';
 import mastersReducer from './reducers/mastersSlice';
 import { apiSlice } from './reducers/apiSlice';
 import {
@@ -26,6 +27,7 @@ export const store = configureStore({
     regState: regReducer,
     notesState: notesReducer,
     regCardState: regCardReducer,
+    noteCardState: noteCardReducer,
     mastersState: mastersReducer,
   },
   middleware: (getDefaultMiddleware) =>

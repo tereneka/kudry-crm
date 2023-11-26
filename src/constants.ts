@@ -1,5 +1,7 @@
 const DATE_FORMAT = 'DD.MM.YYYY';
 
+const TIME_FORMAT = 'HH:mm';
+
 const TIME_LIST = ['09:00'];
 for (let i = 0; i < 30; i++) {
   const time =
@@ -24,18 +26,10 @@ const MAILE_HAIRCAT_LIST = [
   'модельная',
 ];
 
-const INITIAL_NOTE_FORM_VALUES = {
-  text: '',
-  userId: null,
-  masterId: '',
-  date: new Date(),
-  time: '',
-};
-
 export {
   DATE_FORMAT,
+  TIME_FORMAT,
   TIME_LIST,
   HAIR_LENGTH_LIST,
   MAILE_HAIRCAT_LIST,
-  INITIAL_NOTE_FORM_VALUES,
 };

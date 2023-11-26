@@ -19,6 +19,9 @@ export default function PlannerCalendar() {
   const { masterRegList } = useAppSelector(
     (state) => state.regState
   );
+  const { masterNoteList } = useAppSelector(
+    (state) => state.notesState
+  );
 
   const dispatch = useAppDispatch();
 
@@ -28,9 +31,23 @@ export default function PlannerCalendar() {
         reg.date.toDate().toLocaleDateString() ===
         date.format(DATE_FORMAT)
     );
+    const isNotes = masterNoteList?.some(
+      (note) =>
+        note.date
+          .toDate()
+          .toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    );
     const regCount = masterRegList?.filter(
       (reg) =>
         reg.date.toDate().toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    ).length;
+    const notesCount = masterNoteList?.filter(
+      (note) =>
+        note.date
+          .toDate()
+          .toLocaleDateString() ===
         date.format(DATE_FORMAT)
     ).length;
 
@@ -38,13 +55,18 @@ export default function PlannerCalendar() {
       <div
         className={classByCondition(
           'planner__calendar-cell',
-          !!isRegs,
+          !!(isRegs || isNotes),
           'type_event'
         )}
         data-date={date.format(DATE_FORMAT)}>
         {isRegs && (
-          <div className='planner__badge'>
+          <div className='planner__badge planner__badge_type_reg'>
             {regCount}
+          </div>
+        )}
+        {isNotes && (
+          <div className='planner__badge planner__badge_type_note'>
+            {notesCount}
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './NoteForm.css';
 import {
   Button,
@@ -6,6 +6,7 @@ import {
   Drawer,
   Form,
   Select,
+  TimePicker,
 } from 'antd';
 import UserSelect from '../UserSelect/UserSelect';
 import {
@@ -14,43 +15,75 @@ import {
 } from '../../store';
 import {
   DATE_FORMAT,
-  INITIAL_NOTE_FORM_VALUES,
+  TIME_FORMAT,
   TIME_LIST,
 } from '../../constants';
 import { Note } from '../../types';
-import { convertDateStrToDate } from '../../utils/date';
+import {
+  convertDateStrToDate,
+  convertDbDateToStr,
+} from '../../utils/date';
 import dayjs from 'dayjs';
 import {
   setIsNoteFormActive,
-  setNoteFormValues,
+  setOpenedNoteForm,
 } from '../../reducers/notesSlice';
 import TextArea from 'antd/es/input/TextArea';
-import { useAddNoteMutation } from '../../reducers/apiSlice';
+import {
+  useAddNoteMutation,
+  useUpdateNoteMutation,
+} from '../../reducers/apiSlice';
 import { setIsError } from '../../reducers/appSlice';
+import {
+  setNoteCardInfo,
+  setNoteCardUser,
+} from '../../reducers/noteCardSlice';
+import type { Dayjs } from 'dayjs';
 
-export default function NoteForm() {
+interface NoteFormProps {
+  isOpenBtn?: boolean;
+}
+
+export default function NoteForm({
+  isOpenBtn = false,
+}: NoteFormProps) {
   const [form] = Form.useForm();
 
-  const { isNoteFormActive, noteFormValues } =
+  const { isNoteFormActive, openedNoteForm } =
     useAppSelector((state) => state.notesState);
-  const { currentMaster, prevMaster } =
-    useAppSelector((state) => state.mastersState);
+  const { noteCardInfo, noteCardUser } =
+    useAppSelector(
+      (state) => state.noteCardState
+    );
+  const { currentMaster } = useAppSelector(
+    (state) => state.mastersState
+  );
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
-
-  const [isFormOpened, setIsFormOpened] =
-    useState(false);
 
   const dispatch = useAppDispatch();
 
   const [
     addNote,
-    { isError, isLoading, isSuccess },
+    {
+      isError: isAddNoteError,
+      isLoading: isAddNoteLoading,
+      isSuccess: isAddNoteSuccess,
+    },
   ] = useAddNoteMutation();
 
+  const [
+    updateNote,
+    {
+      isError: isUpdateNoteError,
+      isLoading: isUpdateNoteLoading,
+      isSuccess: isUpdateNoteSuccess,
+    },
+  ] = useUpdateNoteMutation();
+
   function openForm() {
-    setIsFormOpened(true);
+    dispatch(setOpenedNoteForm('add'));
     dispatch(setIsNoteFormActive(true));
   }
 
@@ -59,7 +92,9 @@ export default function NoteForm() {
       Object.values(form.getFieldsValue()).filter(
         (field) => field
       ).length < 2;
-    setIsFormOpened(false);
+    dispatch(setOpenedNoteForm(''));
+    dispatch(setNoteCardInfo(null));
+    dispatch(setNoteCardUser(null));
     if (isFormEmpty) {
       dispatch(setIsNoteFormActive(false));
     }
@@ -68,35 +103,56 @@ export default function NoteForm() {
   function handleFormSubmit(values: {
     text: string;
     userId: string;
-    time: string;
+    date: Dayjs;
+    time: Dayjs;
   }) {
-    const { userId, text, time } = values;
+    const { userId, text, date, time } = values;
 
     const body = {
-      ...noteFormValues,
       text,
       userId: userId || null,
       masterId: currentMaster?.id,
-      date: convertDateStrToDate(date),
-      time,
+      date: convertDateStrToDate(
+        date.format(DATE_FORMAT)
+      ),
+      time: time.format(TIME_FORMAT),
     } as Note;
-    addNote(body);
+
+    if (openedNoteForm === 'add') {
+      addNote(body);
+    } else if (openedNoteForm === 'edit') {
+      updateNote({
+        id: noteCardInfo?.id || '',
+        body,
+      });
+    }
   }
 
   function resetForm() {
     form.resetFields();
-
-    dispatch(
-      setNoteFormValues({
-        ...INITIAL_NOTE_FORM_VALUES,
-        masterId: currentMaster?.id || '',
-        date: convertDateStrToDate(date),
-      })
-    );
-
     dispatch(setIsNoteFormActive(false));
-    setIsFormOpened(false);
+    dispatch(setOpenedNoteForm(''));
   }
+
+  // вносим изначальные данные при обновлении
+  useEffect(() => {
+    if (noteCardInfo) {
+      form.setFieldsValue({
+        text: noteCardInfo.text,
+        userId: noteCardUser?.id,
+        date: dayjs(
+          convertDbDateToStr(noteCardInfo?.date),
+          DATE_FORMAT
+        ),
+        time: dayjs(
+          noteCardInfo?.time,
+          TIME_FORMAT
+        ),
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [noteCardInfo, noteCardUser]);
 
   // изменение даты
   useEffect(() => {
@@ -108,28 +164,39 @@ export default function NoteForm() {
 
   // обработка результата отправки формы
   useEffect(() => {
-    dispatch(setIsError(isError));
-    if (isSuccess) {
+    dispatch(setIsError(isAddNoteError));
+    if (isAddNoteSuccess) {
       resetForm();
     }
-  }, [isError, isSuccess]);
+  }, [isAddNoteError, isAddNoteSuccess]);
+
+  useEffect(() => {
+    dispatch(setIsError(isUpdateNoteError));
+    if (isUpdateNoteSuccess) {
+      resetForm();
+    }
+  }, [isUpdateNoteError, isUpdateNoteSuccess]);
 
   return (
     <div className='note-form'>
-      <Button
-        type='primary'
-        danger={!isNoteFormActive}
-        onClick={openForm}>
-        новая напоминалка
-      </Button>
+      {isOpenBtn && (
+        <Button
+          type='primary'
+          danger={!isNoteFormActive}
+          onClick={openForm}>
+          новая напоминалка
+        </Button>
+      )}
 
       <Drawer
         title={
           <h3 className='note-form__title'>
-            новая напоминалка
+            {openedNoteForm === 'add'
+              ? 'новая напоминалка'
+              : 'изменить напоминалку'}
           </h3>
         }
-        open={isFormOpened}
+        open={!!openedNoteForm}
         onClose={closeForm}>
         <Form
           form={form}
@@ -149,7 +216,7 @@ export default function NoteForm() {
                 message: 'напишите текст',
               },
             ]}>
-            <TextArea rows={4} />
+            <TextArea autoSize />
           </Form.Item>
 
           <Form.Item name='userId' label='клиент'>
@@ -166,10 +233,7 @@ export default function NoteForm() {
                   message: 'выберите дату',
                 },
               ]}>
-              <DatePicker
-                format={DATE_FORMAT}
-                disabled
-              />
+              <DatePicker format={DATE_FORMAT} />
             </Form.Item>
 
             <Form.Item
@@ -182,14 +246,7 @@ export default function NoteForm() {
                   message: 'выберите время',
                 },
               ]}>
-              <Select
-                options={TIME_LIST.map((item) => {
-                  return {
-                    value: item,
-                    label: item,
-                  };
-                })}
-              />
+              <TimePicker format={TIME_FORMAT} />
             </Form.Item>
           </div>
 
@@ -204,7 +261,10 @@ export default function NoteForm() {
               htmlType='submit'
               type='primary'
               className='note-form__btn'
-              loading={isLoading}>
+              loading={
+                isAddNoteLoading ||
+                isUpdateNoteLoading
+              }>
               сохранить
             </Button>
           </Form.Item>
