@@ -311,6 +311,7 @@ export default function RegForm() {
 
       <Drawer
         title='НОВАЯ ЗАПИСЬ'
+        width={400}
         open={isFormOpened}
         onClose={closeForm}>
         <Form
@@ -410,38 +411,42 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <Form.Item
-            name='duration'
-            label='продолжительность'
-            rules={[
-              {
-                required: true,
-                message: 'заполните поле',
-              },
-            ]}>
-            <Input
-              addonAfter={plural(
-                Math.floor(durationFormItemValue),
+          <div className='reg-form__flex-container'>
+            <Form.Item
+              name='duration'
+              label='длительность'
+              rules={[
                 {
-                  one: 'час',
-                  few: 'часа',
-                  many: 'часов',
-                }
-              )}
-            />
-          </Form.Item>
+                  required: true,
+                  message: 'заполните поле',
+                },
+              ]}>
+              <Input
+                suffix={plural(
+                  Math.floor(
+                    durationFormItemValue
+                  ),
+                  {
+                    one: 'час',
+                    few: 'часа',
+                    many: 'часов',
+                  }
+                )}
+              />
+            </Form.Item>
 
-          <Form.Item
-            name='income'
-            label='стоимость'
-            rules={[
-              {
-                required: true,
-                message: 'заполните поле',
-              },
-            ]}>
-            <Input addonAfter='₽' />
-          </Form.Item>
+            <Form.Item
+              name='income'
+              label='стоимость'
+              rules={[
+                {
+                  required: true,
+                  message: 'заполните поле',
+                },
+              ]}>
+              <Input suffix='₽' />
+            </Form.Item>
+          </div>
 
           <Form.Item
             name='userId'
@@ -455,7 +460,7 @@ export default function RegForm() {
             <UserSelect />
           </Form.Item>
 
-          <div className='reg-form__date-time-container'>
+          <div className='reg-form__flex-container'>
             <Form.Item name='date' label='дата'>
               <DatePicker
                 format={DATE_FORMAT}

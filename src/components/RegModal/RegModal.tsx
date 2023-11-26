@@ -122,6 +122,14 @@ export default function RegModal({
             duration,
             income,
           } = formValues;
+          const priceCorrection = caculatedIncome
+            ? income / caculatedIncome
+            : income /
+              calculateRegDurationAndIncome(
+                newServiceIdList,
+                serviceList,
+                reg?.serviceIndex || 0
+              ).income;
 
           updateReg({
             id: reg?.id || '',
@@ -130,8 +138,7 @@ export default function RegModal({
               serviceIdList: newServiceIdList,
               duration,
               income,
-              priceCorrection:
-                income / caculatedIncome,
+              priceCorrection,
             },
           })
             .then(() => {
@@ -140,7 +147,7 @@ export default function RegModal({
                 serviceList,
                 convertDateStrToDate(date),
                 reg?.serviceIndex || 0,
-                income / caculatedIncome,
+                priceCorrection,
                 'plus',
                 updateIncome
               );
@@ -189,7 +196,7 @@ export default function RegModal({
       open={isRegModalOpened}
       okText='изменить'
       cancelText='отменить'
-      width={600}
+      width={540}
       cancelButtonProps={{
         style: { display: 'none' },
       }}
@@ -275,7 +282,7 @@ export default function RegModal({
                 },
               ]}>
               <Input
-                addonAfter={plural(
+                suffix={plural(
                   Math.floor(
                     durationFormItemValue
                   ),
@@ -298,7 +305,7 @@ export default function RegModal({
                   message: 'заполните поле',
                 },
               ]}>
-              <Input addonAfter='₽' />
+              <Input suffix='₽' />
             </Form.Item>
           </div>
         </div>
