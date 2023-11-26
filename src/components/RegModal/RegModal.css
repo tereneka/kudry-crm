@@ -8,17 +8,14 @@
   margin: 20px auto;
 }
 
-.reg-modal__form-item {
+.reg-modal__select-form-item {
+  width: 320px;
+  max-width: 100%;
   margin: 0;
 }
 
-.reg-modal__form-item_type_wide {
-  width: 320px;
-  max-width: 100%;
-}
-
-.reg-modal__form-item_type_slim {
-  width: 120px;
+.reg-modal__number-form-item {
+  width: 140px;
 }
 
 .reg-modal__footer {
@@ -63,8 +60,8 @@
 
 .reg-modal__duration-income-container {
   display: flex;
-  gap: 8px;
   align-self: flex-end;
+  gap: 8px;
 }
 
 .reg-modal__income {
@@ -86,7 +83,7 @@
   margin-bottom: 0;
 }
 
-@media screen and (min-width: 550px) {
+@media screen and (min-width: 570px) {
   .reg-modal__form {
     width: auto;
   }
@@ -104,12 +101,16 @@
     flex-direction: column;
   }
 
+  .reg-modal__duration-income-container {
+    gap: 0;
+  }
+
   .reg-modal .ant-modal-content {
     padding: 20px 24px;
   }
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (max-width: 570px) {
   .reg-modal__user-social {
     margin-top: -10px !important;
     margin-bottom: -5px !important;

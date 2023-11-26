@@ -78,9 +78,26 @@ const disableIosTextFieldZoom = () => {
   }
 };
 
+function formatToDecimalNumber(text: string) {
+  let index = text.search(/[,\.]/);
+  if (index < 1) {
+    text = text.replace(/\D/g, '');
+  } else {
+    const str = text
+      .substring(0, index + 1)
+      .replace(',', '.');
+    const end = text
+      .substring(index)
+      .replace(/\D/g, '');
+    text = str + end;
+  }
+  return text;
+}
+
 export {
   plural,
   numberFormat,
   phoneFormat,
   disableIosTextFieldZoom,
+  formatToDecimalNumber,
 };

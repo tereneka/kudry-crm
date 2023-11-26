@@ -42,7 +42,10 @@ import {
 } from '../../utils/reg';
 import { Registration } from '../../types';
 import { convertDateStrToDate } from '../../utils/date';
-import { plural } from '../../utils/format';
+import {
+  formatToDecimalNumber,
+  plural,
+} from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
 import dayjs from 'dayjs';
@@ -155,6 +158,16 @@ export default function RegForm() {
         )
       );
     }
+  }
+
+  function handleNumberInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string
+  ) {
+    form.setFieldValue(
+      fieldName,
+      formatToDecimalNumber(e.target.value)
+    );
   }
 
   function handleFormSubmit(values: {
@@ -420,6 +433,17 @@ export default function RegForm() {
                   required: true,
                   message: 'заполните поле',
                 },
+                {
+                  validator: (_, value) =>
+                    value.toString().length < 1 ||
+                    value > 0
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error(
+                            'значение должно быть больше 0'
+                          )
+                        ),
+                },
               ]}>
               <Input
                 suffix={plural(
@@ -432,6 +456,12 @@ export default function RegForm() {
                     many: 'часов',
                   }
                 )}
+                onChange={(e) =>
+                  handleNumberInputChange(
+                    e,
+                    'duration'
+                  )
+                }
               />
             </Form.Item>
 
@@ -444,7 +474,15 @@ export default function RegForm() {
                   message: 'заполните поле',
                 },
               ]}>
-              <Input suffix='₽' />
+              <Input
+                suffix='₽'
+                onChange={(e) =>
+                  handleNumberInputChange(
+                    e,
+                    'income'
+                  )
+                }
+              />
             </Form.Item>
           </div>
 

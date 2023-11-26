@@ -1,3 +1,4 @@
+import './App.css';
 import { useEffect } from 'react';
 import { useGetMasterListQuery } from '../../reducers/apiSlice';
 import {
@@ -72,7 +73,9 @@ function App() {
   disableIosTextFieldZoom();
 
   return (
-    <div className=''>
+    <div
+      className='content
+    '>
       <RouterApp />
       {errorMessage}
     </div>

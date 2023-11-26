@@ -24,7 +24,10 @@ import {
   filterServicesByMaster,
 } from '../../utils/reg';
 import { TIME_LIST } from '../../constants';
-import { plural } from '../../utils/format';
+import {
+  formatToDecimalNumber,
+  plural,
+} from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { convertDateStrToDate } from '../../utils/date';
 import { setIsError } from '../../reducers/appSlice';
@@ -106,6 +109,16 @@ export default function RegModal({
     }
   }
 
+  function handleNumberInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string
+  ) {
+    form.setFieldValue(
+      fieldName,
+      formatToDecimalNumber(e.target.value)
+    );
+  }
+
   function handleChangesSubmit() {
     form
       .validateFields()
@@ -143,24 +156,24 @@ export default function RegModal({
           })
             .then(() => {
               changeIncome(
-                newServiceIdList,
-                serviceList,
-                convertDateStrToDate(date),
-                reg?.serviceIndex || 0,
-                priceCorrection,
-                'plus',
-                updateIncome
-              );
-
-              changeIncome(
                 reg?.serviceIdList || [],
                 serviceList,
                 convertDateStrToDate(date),
                 reg?.serviceIndex || 0,
-                reg?.priceCorrection || 1,
+                reg?.priceCorrection || 0,
                 'minus',
                 updateIncome
-              );
+              ).then(() => {
+                changeIncome(
+                  newServiceIdList,
+                  serviceList,
+                  convertDateStrToDate(date),
+                  reg?.serviceIndex || 0,
+                  priceCorrection,
+                  'plus',
+                  updateIncome
+                );
+              });
             })
             .then(() => {
               dispatch(
@@ -198,7 +211,7 @@ export default function RegModal({
       open={isRegModalOpened}
       okText='изменить'
       cancelText='отменить'
-      width={540}
+      width={600}
       cancelButtonProps={{
         style: { display: 'none' },
       }}
@@ -224,7 +237,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__form-item  reg-modal__form-item_type_wide'
+            className='reg-modal__select-form-item'
             name='userId'
             rules={[
               {
@@ -246,7 +259,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__form-item reg-modal__form-item_type_wide'
+            className='reg-modal__select-form-item'
             name='serviceIdList'
             rules={[
               {
@@ -270,13 +283,24 @@ export default function RegModal({
 
           <div className='reg-modal__duration-income-container'>
             <Form.Item
-              className='reg-modal__form-item reg-modal__form-item_type_slim'
+              className='reg-modal__number-form-item'
               name='duration'
               label=''
               rules={[
                 {
                   required: true,
                   message: 'заполните поле',
+                },
+                {
+                  validator: (_, value) =>
+                    value.toString().length < 1 ||
+                    value > 0
+                      ? Promise.resolve()
+                      : Promise.reject(
+                          new Error(
+                            'значение должно быть больше 0'
+                          )
+                        ),
                 },
               ]}>
               <Input
@@ -290,11 +314,17 @@ export default function RegModal({
                     many: 'часов',
                   }
                 )}
+                onChange={(e) =>
+                  handleNumberInputChange(
+                    e,
+                    'duration'
+                  )
+                }
               />
             </Form.Item>
 
             <Form.Item
-              className='reg-modal__form-item reg-modal__form-item_type_slim'
+              className='reg-modal__number-form-item'
               name='income'
               label=''
               rules={[
@@ -303,7 +333,15 @@ export default function RegModal({
                   message: 'заполните поле',
                 },
               ]}>
-              <Input suffix='₽' />
+              <Input
+                suffix='₽'
+                onChange={(e) =>
+                  handleNumberInputChange(
+                    e,
+                    'income'
+                  )
+                }
+              />
             </Form.Item>
           </div>
         </div>
