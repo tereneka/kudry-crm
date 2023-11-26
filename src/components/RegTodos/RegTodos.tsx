@@ -105,13 +105,8 @@ export default function RegTodos({
       selectedTime && time === selectedTime
         ? setSelectedTime('')
         : setSelectedTime(time);
-      if (isRegFormActive) {
-        if (time === regFormTime) {
-          dispatch(setRegFormTime(''));
-        } else {
-          dispatch(setRegFormTime(time));
-        }
-      } else if (regCardInfo) {
+
+      if (regCardInfo) {
         updateReg({
           id: regCardInfo.id,
           body: {
@@ -120,6 +115,10 @@ export default function RegTodos({
             masterId: currentMaster?.id,
           },
         });
+      } else if (time === regFormTime) {
+        dispatch(setRegFormTime(''));
+      } else {
+        dispatch(setRegFormTime(time));
       }
     }
 
@@ -193,6 +192,11 @@ export default function RegTodos({
       setSelectedTime('');
     }
   }, [isRegFormActive]);
+
+  useEffect(() => {
+    setSelectedTime('');
+    dispatch(setRegFormTime(''));
+  }, [date]);
 
   return (
     <div className='reg-todos'>

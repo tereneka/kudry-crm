@@ -182,6 +182,8 @@ export default function RegModal({
     form.setFieldsValue({
       userId: user?.id || '',
       serviceIdList: reg?.serviceIdList || [],
+      duration: reg?.duration,
+      income: reg?.income,
     });
   }, [reg, user]);
 
@@ -209,10 +211,6 @@ export default function RegModal({
       <Form
         className='reg-modal__form'
         form={form}
-        initialValues={{
-          duration: reg?.duration,
-          income: reg?.income,
-        }}
         name=''
         requiredMark={false}>
         <div className='reg-modal__date-time-container'>

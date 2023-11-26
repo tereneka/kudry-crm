@@ -251,9 +251,9 @@ export default function RegForm() {
 
   // изменение и валидация полей даты и времени
   useEffect(() => {
+    form.setFieldValue('time', regFormTime);
     if (regFormTime) {
       setDateTimeError('');
-      form.setFieldValue('time', regFormTime);
     }
   }, [regFormTime]);
 
