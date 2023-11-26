@@ -246,16 +246,25 @@ export const apiSlice = createApi({
       providesTags: ['Photo'],
     }),
 
-    getActualRegistrationList: builder.query<
+    getRegistrationList: builder.query<
       DbRegistration[],
-      void
+      number | void
     >({
-      async queryFn() {
+      async queryFn(num) {
         try {
-          const registrationsQuery = query(
-            collection(db, 'registrations'),
-            where('date', '>=', getEarlierDate(1))
-          );
+          const registrationsQuery =
+            typeof num === 'number'
+              ? query(
+                  collection(db, 'registrations'),
+                  where(
+                    'date',
+                    '>=',
+                    getEarlierDate(num)
+                  )
+                )
+              : query(
+                  collection(db, 'registrations')
+                );
           const querySnaphot = await getDocs(
             registrationsQuery
           );
@@ -494,7 +503,7 @@ export const {
   useGetServiceListQuery,
   useGetPhotoQuery,
   useGetPhotoListQuery,
-  useGetActualRegistrationListQuery,
+  useGetRegistrationListQuery,
   useAddRegistrationMutation,
   useUpdateRegistrationMutation,
   useDeleteRegistrationMutation,

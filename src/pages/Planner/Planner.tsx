@@ -4,9 +4,9 @@ import {
   useAppSelector,
 } from '../../store';
 import {
-  useGetActualRegistrationListQuery,
   useGetMasterListQuery,
   useGetNoteListQuery,
+  useGetRegistrationListQuery,
 } from '../../reducers/apiSlice';
 import MastersSelect from '../../components/MasterSelect/MasterSelect';
 import { useEffect } from 'react';
@@ -37,7 +37,7 @@ import { setIsNoteFormActive } from '../../reducers/notesSlice';
 
 export default function Planner() {
   const { data: regList } =
-    useGetActualRegistrationListQuery();
+    useGetRegistrationListQuery(7);
   const { data: noteList } =
     useGetNoteListQuery(1);
   const { data: masterList } =
