@@ -62,13 +62,13 @@
 .reg-card__number-list {
   display: flex;
   justify-content: space-between;
-  font-weight: 600;
 }
 
 .reg-card__number {
-  padding: 0 4px;
+  padding: 2px 8px;
   border-radius: 4px;
-  background: var(--disabled);
+  background: var(--accent-extra);
+  color: var(--main-back);
 }
 
 .reg-card__service-list {

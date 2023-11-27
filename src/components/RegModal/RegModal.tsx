@@ -237,7 +237,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__select-form-item'
+            className='reg-modal__select-item'
             name='userId'
             rules={[
               {
@@ -259,7 +259,7 @@ export default function RegModal({
 
         <div className='reg-modal__box'>
           <Form.Item
-            className='reg-modal__select-form-item'
+            className='reg-modal__select-item'
             name='serviceIdList'
             rules={[
               {
@@ -283,7 +283,7 @@ export default function RegModal({
 
           <div className='reg-modal__duration-income-container'>
             <Form.Item
-              className='reg-modal__number-form-item'
+              className='reg-modal__numeric-item'
               name='duration'
               label=''
               rules={[
@@ -304,27 +304,23 @@ export default function RegModal({
                 },
               ]}>
               <Input
-                suffix={plural(
-                  Math.floor(
-                    durationFormItemValue
-                  ),
-                  {
-                    one: 'час',
-                    few: 'часа',
-                    many: 'часов',
-                  }
-                )}
+                suffix={
+                  <span className='reg-modal__input-suffix'>
+                    ч.
+                  </span>
+                }
                 onChange={(e) =>
                   handleNumberInputChange(
                     e,
                     'duration'
                   )
                 }
+                allowClear
               />
             </Form.Item>
 
             <Form.Item
-              className='reg-modal__number-form-item'
+              className='reg-modal__numeric-item'
               name='income'
               label=''
               rules={[
@@ -334,13 +330,18 @@ export default function RegModal({
                 },
               ]}>
               <Input
-                suffix='₽'
+                suffix={
+                  <span className='reg-modal__input-suffix'>
+                    ₽
+                  </span>
+                }
                 onChange={(e) =>
                   handleNumberInputChange(
                     e,
                     'income'
                   )
                 }
+                allowClear
               />
             </Form.Item>
           </div>

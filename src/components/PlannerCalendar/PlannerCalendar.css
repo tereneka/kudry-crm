@@ -33,10 +33,10 @@
 .planner-caledar__description-list-item:nth-of-type(
     2
   )::before {
-  background: rgb(120, 155, 155);
+  background: var(--accent-extra);
 }
 
-.planner__calendar-cell {
+.planner-calendar__cell {
   width: 38px;
   height: 38px;
   position: absolute;
@@ -44,7 +44,7 @@
   left: -7px;
 }
 
-.planner__calendar-cell_type_event {
+.planner-calendar__cell_type_event {
   width: 38px;
   height: 38px;
   position: absolute;
@@ -60,7 +60,7 @@
   gap: 2px;
 }
 
-.planner__badge {
+.planner-calendar__badge {
   font-size: 10px;
   font-weight: 700;
   line-height: 1;
@@ -69,10 +69,10 @@
   padding: 1px 2px;
 }
 
-.planner__badge_type_reg {
+.planner-calendar__badge_type_reg {
   background: var(--accent-bright);
 }
 
-.planner__badge_type_note {
-  background: rgb(120, 155, 155);
+.planner-calendar__badge_type_note {
+  background: var(--accent-extra);
 }

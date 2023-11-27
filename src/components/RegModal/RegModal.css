@@ -8,14 +8,18 @@
   margin: 20px auto;
 }
 
-.reg-modal__select-form-item {
+.reg-modal__select-item {
   width: 320px;
   max-width: 100%;
   margin: 0;
 }
 
-.reg-modal__number-form-item {
+.reg-modal__numeric-item {
   width: 140px;
+}
+
+.reg-modal__input-suffix {
+  width: 20px;
 }
 
 .reg-modal__footer {
@@ -60,6 +64,8 @@
 
 .reg-modal__duration-income-container {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   align-self: flex-end;
   gap: 8px;
 }

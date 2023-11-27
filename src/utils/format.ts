@@ -85,7 +85,7 @@ function formatToDecimalNumber(text: string) {
   } else {
     const str = text
       .substring(0, index + 1)
-      .replace(',', '.');
+      .replace('.', ',');
     const end = text
       .substring(index)
       .replace(/\D/g, '');
@@ -94,10 +94,18 @@ function formatToDecimalNumber(text: string) {
   return text;
 }
 
+function convertStrToNum(str: string) {
+  return +str
+    .replace(',', '.')
+    .replaceAll(',', '')
+    .replaceAll(/\s/g, '');
+}
+
 export {
   plural,
   numberFormat,
   phoneFormat,
   disableIosTextFieldZoom,
   formatToDecimalNumber,
+  convertStrToNum,
 };

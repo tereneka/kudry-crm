@@ -43,12 +43,15 @@ import {
 import { Registration } from '../../types';
 import { convertDateStrToDate } from '../../utils/date';
 import {
+  convertStrToNum,
   formatToDecimalNumber,
+  numberFormat,
   plural,
 } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
 import dayjs from 'dayjs';
+import { ClockCircleOutlined } from '@ant-design/icons';
 
 export default function RegForm() {
   const [form] = Form.useForm();
@@ -138,7 +141,7 @@ export default function RegForm() {
       ).length < 2;
     setIsFormOpened(false);
     if (isFormEmpty) {
-      dispatch(setIsRegFormActive(false));
+      resetForm();
     }
   }
 
@@ -162,7 +165,7 @@ export default function RegForm() {
 
   function handleNumberInputChange(
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: string
+    fieldName: 'duration' | 'income'
   ) {
     form.setFieldValue(
       fieldName,
@@ -170,11 +173,26 @@ export default function RegForm() {
     );
   }
 
+  function handleNumberInputBlur(
+    e: React.FocusEvent<
+      HTMLInputElement,
+      Element
+    >,
+    fieldName: 'duration' | 'income'
+  ) {
+    form.setFieldValue(
+      fieldName,
+      numberFormat(
+        convertStrToNum(e.target.value)
+      )
+    );
+  }
+
   function handleFormSubmit(values: {
     userId: string;
     serviceIdList: string[];
-    duration: number;
-    income: number;
+    duration: string;
+    income: string;
     index?: number;
     gender?: 'male' | 'female';
   }) {
@@ -186,15 +204,20 @@ export default function RegForm() {
       index,
       gender,
     } = values;
+
+    const durationNum = convertStrToNum(duration);
+    const incomeNum = convertStrToNum(income);
+
     const body = {
       userId,
       serviceIdList,
       masterId: currentMaster?.id,
       date: convertDateStrToDate(date),
       time: regFormTime,
-      duration,
-      income,
-      priceCorrection: income / caculatedIncome,
+      duration: durationNum,
+      income: incomeNum,
+      priceCorrection:
+        incomeNum / caculatedIncome,
       serviceIndex: index || 0,
       gender:
         gender === undefined ? null : gender,
@@ -211,7 +234,8 @@ export default function RegForm() {
         serviceList,
         convertDateStrToDate(date),
         index || 0,
-        income / caculatedIncome,
+        +income.replace(',', '.') /
+          caculatedIncome,
         'plus',
         updateIncome
       );
@@ -248,18 +272,17 @@ export default function RegForm() {
           index
         );
       form.setFieldsValue({
-        duration: duration,
-        income,
+        duration: numberFormat(duration),
+        income: numberFormat(income),
       });
       setCaculatedIncome(income);
     } else {
       form.setFieldsValue({
-        duration: 0,
-        income: 0,
+        duration: '0',
+        income: '0',
       });
       setCaculatedIncome(0);
     }
-    form.validateFields(['duration', 'income']);
   }, [serviceIdListFormItemValue, index]);
 
   // изменение и валидация полей даты и времени
@@ -342,9 +365,10 @@ export default function RegForm() {
           requiredMark={false}
           initialValues={{
             date: dayjs(date, DATE_FORMAT),
-            duration: 0,
-            income: 0,
-          }}>
+            duration: '0',
+            income: '0',
+          }}
+          validateTrigger='onSubmit'>
           {isHairCategory && (
             <Form.Item
               name='gender'
@@ -426,6 +450,7 @@ export default function RegForm() {
 
           <div className='reg-form__flex-container'>
             <Form.Item
+              className='reg-form__numeric-item'
               name='duration'
               label='длительность'
               rules={[
@@ -434,9 +459,8 @@ export default function RegForm() {
                   message: 'заполните поле',
                 },
                 {
-                  validator: (_, value) =>
-                    value.toString().length < 1 ||
-                    value > 0
+                  validator: (_, value: string) =>
+                    convertStrToNum(value) > 0
                       ? Promise.resolve()
                       : Promise.reject(
                           new Error(
@@ -462,10 +486,18 @@ export default function RegForm() {
                     'duration'
                   )
                 }
+                onBlur={(e) =>
+                  handleNumberInputBlur(
+                    e,
+                    'duration'
+                  )
+                }
+                allowClear
               />
             </Form.Item>
 
             <Form.Item
+              className='reg-form__numeric-item'
               name='income'
               label='стоимость'
               rules={[
@@ -482,6 +514,13 @@ export default function RegForm() {
                     'income'
                   )
                 }
+                onBlur={(e) =>
+                  handleNumberInputBlur(
+                    e,
+                    'income'
+                  )
+                }
+                allowClear
               />
             </Form.Item>
           </div>
@@ -499,7 +538,10 @@ export default function RegForm() {
           </Form.Item>
 
           <div className='reg-form__flex-container'>
-            <Form.Item name='date' label='дата'>
+            <Form.Item
+              className='reg-form__numeric-item'
+              name='date'
+              label=''>
               <DatePicker
                 format={DATE_FORMAT}
                 disabled
@@ -507,9 +549,9 @@ export default function RegForm() {
             </Form.Item>
 
             <Form.Item
+              className='reg-form__numeric-item'
               name='time'
-              label='время'
-              style={{ minWidth: 100 }}>
+              label=''>
               <Select
                 options={TIME_LIST.map((item) => {
                   return {
@@ -518,6 +560,11 @@ export default function RegForm() {
                   };
                 })}
                 disabled
+                suffixIcon={
+                  <ClockCircleOutlined
+                    rev={undefined}
+                  />
+                }
               />
             </Form.Item>
           </div>

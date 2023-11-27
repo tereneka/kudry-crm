@@ -56,6 +56,7 @@ export default function Todos() {
           </Tooltip>
         )}
         <Radio.Group
+          className='todos__radio-group'
           defaultValue={currentTodoListName}
           buttonStyle='solid'
           onChange={(e) =>

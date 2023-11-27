@@ -54,18 +54,18 @@ export default function PlannerCalendar() {
     return (
       <div
         className={classByCondition(
-          'planner__calendar-cell',
+          'planner-calendar__cell',
           !!(isRegs || isNotes),
           'type_event'
         )}
         data-date={date.format(DATE_FORMAT)}>
         {isRegs && (
-          <div className='planner__badge planner__badge_type_reg'>
+          <div className='planner-calendar__badge planner-calendar__badge_type_reg'>
             {regCount}
           </div>
         )}
         {isNotes && (
-          <div className='planner__badge planner__badge_type_note'>
+          <div className='planner-calendar__badge planner-calendar__badge_type_note'>
             {notesCount}
           </div>
         )}

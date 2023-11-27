@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+.todos__radio-group {
+  border-radius: 6px;
+}
+
 .todos__radio-btn {
   padding: 0;
 }

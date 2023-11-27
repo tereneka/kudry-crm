@@ -15,7 +15,10 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { disableIosTextFieldZoom } from '../../utils/format';
+import {
+  disableIosTextFieldZoom,
+  numberFormat,
+} from '../../utils/format';
 import React from 'react';
 import { getEarlierDate } from '../../utils/date';
 

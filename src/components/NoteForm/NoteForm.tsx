@@ -5,7 +5,6 @@ import {
   DatePicker,
   Drawer,
   Form,
-  Select,
   TimePicker,
 } from 'antd';
 import UserSelect from '../UserSelect/UserSelect';
@@ -16,7 +15,6 @@ import {
 import {
   DATE_FORMAT,
   TIME_FORMAT,
-  TIME_LIST,
 } from '../../constants';
 import { Note } from '../../types';
 import {
@@ -96,7 +94,7 @@ export default function NoteForm({
     dispatch(setNoteCardInfo(null));
     dispatch(setNoteCardUser(null));
     if (isFormEmpty) {
-      dispatch(setIsNoteFormActive(false));
+      resetForm();
     }
   }
 
@@ -226,19 +224,22 @@ export default function NoteForm({
           <div className='note-form__date-time-container'>
             <Form.Item
               name='date'
-              label='дата'
+              label=''
               rules={[
                 {
                   required: true,
                   message: 'выберите дату',
                 },
               ]}>
-              <DatePicker format={DATE_FORMAT} />
+              <DatePicker
+                format={DATE_FORMAT}
+                placeholder=''
+              />
             </Form.Item>
 
             <Form.Item
               name='time'
-              label='время'
+              label=''
               style={{ minWidth: 135 }}
               rules={[
                 {
@@ -246,7 +247,10 @@ export default function NoteForm({
                   message: 'выберите время',
                 },
               ]}>
-              <TimePicker format={TIME_FORMAT} />
+              <TimePicker
+                format={TIME_FORMAT}
+                placeholder=''
+              />
             </Form.Item>
           </div>
 

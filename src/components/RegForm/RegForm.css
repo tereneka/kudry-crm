@@ -8,7 +8,11 @@
 .reg-form__flex-container {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 20px;
+}
+
+.reg-form__numeric-item {
+  width: calc((100% - 20px) / 2);
 }
 
 .reg-form__date-time-error {
@@ -32,5 +36,15 @@
   .reg-form {
     bottom: 20px;
     right: 20px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .reg-form__numeric-item:first-of-type {
+    width: 52%;
+  }
+
+  .reg-form__numeric-item:last-of-type {
+    width: calc(48% - 20px);
   }
 }

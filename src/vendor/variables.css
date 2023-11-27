@@ -6,5 +6,6 @@
   --accent-light-bright: rgb(215, 142, 123, 0.8);
   --accent-soft: rgb(137, 175, 176);
   --accent-light-soft: rgb(137, 175, 176, 0.4);
+  --accent-extra: rgb(140, 140, 140);
   --disabled: rgb(217, 217, 217);
 }
