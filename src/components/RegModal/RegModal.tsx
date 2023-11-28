@@ -181,6 +181,7 @@ export default function RegModal({
       })
         .then(() => {
           changeIncome(
+            currentMaster,
             reg?.serviceIdList || [],
             serviceList,
             convertDateStrToDate(date),
@@ -190,6 +191,7 @@ export default function RegModal({
             updateIncome
           ).then(() => {
             changeIncome(
+              currentMaster,
               newServiceIdList,
               serviceList,
               convertDateStrToDate(date),

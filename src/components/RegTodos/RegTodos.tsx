@@ -145,6 +145,7 @@ export default function RegTodos() {
         date
     ) {
       changeIncome(
+        currentMaster,
         regCardInfo.serviceIdList,
         serviceList,
         regCardInfo.date.toDate(),
@@ -154,6 +155,7 @@ export default function RegTodos() {
         updateIncome
       ).then(() => {
         changeIncome(
+          currentMaster,
           regCardInfo.serviceIdList,
           serviceList,
           convertDateStrToDate(date),

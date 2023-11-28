@@ -12,6 +12,7 @@ interface Master {
   index: number;
   available: boolean;
   regAvailable: boolean;
+  incomePercent: number;
 }
 
 interface Category {
@@ -67,6 +68,7 @@ interface Income {
   id: string;
   serviceId: string;
   categoryId: string;
+  masterId: string;
   date: Date;
   sum: number;
 }

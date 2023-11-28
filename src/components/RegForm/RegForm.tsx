@@ -238,6 +238,7 @@ export default function RegForm() {
       !isIncomeLoading
     ) {
       changeIncome(
+        currentMaster,
         serviceIdList,
         serviceList,
         convertDateStrToDate(date),

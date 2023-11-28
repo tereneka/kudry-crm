@@ -11,17 +11,10 @@ import RouterApp from '../RouterApp/RouterApp';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../db/firebaseConfig';
 import { setCurrentAccount } from '../../reducers/appSlice';
-import {
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
 import { disableIosTextFieldZoom } from '../../utils/format';
 import Header from '../Header/Header';
 
 function App() {
-  const navigate = useNavigate();
-  const { pathname: location } = useLocation();
-
   const { data: masters } =
     useGetMasterListQuery();
 

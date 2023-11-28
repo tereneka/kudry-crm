@@ -63,6 +63,9 @@ export default function RegCard({
   const { isFormActive } = useAppSelector(
     (state) => state.plannerState
   );
+  const { currentMaster } = useAppSelector(
+    (state) => state.mastersState
+  );
 
   const [deleteReg, { isError, isSuccess }] =
     useDeleteRegistrationMutation();
@@ -212,6 +215,7 @@ export default function RegCard({
   useEffect(() => {
     if (isSuccess) {
       changeIncome(
+        currentMaster,
         reg.serviceIdList,
         serviceList,
         reg.date.toDate(),

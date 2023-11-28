@@ -1,8 +1,6 @@
-import { type } from 'os';
 import { TIME_LIST } from '../constants';
 import {
   Category,
-  DbRegistration,
   Income,
   Master,
   Service,
@@ -30,12 +28,11 @@ function calculateRegDurationAndIncome(
     );
 
     if (service) {
-      const currentServicePrice =
+      const servicePrice =
         +service.price.split('/')[index];
       const serviceIncome = service.priceDivider
-        ? currentServicePrice /
-          service.priceDivider
-        : currentServicePrice;
+        ? servicePrice / service.priceDivider
+        : servicePrice;
       duration +=
         service.duration[index] ||
         service.duration[0];
@@ -134,6 +131,7 @@ function isMastersCategoriesSame(
 }
 
 function changeIncome(
+  master: Master | undefined | null,
   serviceIdList: string[],
   serviceList: Service[] | undefined,
   date: Date,
@@ -167,17 +165,18 @@ function changeIncome(
         serviceList,
         serviceId
       );
-      const currentServicePrice = service
+      const serviceIncome = service
         ? +service.price.split('/')[index || 0] *
-          priceCorrection
+          priceCorrection *
+          (1 - (master?.incomePercent || 0))
         : 0;
       const sum = service?.priceDivider
-        ? currentServicePrice /
-          service.priceDivider
-        : currentServicePrice;
+        ? serviceIncome / service.priceDivider
+        : serviceIncome;
       incomeBodyList.push({
         serviceId,
         categoryId: service?.categoryId || '',
+        masterId: master?.id || '',
         date,
         sum: operation === 'plus' ? sum : -sum,
       });
