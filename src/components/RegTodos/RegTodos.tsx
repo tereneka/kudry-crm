@@ -55,16 +55,15 @@ export default function RegTodos({
   } = useAppSelector(
     (state) => state.regCardState
   );
-  const {
-    masterRegList,
-    isRegFormActive,
-    regFormTime,
-  } = useAppSelector((state) => state.regState);
+  const { masterRegList, regFormTime } =
+    useAppSelector((state) => state.regState);
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
+  const { isFormActive, openedFormName } =
+    useAppSelector((state) => state.plannerState);
 
   const [updateReg, { isError, isLoading }] =
     useUpdateRegistrationMutation();
@@ -188,10 +187,10 @@ export default function RegTodos({
   }, [isLoading]);
 
   useEffect(() => {
-    if (!isRegFormActive) {
+    if (!isFormActive) {
       setSelectedTime('');
     }
-  }, [isRegFormActive]);
+  }, [isFormActive]);
 
   useEffect(() => {
     setSelectedTime('');

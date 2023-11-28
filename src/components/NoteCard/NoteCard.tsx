@@ -21,9 +21,9 @@ import {
   setNoteCardInfo,
   setNoteCardUser,
 } from '../../reducers/noteCardSlice';
-import { setOpenedNoteForm } from '../../reducers/notesSlice';
 import { useDeleteNoteMutation } from '../../reducers/apiSlice';
 import { setIsError } from '../../reducers/appSlice';
+import { setOpenedFormName } from '../../reducers/plannerSlice';
 
 interface NoteCardProps {
   note: DbNote;
@@ -38,13 +38,6 @@ export default function NoteCard({
   type = 'major',
   index,
 }: NoteCardProps) {
-  const { noteCardInfo } = useAppSelector(
-    (state) => state.noteCardState
-  );
-  const { isNoteFormActive } = useAppSelector(
-    (state) => state.notesState
-  );
-
   const [deleteNote, { isError }] =
     useDeleteNoteMutation();
 
@@ -134,7 +127,7 @@ export default function NoteCard({
   function handleEditBtnClick() {
     dispatch(setNoteCardInfo(note));
     dispatch(setNoteCardUser(user));
-    dispatch(setOpenedNoteForm('edit'));
+    dispatch(setOpenedFormName('editNote'));
   }
 
   useEffect(() => {

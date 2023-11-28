@@ -6,13 +6,9 @@ import { DbNote } from '../types';
 
 interface NotesState {
   masterNoteList: DbNote[] | undefined;
-  isNoteFormActive: boolean;
-  openedNoteForm: '' | 'add' | 'edit';
 }
 const initialState: NotesState = {
   masterNoteList: undefined,
-  isNoteFormActive: false,
-  openedNoteForm: '',
 };
 
 const notesSlice = createSlice({
@@ -33,27 +29,10 @@ const notesSlice = createSlice({
         (reg) => reg.masterId === masterId
       );
     },
-
-    setIsNoteFormActive: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isNoteFormActive = action.payload;
-    },
-
-    setOpenedNoteForm: (
-      state,
-      action: PayloadAction<'' | 'add' | 'edit'>
-    ) => {
-      state.openedNoteForm = action.payload;
-    },
   },
 });
 
-export const {
-  filterNoteListByMasterId,
-  setIsNoteFormActive,
-  setOpenedNoteForm,
-} = notesSlice.actions;
+export const { filterNoteListByMasterId } =
+  notesSlice.actions;
 
 export default notesSlice.reducer;

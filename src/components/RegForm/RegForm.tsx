@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import './RegForm.css';
 import {
-  Badge,
   Button,
   DatePicker,
   Drawer,
@@ -21,7 +20,7 @@ import {
   useUpdateIncomeMutation,
 } from '../../reducers/apiSlice';
 import {
-  setIsRegFormActive,
+  setRegFormDuration,
   setRegFormTime,
 } from '../../reducers/regSlice';
 import {
@@ -52,20 +51,30 @@ import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
 import dayjs from 'dayjs';
 import { ClockCircleOutlined } from '@ant-design/icons';
+import {
+  setIsFormActive,
+  setOpenedFormName,
+} from '../../reducers/plannerSlice';
 
 export default function RegForm() {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<{
+    userId: string;
+    serviceIdList: string[];
+    date: Date;
+    time: string;
+    duration: string;
+    income: string;
+    priceCorrection: number;
+    index: number;
+    gender: 'male' | 'female';
+  }>();
 
-  const genderFormItemValue:
-    | 'male'
-    | 'female'
-    | undefined = useWatch('gender', form);
-  const serviceIdListFormItemValue = useWatch(
-    'serviceIdList',
+  const genderFormItemValue = useWatch(
+    'gender',
     form
   );
-  const indexFormItemValue = useWatch(
-    'index',
+  const serviceIdListFormItemValue = useWatch(
+    'serviceIdList',
     form
   );
   const durationFormItemValue = useWatch(
@@ -73,8 +82,11 @@ export default function RegForm() {
     form
   );
 
-  const { isRegFormActive, regFormTime } =
-    useAppSelector((state) => state.regState);
+  const { openedFormName, isFormActive } =
+    useAppSelector((state) => state.plannerState);
+  const { regFormTime } = useAppSelector(
+    (state) => state.regState
+  );
   const { currentMaster, prevMaster } =
     useAppSelector((state) => state.mastersState);
   const { date } = useAppSelector(
@@ -99,8 +111,6 @@ export default function RegForm() {
     { isLoading: isIncomeLoading },
   ] = useUpdateIncomeMutation();
 
-  const [isFormOpened, setIsFormOpened] =
-    useState(false);
   const [
     isIndexSelectVisible,
     setIsIndexSelectVisible,
@@ -121,25 +131,17 @@ export default function RegForm() {
       currentMaster
     );
   const indexSelectOptionList =
-    genderFormItemValue
-      ? genderFormItemValue === 'female'
-        ? HAIR_LENGTH_LIST
-        : MAILE_HAIRCAT_LIST
-      : [];
-
+    genderFormItemValue === 'female'
+      ? HAIR_LENGTH_LIST
+      : MAILE_HAIRCAT_LIST;
   const dispatch = useAppDispatch();
-
-  function openForm() {
-    setIsFormOpened(true);
-    dispatch(setIsRegFormActive(true));
-  }
 
   function closeForm() {
     const isFormEmpty =
       Object.values(form.getFieldsValue()).filter(
         (field) => field
-      ).length < 2;
-    setIsFormOpened(false);
+      ).length < 4;
+    dispatch(setOpenedFormName(''));
     if (isFormEmpty) {
       resetForm();
     }
@@ -171,6 +173,12 @@ export default function RegForm() {
       fieldName,
       formatToDecimalNumber(e.target.value)
     );
+
+    if (fieldName === 'duration') {
+      dispatch(
+        setRegFormDuration(e.target.value)
+      );
+    }
   }
 
   function handleNumberInputBlur(
@@ -234,8 +242,7 @@ export default function RegForm() {
         serviceList,
         convertDateStrToDate(date),
         index || 0,
-        +income.replace(',', '.') /
-          caculatedIncome,
+        incomeNum / caculatedIncome,
         'plus',
         updateIncome
       );
@@ -250,21 +257,21 @@ export default function RegForm() {
   function resetForm() {
     form.resetFields();
     dispatch(setRegFormTime(''));
-    dispatch(setIsRegFormActive(false));
-    setIsFormOpened(false);
+    dispatch(setRegFormDuration(''));
+    dispatch(setIsFormActive(false));
+    dispatch(setOpenedFormName(''));
+    setIndex(0);
     setIsIndexSelectVisible(false);
+    setCaculatedIncome(0);
     setDateTimeError('');
   }
 
-  // определяем индекс для массива продолжительности
-  // услуги и прайса в зависимости от выбранной длины волос
-  useEffect(() => {
-    setIndex(indexFormItemValue || 0);
-  }, [indexFormItemValue]);
-
   // вычисляем продолжительность регистрации и стоимость
   useEffect(() => {
-    if (serviceIdListFormItemValue) {
+    if (
+      serviceIdListFormItemValue &&
+      serviceIdListFormItemValue.length > 0
+    ) {
       const { duration, income } =
         calculateRegDurationAndIncome(
           serviceIdListFormItemValue,
@@ -276,12 +283,16 @@ export default function RegForm() {
         income: numberFormat(income),
       });
       setCaculatedIncome(income);
+      dispatch(
+        setRegFormDuration(duration.toString())
+      );
     } else {
       form.setFieldsValue({
         duration: '0',
         income: '0',
       });
       setCaculatedIncome(0);
+      dispatch(setRegFormDuration(''));
     }
   }, [serviceIdListFormItemValue, index]);
 
@@ -302,7 +313,7 @@ export default function RegForm() {
 
   // описываем действия при смене мастера
   useEffect(() => {
-    if (isRegFormActive) {
+    if (isFormActive) {
       if (
         isMastersCategoriesSame(
           prevMaster,
@@ -311,7 +322,6 @@ export default function RegForm() {
       ) {
         dispatch(setRegFormTime(''));
       } else {
-        setIsIndexSelectVisible(false);
         resetForm();
       }
     }
@@ -322,37 +332,19 @@ export default function RegForm() {
     dispatch(setIsError(isError));
     if (isSuccess) {
       resetForm();
-      setIsIndexSelectVisible(false);
     }
   }, [isError, isSuccess]);
 
   return (
     <div className='reg-form'>
-      <Badge
-        count={
-          isRegFormActive
-            ? durationFormItemValue + 'ч.'
-            : 0
-        }
-        showZero={false}
-        size='small'
-        offset={[-20, 0]}>
-        <Button
-          type='primary'
-          danger={!isRegFormActive}
-          onClick={openForm}>
-          новая запись
-        </Button>
-      </Badge>
-
       <Drawer
         title='НОВАЯ ЗАПИСЬ'
         width={400}
-        open={isFormOpened}
+        open={openedFormName === 'addReg'}
         onClose={closeForm}>
         <Form
           form={form}
-          name='reg'
+          name='addReg'
           onFinish={handleFormSubmit}
           onFinishFailed={() => {
             if (!regFormTime) {
@@ -443,7 +435,7 @@ export default function RegForm() {
                   }
                 )}
                 allowClear
-                onSelect={(v) => setIndex(v)}
+                onChange={(v) => setIndex(v || 0)}
               />
             </Form.Item>
           )}
@@ -470,16 +462,24 @@ export default function RegForm() {
                 },
               ]}>
               <Input
-                suffix={plural(
-                  Math.floor(
-                    durationFormItemValue
-                  ),
-                  {
-                    one: 'час',
-                    few: 'часа',
-                    many: 'часов',
-                  }
-                )}
+                suffix={
+                  durationFormItemValue ? (
+                    plural(
+                      Math.floor(
+                        convertStrToNum(
+                          durationFormItemValue
+                        )
+                      ),
+                      {
+                        one: 'час',
+                        few: 'часа',
+                        many: 'часов',
+                      }
+                    )
+                  ) : (
+                    <></>
+                  )
+                }
                 onChange={(e) =>
                   handleNumberInputChange(
                     e,

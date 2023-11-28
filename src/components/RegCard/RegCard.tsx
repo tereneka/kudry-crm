@@ -61,9 +61,8 @@ export default function RegCard({
 
   const { draggableRegCard, regCardInfo } =
     useAppSelector((state) => state.regCardState);
-  const { isRegFormActive } = useAppSelector(
-    (state) => state.regState
-  );
+  const { isFormActive, openedFormName } =
+    useAppSelector((state) => state.plannerState);
 
   const [deleteReg, { isError, isSuccess }] =
     useDeleteRegistrationMutation();
@@ -134,7 +133,7 @@ export default function RegCard({
           className='reg-card__move-btn'
           size='large'
           type='text'
-          disabled={isRegFormActive}
+          disabled={isFormActive}
           icon={
             <DragOutlined
               rev={undefined}

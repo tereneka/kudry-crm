@@ -3,11 +3,22 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 
+type TodoListName = 'reg' | 'notes';
+type FormName =
+  | ''
+  | 'addReg'
+  | 'addNote'
+  | 'editNote';
+
 interface PlannerState {
-  currentTodoListName: 'reg' | 'notes';
+  currentTodoListName: TodoListName;
+  openedFormName: FormName;
+  isFormActive: boolean;
 }
 const initialState: PlannerState = {
   currentTodoListName: 'reg',
+  openedFormName: '',
+  isFormActive: false,
 };
 
 const plannerSlice = createSlice({
@@ -16,14 +27,31 @@ const plannerSlice = createSlice({
   reducers: {
     setCurrentTodoListName: (
       state,
-      action: PayloadAction<'reg' | 'notes'>
+      action: PayloadAction<TodoListName>
     ) => {
       state.currentTodoListName = action.payload;
+    },
+
+    setOpenedFormName: (
+      state,
+      action: PayloadAction<FormName>
+    ) => {
+      state.openedFormName = action.payload;
+    },
+
+    setIsFormActive: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isFormActive = action.payload;
     },
   },
 });
 
-export const { setCurrentTodoListName } =
-  plannerSlice.actions;
+export const {
+  setCurrentTodoListName,
+  setOpenedFormName,
+  setIsFormActive,
+} = plannerSlice.actions;
 
 export default plannerSlice.reducer;

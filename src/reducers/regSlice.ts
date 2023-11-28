@@ -6,14 +6,14 @@ import { DbRegistration } from '../types';
 
 interface RegState {
   masterRegList: DbRegistration[] | undefined;
-  isRegFormActive: boolean;
   regFormTime: string;
+  regFormDuration: string;
   isRegModalOpened: boolean;
 }
 const initialState: RegState = {
   masterRegList: undefined,
-  isRegFormActive: false,
   regFormTime: '',
+  regFormDuration: '',
   isRegModalOpened: false,
 };
 
@@ -36,18 +36,18 @@ const regSlice = createSlice({
       );
     },
 
-    setIsRegFormActive: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isRegFormActive = action.payload;
-    },
-
     setRegFormTime: (
       state,
       action: PayloadAction<string>
     ) => {
       state.regFormTime = action.payload;
+    },
+
+    setRegFormDuration: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.regFormDuration = action.payload;
     },
 
     setIsRegModalOpened: (
@@ -61,8 +61,8 @@ const regSlice = createSlice({
 
 export const {
   filterRegListByMasterId,
-  setIsRegFormActive,
   setRegFormTime,
+  setRegFormDuration,
   setIsRegModalOpened,
 } = regSlice.actions;
 

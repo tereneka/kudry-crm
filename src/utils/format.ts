@@ -33,6 +33,29 @@ function numberFormat(
   ).format(value);
 }
 
+function formatToDecimalNumber(text: string) {
+  let index = text.search(/[,\.]/);
+  if (index < 1) {
+    text = text.replace(/\D/g, '');
+  } else {
+    const str = text
+      .substring(0, index + 1)
+      .replace('.', ',');
+    const end = text
+      .substring(index)
+      .replace(/\D/g, '');
+    text = str + end;
+  }
+  return text;
+}
+
+function convertStrToNum(str: string) {
+  return +str
+    .replace(',', '.')
+    .replaceAll(',', '')
+    .replaceAll(/\s/g, '');
+}
+
 function phoneFormat(phone: string) {
   return (
     phone.slice(0, 2) +
@@ -77,29 +100,6 @@ const disableIosTextFieldZoom = () => {
     }
   }
 };
-
-function formatToDecimalNumber(text: string) {
-  let index = text.search(/[,\.]/);
-  if (index < 1) {
-    text = text.replace(/\D/g, '');
-  } else {
-    const str = text
-      .substring(0, index + 1)
-      .replace('.', ',');
-    const end = text
-      .substring(index)
-      .replace(/\D/g, '');
-    text = str + end;
-  }
-  return text;
-}
-
-function convertStrToNum(str: string) {
-  return +str
-    .replace(',', '.')
-    .replaceAll(',', '')
-    .replaceAll(/\s/g, '');
-}
 
 export {
   plural,

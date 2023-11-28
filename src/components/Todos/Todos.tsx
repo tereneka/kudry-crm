@@ -10,7 +10,10 @@ import personIconBlack from '../../images/person-lines-black.svg';
 import notesIconBlack from '../../images/notes-black.svg';
 import personIconWhite from '../../images/person-lines-white.svg';
 import notesIconWhite from '../../images/notes-white.svg';
-import { setCurrentTodoListName } from '../../reducers/plannerSlice';
+import {
+  setCurrentTodoListName,
+  setIsFormActive,
+} from '../../reducers/plannerSlice';
 import RegTodos from '../RegTodos/RegTodos';
 import NotesTodos from '../NotesTodos/NotesTodos';
 
@@ -38,6 +41,7 @@ export default function Todos() {
     dispatch(
       setCurrentTodoListName(todoListName)
     );
+    dispatch(setIsFormActive(false));
   }
 
   return (

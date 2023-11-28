@@ -11,10 +11,7 @@ import {
 import MastersSelect from '../../components/MasterSelect/MasterSelect';
 import { useEffect } from 'react';
 
-import {
-  filterRegListByMasterId,
-  setIsRegFormActive,
-} from '../../reducers/regSlice';
+import { filterRegListByMasterId } from '../../reducers/regSlice';
 import {
   setCurrentMaster,
   setPrevMaster,
@@ -28,15 +25,16 @@ import {
   setDraggableRegCard,
 } from '../../reducers/regCardSlice';
 import RegModal from '../../components/RegModal/RegModal';
-import { Button } from 'antd';
+import { Badge, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../db/firebaseConfig';
 import NoteForm from '../../components/NoteForm/NoteForm';
+import { filterNoteListByMasterId } from '../../reducers/notesSlice';
 import {
-  filterNoteListByMasterId,
-  setIsNoteFormActive,
-} from '../../reducers/notesSlice';
+  setIsFormActive,
+  setOpenedFormName,
+} from '../../reducers/plannerSlice';
 
 export default function Planner() {
   const { data: regList } =
@@ -49,10 +47,9 @@ export default function Planner() {
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
-  const { currentTodoListName } = useAppSelector(
-    (state) => state.plannerState
-  );
-  const { isRegFormActive } = useAppSelector(
+  const { currentTodoListName, isFormActive } =
+    useAppSelector((state) => state.plannerState);
+  const { regFormDuration } = useAppSelector(
     (state) => state.regState
   );
 
@@ -69,12 +66,17 @@ export default function Planner() {
     dispatch(setCurrentMaster(master));
   }
 
-  useEffect(() => {
-    if (currentTodoListName === 'notes') {
-      dispatch(setIsRegFormActive(false));
+  function openForm() {
+    if (currentTodoListName === 'reg') {
+      dispatch(setOpenedFormName('addReg'));
     } else {
-      dispatch(setIsNoteFormActive(false));
+      dispatch(setOpenedFormName('addNote'));
     }
+    dispatch(setIsFormActive(true));
+  }
+
+  useEffect(() => {
+    dispatch(setIsFormActive(false));
   }, [currentTodoListName]);
 
   useEffect(() => {
@@ -100,12 +102,12 @@ export default function Planner() {
   }, [noteList, currentMaster]);
 
   useEffect(() => {
-    if (isRegFormActive) {
+    if (isFormActive) {
       dispatch(setRegCardInfo(null));
       dispatch(setRegCardUser(null));
       dispatch(setDraggableRegCard(null));
     }
-  }, [isRegFormActive]);
+  }, [isFormActive]);
 
   return (
     <div className='planner'>
@@ -138,10 +140,31 @@ export default function Planner() {
       )}
       {currentTodoListName === 'notes' && (
         <>
-          <NoteForm isOpenBtn={true} />
+          <NoteForm />
           <NoteForm />
         </>
       )}
+
+      <Badge
+        className='planner__open-form-btn'
+        count={
+          currentTodoListName === 'reg' &&
+          isFormActive
+            ? (regFormDuration || 0) + 'ч.'
+            : 0
+        }
+        showZero={false}
+        size='small'
+        offset={[-20, 0]}>
+        <Button
+          type='primary'
+          danger={!isFormActive}
+          onClick={openForm}>
+          {currentTodoListName === 'reg'
+            ? 'новая запись'
+            : 'новая напоминалка'}
+        </Button>
+      </Badge>
     </div>
   );
 }

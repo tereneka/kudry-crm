@@ -7,3 +7,10 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.planner__open-form-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  z-index: 10;
+}

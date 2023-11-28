@@ -25,7 +25,9 @@ import {
 } from '../../utils/reg';
 import { TIME_LIST } from '../../constants';
 import {
+  convertStrToNum,
   formatToDecimalNumber,
+  numberFormat,
   plural,
 } from '../../utils/format';
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
@@ -67,7 +69,12 @@ export default function RegModal({
     { isLoading: isUpdatingIncomeLoading },
   ] = useUpdateIncomeMutation();
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<{
+    userId: string;
+    serviceIdList: string[];
+    duration: string;
+    income: string;
+  }>();
 
   const durationFormItemValue = useWatch(
     'duration',
@@ -78,12 +85,15 @@ export default function RegModal({
 
   const [caculatedIncome, setCaculatedIncome] =
     useState(0);
+  // const [endTime, setEndTime] = useState('');
 
-  const endTime: string | undefined =
-    TIME_LIST[
-      TIME_LIST.indexOf(reg?.time || '') +
-        durationFormItemValue * 2
-    ];
+  const endTime = durationFormItemValue
+    ? TIME_LIST[
+        TIME_LIST.indexOf(reg?.time || '') +
+          convertStrToNum(durationFormItemValue) *
+            2
+      ]
+    : '';
 
   function handleServicesChange(
     selectedServiceIdList: string[]
@@ -96,14 +106,14 @@ export default function RegModal({
       );
     if (selectedServiceIdList.length > 0) {
       form.setFieldsValue({
-        duration: duration,
-        income,
+        duration: numberFormat(duration),
+        income: numberFormat(income),
       });
       setCaculatedIncome(income);
     } else {
       form.setFieldsValue({
-        duration: 0,
-        income: 0,
+        duration: '0',
+        income: '0',
       });
       setCaculatedIncome(0);
     }
@@ -111,7 +121,7 @@ export default function RegModal({
 
   function handleNumberInputChange(
     e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: string
+    fieldName: 'duration' | 'income'
   ) {
     form.setFieldValue(
       fieldName,
@@ -119,69 +129,81 @@ export default function RegModal({
     );
   }
 
-  function handleChangesSubmit() {
-    form
-      .validateFields()
-      .then(
-        (formValues: {
-          userId: string;
-          serviceIdList: string[];
-          duration: number;
-          income: number;
-        }) => {
-          const {
-            userId,
-            serviceIdList: newServiceIdList,
-            duration,
-            income,
-          } = formValues;
-          const priceCorrection = caculatedIncome
-            ? income / caculatedIncome
-            : income /
-              calculateRegDurationAndIncome(
-                newServiceIdList,
-                serviceList,
-                reg?.serviceIndex || 0
-              ).income;
+  function handleNumberInputBlur(
+    e: React.FocusEvent<
+      HTMLInputElement,
+      Element
+    >,
+    fieldName: 'duration' | 'income'
+  ) {
+    const num = convertStrToNum(e.target.value);
+    const fieldValue =
+      fieldName === 'duration' && num % 0.5
+        ? Math.round(num)
+        : num;
 
-          updateReg({
-            id: reg?.id || '',
-            body: {
-              userId,
-              serviceIdList: newServiceIdList,
-              duration,
-              income,
+    form.setFieldValue(
+      fieldName,
+      numberFormat(fieldValue)
+    );
+  }
+
+  function handleChangesSubmit() {
+    form.validateFields().then((formValues) => {
+      const {
+        userId,
+        serviceIdList: newServiceIdList,
+        duration,
+        income,
+      } = formValues;
+      const durationNum =
+        convertStrToNum(duration);
+      const incomeNum = convertStrToNum(income);
+
+      const priceCorrection = caculatedIncome
+        ? incomeNum / caculatedIncome
+        : incomeNum /
+          calculateRegDurationAndIncome(
+            newServiceIdList,
+            serviceList,
+            reg?.serviceIndex || 0
+          ).income;
+
+      updateReg({
+        id: reg?.id || '',
+        body: {
+          userId,
+          serviceIdList: newServiceIdList,
+          duration: durationNum,
+          income: incomeNum,
+          priceCorrection,
+        },
+      })
+        .then(() => {
+          changeIncome(
+            reg?.serviceIdList || [],
+            serviceList,
+            convertDateStrToDate(date),
+            reg?.serviceIndex || 0,
+            reg?.priceCorrection || 0,
+            'minus',
+            updateIncome
+          ).then(() => {
+            changeIncome(
+              newServiceIdList,
+              serviceList,
+              convertDateStrToDate(date),
+              reg?.serviceIndex || 0,
               priceCorrection,
-            },
-          })
-            .then(() => {
-              changeIncome(
-                reg?.serviceIdList || [],
-                serviceList,
-                convertDateStrToDate(date),
-                reg?.serviceIndex || 0,
-                reg?.priceCorrection || 0,
-                'minus',
-                updateIncome
-              ).then(() => {
-                changeIncome(
-                  newServiceIdList,
-                  serviceList,
-                  convertDateStrToDate(date),
-                  reg?.serviceIndex || 0,
-                  priceCorrection,
-                  'plus',
-                  updateIncome
-                );
-              });
-            })
-            .then(() => {
-              dispatch(
-                setIsRegModalOpened(false)
-              );
-            });
-        }
-      );
+              'plus',
+              updateIncome
+            );
+          });
+        })
+        .then(() => {
+          dispatch(setIsRegModalOpened(false));
+        });
+    });
   }
 
   function handleCancelClick() {
@@ -192,12 +214,14 @@ export default function RegModal({
   }
 
   useEffect(() => {
-    form.setFieldsValue({
-      userId: user?.id || '',
-      serviceIdList: reg?.serviceIdList || [],
-      duration: reg?.duration,
-      income: reg?.income,
-    });
+    if (reg && user) {
+      form.setFieldsValue({
+        userId: user.id,
+        serviceIdList: reg?.serviceIdList || [],
+        duration: numberFormat(reg.duration),
+        income: numberFormat(reg.income),
+      });
+    }
   }, [reg, user]);
 
   useEffect(() => {
@@ -224,8 +248,9 @@ export default function RegModal({
       <Form
         className='reg-modal__form'
         form={form}
-        name=''
-        requiredMark={false}>
+        name='editReg'
+        requiredMark={false}
+        validateTrigger='onSubmit'>
         <div className='reg-modal__date-time-container'>
           <span>{date}</span>
           <span>
@@ -293,8 +318,7 @@ export default function RegModal({
                 },
                 {
                   validator: (_, value) =>
-                    value.toString().length < 1 ||
-                    value > 0
+                    convertStrToNum(value) > 0
                       ? Promise.resolve()
                       : Promise.reject(
                           new Error(
@@ -311,6 +335,12 @@ export default function RegModal({
                 }
                 onChange={(e) =>
                   handleNumberInputChange(
+                    e,
+                    'duration'
+                  )
+                }
+                onBlur={(e) =>
+                  handleNumberInputBlur(
                     e,
                     'duration'
                   )
@@ -337,6 +367,12 @@ export default function RegModal({
                 }
                 onChange={(e) =>
                   handleNumberInputChange(
+                    e,
+                    'income'
+                  )
+                }
+                onBlur={(e) =>
+                  handleNumberInputBlur(
                     e,
                     'income'
                   )

@@ -22,10 +22,6 @@ import {
   convertDbDateToStr,
 } from '../../utils/date';
 import dayjs from 'dayjs';
-import {
-  setIsNoteFormActive,
-  setOpenedNoteForm,
-} from '../../reducers/notesSlice';
 import TextArea from 'antd/es/input/TextArea';
 import {
   useAddNoteMutation,
@@ -37,18 +33,17 @@ import {
   setNoteCardUser,
 } from '../../reducers/noteCardSlice';
 import type { Dayjs } from 'dayjs';
+import {
+  setIsFormActive,
+  setOpenedFormName,
+} from '../../reducers/plannerSlice';
 
-interface NoteFormProps {
-  isOpenBtn?: boolean;
-}
-
-export default function NoteForm({
-  isOpenBtn = false,
-}: NoteFormProps) {
+export default function NoteForm() {
   const [form] = Form.useForm();
 
-  const { isNoteFormActive, openedNoteForm } =
-    useAppSelector((state) => state.notesState);
+  const { openedFormName } = useAppSelector(
+    (state) => state.plannerState
+  );
   const { noteCardInfo, noteCardUser } =
     useAppSelector(
       (state) => state.noteCardState
@@ -80,17 +75,12 @@ export default function NoteForm({
     },
   ] = useUpdateNoteMutation();
 
-  function openForm() {
-    dispatch(setOpenedNoteForm('add'));
-    dispatch(setIsNoteFormActive(true));
-  }
-
   function closeForm() {
     const isFormEmpty =
       Object.values(form.getFieldsValue()).filter(
         (field) => field
       ).length < 2;
-    dispatch(setOpenedNoteForm(''));
+    dispatch(setOpenedFormName(''));
     dispatch(setNoteCardInfo(null));
     dispatch(setNoteCardUser(null));
     if (isFormEmpty) {
@@ -116,9 +106,9 @@ export default function NoteForm({
       time: time.format(TIME_FORMAT),
     } as Note;
 
-    if (openedNoteForm === 'add') {
+    if (openedFormName === 'addNote') {
       addNote(body);
-    } else if (openedNoteForm === 'edit') {
+    } else if (openedFormName === 'editNote') {
       updateNote({
         id: noteCardInfo?.id || '',
         body,
@@ -128,8 +118,8 @@ export default function NoteForm({
 
   function resetForm() {
     form.resetFields();
-    dispatch(setIsNoteFormActive(false));
-    dispatch(setOpenedNoteForm(''));
+    dispatch(setIsFormActive(false));
+    dispatch(setOpenedFormName(''));
   }
 
   // вносим изначальные данные при обновлении
@@ -177,24 +167,18 @@ export default function NoteForm({
 
   return (
     <div className='note-form'>
-      {isOpenBtn && (
-        <Button
-          type='primary'
-          danger={!isNoteFormActive}
-          onClick={openForm}>
-          новая напоминалка
-        </Button>
-      )}
-
       <Drawer
         title={
           <h3 className='note-form__title'>
-            {openedNoteForm === 'add'
+            {openedFormName === 'addNote'
               ? 'новая напоминалка'
               : 'изменить напоминалку'}
           </h3>
         }
-        open={!!openedNoteForm}
+        open={
+          openedFormName === 'addNote' ||
+          openedFormName === 'editNote'
+        }
         onClose={closeForm}>
         <Form
           form={form}
