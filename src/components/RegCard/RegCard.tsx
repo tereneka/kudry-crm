@@ -40,13 +40,13 @@ import { Dropdown } from 'antd/lib';
 import React from 'react';
 import phoneIcon from '../../images/phone.svg';
 import whatsappIcon from '../../images/whatsapp.svg';
+import { setIsTimeSelectAvailable } from '../../reducers/plannerSlice';
 
 interface RegCardProps {
   reg: DbRegistration;
   user: RegUser | undefined;
   type?: 'major' | 'copy';
   index?: number;
-  toggleTimeSelect?: (bool: boolean) => void;
 }
 
 export default function RegCard({
@@ -54,15 +54,15 @@ export default function RegCard({
   user,
   type = 'major',
   index,
-  toggleTimeSelect = () => {},
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
 
   const { draggableRegCard, regCardInfo } =
     useAppSelector((state) => state.regCardState);
-  const { isFormActive, openedFormName } =
-    useAppSelector((state) => state.plannerState);
+  const { isFormActive } = useAppSelector(
+    (state) => state.plannerState
+  );
 
   const [deleteReg, { isError, isSuccess }] =
     useDeleteRegistrationMutation();
@@ -183,14 +183,14 @@ export default function RegCard({
     dispatch(setDraggableRegCard(reg.id));
     dispatch(setRegCardInfo(reg));
     dispatch(setRegCardUser(user));
-    toggleTimeSelect(true);
+    dispatch(setIsTimeSelectAvailable(true));
   }
 
   function handleCloseBtnClick() {
     dispatch(setRegCardInfo(null));
     dispatch(setRegCardUser(null));
     dispatch(setDraggableRegCard(null));
-    toggleTimeSelect(false);
+    dispatch(setIsTimeSelectAvailable(false));
   }
 
   function handleViewBtnClick() {

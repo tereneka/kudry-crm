@@ -31,18 +31,9 @@ import {
   changeIncome,
 } from '../../utils/reg';
 import { setRegFormTime } from '../../reducers/regSlice';
+import { setIsTimeSelectAvailable } from '../../reducers/plannerSlice';
 
-interface RegTodosProps {
-  isTimeSelectAvailable: boolean;
-  setIsTimeSelectAvailable: (
-    value: boolean
-  ) => void;
-}
-
-export default function RegTodos({
-  isTimeSelectAvailable,
-  setIsTimeSelectAvailable,
-}: RegTodosProps) {
+export default function RegTodos() {
   const { data: userList } =
     useGetUserListQuery();
   const { data: serviceList } =
@@ -62,7 +53,7 @@ export default function RegTodos({
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
-  const { isFormActive, openedFormName } =
+  const { isFormActive, isTimeSelectAvailable } =
     useAppSelector((state) => state.plannerState);
 
   const [updateReg, { isError, isLoading }] =
@@ -91,9 +82,6 @@ export default function RegTodos({
           reg={reg}
           user={user}
           index={index}
-          toggleTimeSelect={
-            setIsTimeSelectAvailable
-          }
           key={reg.id}
         />
       );
@@ -121,7 +109,7 @@ export default function RegTodos({
       }
     }
 
-    setIsTimeSelectAvailable(false);
+    dispatch(setIsTimeSelectAvailable(false));
   }
 
   // описываем действия при смене мастера во время переноса записи
@@ -205,9 +193,6 @@ export default function RegTodos({
           <RegCard
             reg={regCardInfo}
             user={regCardUser}
-            toggleTimeSelect={
-              setIsTimeSelectAvailable
-            }
             type='copy'
           />
         )}

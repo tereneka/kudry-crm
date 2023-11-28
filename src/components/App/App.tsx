@@ -15,13 +15,8 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import {
-  convertStrToNum,
-  disableIosTextFieldZoom,
-  numberFormat,
-} from '../../utils/format';
-import React from 'react';
-import { getEarlierDate } from '../../utils/date';
+import { disableIosTextFieldZoom } from '../../utils/format';
+import Header from '../Header/Header';
 
 function App() {
   const navigate = useNavigate();
@@ -30,6 +25,9 @@ function App() {
   const { data: masters } =
     useGetMasterListQuery();
 
+  const { currentAccount } = useAppSelector(
+    (state) => state.appState
+  );
   const { isError } = useAppSelector(
     (state) => state.appState
   );
@@ -52,14 +50,6 @@ function App() {
 
   onAuthStateChanged(auth, (account) => {
     dispatch(setCurrentAccount(account));
-    if (account && location !== '/') {
-      navigate('/');
-    } else if (
-      !account &&
-      location !== '/sign-in'
-    ) {
-      navigate('/sign-in');
-    }
   });
 
   useEffect(() => {
@@ -80,7 +70,11 @@ function App() {
     <div
       className='content
     '>
-      <RouterApp />
+      {!!currentAccount && <Header />}
+      <main>
+        <RouterApp />
+      </main>
+
       {errorMessage}
     </div>
   );

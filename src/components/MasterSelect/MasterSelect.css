@@ -1,14 +1,43 @@
 .master-select__select {
   height: 55px !important;
-  min-width: 200px;
 }
 
 .master-select__select div {
-  font-weight: 600;
+  padding: 0 4px !important;
+}
+
+.master-select__select span {
+  padding: 0 !important;
 }
 
 .master-select__avatar {
   background: var(--accent-soft);
   width: 50px;
   height: 50px;
+}
+
+.master-select__option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.master-select__name {
+  font-weight: 600;
+  display: inline-block;
+  width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 370px) {
+  .master-select__name {
+    width: 68px;
+  }
+
+  .master-select__avatar {
+    width: 40px;
+    height: 40px;
+  }
 }

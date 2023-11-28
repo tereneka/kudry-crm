@@ -12,11 +12,13 @@ type FormName =
 
 interface PlannerState {
   currentTodoListName: TodoListName;
+  isTimeSelectAvailable: boolean;
   openedFormName: FormName;
   isFormActive: boolean;
 }
 const initialState: PlannerState = {
   currentTodoListName: 'reg',
+  isTimeSelectAvailable: false,
   openedFormName: '',
   isFormActive: false,
 };
@@ -30,6 +32,14 @@ const plannerSlice = createSlice({
       action: PayloadAction<TodoListName>
     ) => {
       state.currentTodoListName = action.payload;
+    },
+
+    setIsTimeSelectAvailable: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isTimeSelectAvailable =
+        action.payload;
     },
 
     setOpenedFormName: (
@@ -50,6 +60,7 @@ const plannerSlice = createSlice({
 
 export const {
   setCurrentTodoListName,
+  setIsTimeSelectAvailable,
   setOpenedFormName,
   setIsFormActive,
 } = plannerSlice.actions;

@@ -1,11 +1,19 @@
 .planner {
   position: relative;
+  padding-top: 10px;
 }
 
 .planner__container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  max-width: 500px;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  background: var(--main-back);
+  padding: 10px 0;
+  z-index: 10;
 }
 
 .planner__open-form-btn {
@@ -13,4 +21,31 @@
   bottom: 20px;
   right: 10px;
   z-index: 10;
+}
+
+.planner__btn-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.planner__radio-group {
+  border-radius: 6px;
+}
+
+.planner__radio-btn {
+  padding: 0;
+}
+
+.planner__radio-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  line-height: 0.5;
+  min-width: 60px;
+  padding: 3px 0;
+  border-radius: 6px;
 }

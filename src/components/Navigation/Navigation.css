@@ -1,0 +1,16 @@
+.navigation {
+  padding: 5px 0 8px;
+}
+
+.navigation__link {
+  text-decoration: none;
+  font-size: 16px;
+  padding: 5px 8px 8px;
+  border-radius: 4px;
+  color: var(--main-text);
+}
+
+.navigation__link_active {
+  background: var(--accent-soft);
+  color: var(--main-back);
+}

@@ -25,16 +25,25 @@ import {
   setDraggableRegCard,
 } from '../../reducers/regCardSlice';
 import RegModal from '../../components/RegModal/RegModal';
-import { Badge, Button } from 'antd';
-import { Link } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../db/firebaseConfig';
+import {
+  Badge,
+  Button,
+  Radio,
+  Tooltip,
+} from 'antd';
 import NoteForm from '../../components/NoteForm/NoteForm';
 import { filterNoteListByMasterId } from '../../reducers/notesSlice';
 import {
+  setCurrentTodoListName,
   setIsFormActive,
+  setIsTimeSelectAvailable,
   setOpenedFormName,
 } from '../../reducers/plannerSlice';
+import { SelectOutlined } from '@ant-design/icons';
+import personIconBlack from '../../images/person-lines-black.svg';
+import notesIconBlack from '../../images/notes-black.svg';
+import personIconWhite from '../../images/person-lines-white.svg';
+import notesIconWhite from '../../images/notes-white.svg';
 
 export default function Planner() {
   const { data: regList } =
@@ -47,8 +56,13 @@ export default function Planner() {
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
-  const { currentTodoListName, isFormActive } =
-    useAppSelector((state) => state.plannerState);
+  const {
+    currentTodoListName,
+    isTimeSelectAvailable,
+    isFormActive,
+  } = useAppSelector(
+    (state) => state.plannerState
+  );
   const { regFormDuration } = useAppSelector(
     (state) => state.regState
   );
@@ -64,6 +78,23 @@ export default function Planner() {
     );
     dispatch(setPrevMaster(currentMaster));
     dispatch(setCurrentMaster(master));
+  }
+
+  function toggleTimeSelectBtn() {
+    dispatch(
+      setIsTimeSelectAvailable(
+        !isTimeSelectAvailable
+      )
+    );
+  }
+
+  function handleTodoListChange(
+    todoListName: 'reg' | 'notes'
+  ) {
+    dispatch(
+      setCurrentTodoListName(todoListName)
+    );
+    dispatch(setIsFormActive(false));
   }
 
   function openForm() {
@@ -117,13 +148,61 @@ export default function Planner() {
           currentMaster={currentMaster}
           onChange={handleMasterChange}
         />
-        <Button type='primary'>
-          <Link
-            to={'/sign-in'}
-            onClick={() => signOut(auth)}>
-            выйти
-          </Link>
-        </Button>
+        <div className='planner__btn-group'>
+          {currentTodoListName === 'reg' && (
+            <Tooltip title='выбрать время'>
+              <Button
+                icon={
+                  <SelectOutlined
+                    rev={undefined}
+                  />
+                }
+                type='primary'
+                danger={!isTimeSelectAvailable}
+                onClick={toggleTimeSelectBtn}
+              />
+            </Tooltip>
+          )}
+          <Radio.Group
+            className='planner__radio-group'
+            defaultValue={currentTodoListName}
+            buttonStyle='solid'
+            onChange={(e) =>
+              handleTodoListChange(e.target.value)
+            }>
+            <Radio.Button
+              className='planner__radio-btn'
+              value={'reg'}>
+              <div className='planner__radio-content'>
+                <img
+                  src={
+                    currentTodoListName === 'reg'
+                      ? personIconWhite
+                      : personIconBlack
+                  }
+                  alt=''
+                />
+                <span>записи</span>
+              </div>
+            </Radio.Button>
+            <Radio.Button
+              value={'notes'}
+              className='planner__radio-btn'>
+              <div className='planner__radio-content'>
+                <img
+                  src={
+                    currentTodoListName ===
+                    'notes'
+                      ? notesIconWhite
+                      : notesIconBlack
+                  }
+                  alt=''
+                />
+                <span>напоминалки</span>
+              </div>
+            </Radio.Button>
+          </Radio.Group>
+        </div>
       </div>
 
       <PlannerCalendar />

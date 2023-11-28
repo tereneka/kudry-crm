@@ -21,14 +21,16 @@ export default function MasterSelect({
   const { Option } = Select;
 
   const optionContent = (master: Master) => (
-    <div>
+    <div className='master-select__option'>
       <Avatar
         className='master-select__avatar'
         size='large'
         src={master.photoUrl}
         alt='фото мастера'
       />{' '}
-      {master.name}
+      <span className='master-select__name'>
+        {master.name}
+      </span>
     </div>
   );
   return (
