@@ -26,6 +26,7 @@ root.render(
           fontFamily:
             '"Source Code Pro", monospace',
           colorTextBase: 'rgb(60, 60, 60)',
+          colorBgBase: 'rgb(250, 250, 250)',
           fontSize: 16,
         },
         components: {

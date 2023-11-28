@@ -60,9 +60,7 @@ function App() {
   disableIosTextFieldZoom();
 
   return (
-    <div
-      className='content
-    '>
+    <div className='content'>
       {!!currentAccount && <Header />}
       <main>
         <RouterApp />
