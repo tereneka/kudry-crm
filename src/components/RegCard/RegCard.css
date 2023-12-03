@@ -2,11 +2,12 @@
   width: calc((100% - 74px));
   position: absolute;
   left: 74px;
+  border: 2px solid var(--disabled);
   padding: 4px;
   font-size: 14px;
   box-sizing: border-box;
   background: var(--accent-bright);
-  background: var(--disabled);
+  background: var(--main-back);
 }
 
 .reg-card_invisible {
@@ -28,15 +29,39 @@
   font-size: 10px;
   background: var(--accent-soft);
   position: sticky;
-  top: 0px !important;
+  top: 76.5px !important;
   left: calc(100% - 190px) !important;
   z-index: 10;
   cursor: auto;
   border: none !important;
 }
 
-.reg-card__box {
+.reg-card_type_copy .reg-card__box {
   background: var(--main-back);
+  color: var(--main-text);
+}
+
+.reg-card_type_copy .reg-card__contacts {
+  color: var(--main-text);
+}
+
+.reg-card_type_copy .reg-card__service {
+  color: var(--main-text);
+}
+
+.reg-card_type_copy
+  .reg-card__services-paragraph {
+  color: var(--main-text);
+}
+
+.reg-card_type_copy .reg-card__number {
+  color: var(--main-back);
+  background: var(--accent-extra);
+}
+
+.reg-card__box {
+  background: var(--accent-extra);
+  color: var(--main-back);
   margin-bottom: 4px;
   padding: 4px 8px;
   border-radius: 4px;
@@ -55,7 +80,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--light-text);
+  color: var(--main-back);
   padding-right: 4px;
 }
 
@@ -67,8 +92,8 @@
 .reg-card__number {
   padding: 2px 8px;
   border-radius: 4px;
-  background: var(--accent-extra);
-  color: var(--main-back);
+  background: var(--main-back);
+  color: var(--accent-extra);
 }
 
 .reg-card__service-list {
@@ -79,6 +104,7 @@
 }
 
 .reg-card__service {
+  color: var(--main-back);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -86,7 +112,7 @@
 
 .reg-card__services-paragraph {
   margin: 0;
-  color: var(--light-text);
+  color: var(--main-back);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -111,8 +137,8 @@
 
 .reg-card__memu-btn {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -2px;
+  right: -2px;
 }
 
 .reg-card:nth-child(odd) .reg-card__memu-btn {
