@@ -3,6 +3,7 @@ import { useAppSelector } from '../../store';
 import { convertDbDateToStr } from '../../utils/date';
 import { useGetUserListQuery } from '../../reducers/apiSlice';
 import NoteCard from '../NoteCard/NoteCard';
+import { Empty } from 'antd';
 
 export default function NotesTodos() {
   const { masterNoteList } = useAppSelector(
@@ -15,17 +16,18 @@ export default function NotesTodos() {
   const { data: userList } =
     useGetUserListQuery();
 
+  const noteListForRender = masterNoteList
+    ?.filter(
+      (note) =>
+        convertDbDateToStr(note.date) === date
+    )
+    .sort((a, b) => a.time.localeCompare(b.time));
+
   return (
     <div className='notes-todos'>
-      {masterNoteList
-        ?.filter(
-          (note) =>
-            convertDbDateToStr(note.date) === date
-        )
-        .sort((a, b) =>
-          a.time.localeCompare(b.time)
-        )
-        .map((note, index) => {
+      {noteListForRender &&
+      noteListForRender.length > 0 ? (
+        noteListForRender.map((note, index) => {
           const user = userList?.find(
             (user) => user.id === note.userId
           );
@@ -38,7 +40,13 @@ export default function NotesTodos() {
               key={note.id}
             />
           );
-        })}
+        })
+      ) : (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description='нет напоминалок'
+        />
+      )}
     </div>
   );
 }
