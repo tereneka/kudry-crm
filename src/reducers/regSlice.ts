@@ -2,7 +2,7 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import { DbRegistration } from '../types';
+import { DbRegistration, Master } from '../types';
 
 interface RegState {
   masterRegList: DbRegistration[] | undefined;

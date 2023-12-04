@@ -15,6 +15,8 @@ import {
   convertDbDateToStr,
 } from '../../utils/date';
 import {
+  useGetMasterListQuery,
+  useGetRegistrationListQuery,
   useGetServiceListQuery,
   useGetUserListQuery,
   useUpdateIncomeMutation,
@@ -32,6 +34,8 @@ import {
 } from '../../utils/reg';
 import { setRegFormTime } from '../../reducers/regSlice';
 import { setIsTimeSelectAvailable } from '../../reducers/plannerSlice';
+import RegMark from '../RegMark/RegMark';
+import { Master } from '../../types';
 
 export default function RegTodos() {
   const { data: userList } =
@@ -39,6 +43,10 @@ export default function RegTodos() {
   const { data: serviceList } =
     useGetServiceListQuery();
 
+  const { data: regList } =
+    useGetRegistrationListQuery(7);
+  const { data: masterList } =
+    useGetMasterListQuery();
   const {
     regCardInfo,
     regCardUser,
@@ -66,7 +74,7 @@ export default function RegTodos() {
   const [selectedTime, setSelectedTime] =
     useState('');
 
-  const regList = masterRegList
+  const currentMasterRegList = masterRegList
     ?.filter(
       (reg) =>
         convertDbDateToStr(reg.date) === date
@@ -82,6 +90,36 @@ export default function RegTodos() {
           reg={reg}
           user={user}
           index={index}
+          key={reg.id}
+        />
+      );
+    });
+
+  let position = 0;
+  const otherMastersRegList = regList
+    ?.filter(
+      (reg) =>
+        reg.masterId !== currentMaster?.id &&
+        convertDbDateToStr(reg.date) === date
+    )
+    .sort((a, b) =>
+      a.masterId.localeCompare(b.masterId)
+    )
+    .map((reg, index, list) => {
+      const master = masterList?.find(
+        (master) => master.id === reg.masterId
+      ) as Master;
+      if (
+        index > 0 &&
+        reg.masterId !== list[index - 1]?.masterId
+      ) {
+        position += 1;
+      }
+      return (
+        <RegMark
+          reg={reg}
+          master={master}
+          position={position}
           key={reg.id}
         />
       );
@@ -227,7 +265,8 @@ export default function RegTodos() {
           />
         </div>
       ))}
-      <div>{regList}</div>
+      <div>{currentMasterRegList}</div>
+      {otherMastersRegList}
     </div>
   );
 }

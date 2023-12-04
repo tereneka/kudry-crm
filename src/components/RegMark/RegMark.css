@@ -1,0 +1,35 @@
+.reg-mark {
+  width: 30px;
+  position: absolute;
+}
+
+.reg-mark__content {
+  position: sticky;
+  top: 100px;
+}
+
+.reg-mark__avatar {
+  width: 30px;
+  height: 30px;
+}
+
+.reg-mark__name {
+  display: block;
+  font-size: 8px;
+  width: 100%;
+  margin: -4px auto 0;
+  padding: 8px 2px 4px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+  color: var(--main-back);
+}
+
+.reg-mark__stripe {
+  width: 6px;
+  margin: -46px auto 0;
+}

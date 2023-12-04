@@ -6,6 +6,7 @@ import {
 import { TIME_LIST } from '../../constants';
 import {
   useDeleteRegistrationMutation,
+  useGetMasterListQuery,
   useGetServiceListQuery,
   useUpdateIncomeMutation,
 } from '../../reducers/apiSlice';
@@ -63,6 +64,8 @@ export default function RegCard({
   const { isFormActive } = useAppSelector(
     (state) => state.plannerState
   );
+  const { data: masterList } =
+    useGetMasterListQuery();
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
   );
@@ -84,6 +87,9 @@ export default function RegCard({
   }`;
 
   const cardStyle = {
+    width: `calc((100% - 48px - ${
+      ((masterList?.length || 1) - 1) * 30
+    }px))`,
     height: reg.duration * 2 * 58 - 4,
     top: TIME_LIST.indexOf(reg.time) * 58,
   };

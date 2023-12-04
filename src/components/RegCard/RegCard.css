@@ -1,7 +1,8 @@
 .reg-card {
-  width: calc((100% - 74px));
+  /* width: calc((100% - 74px)); */
   position: absolute;
-  left: 74px;
+  /* left: 74px; */
+  left: 48px;
   border: 2px solid var(--disabled);
   padding: 4px;
   font-size: 14px;
