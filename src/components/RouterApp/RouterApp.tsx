@@ -4,11 +4,10 @@ import {
   Navigate,
   Outlet,
 } from 'react-router-dom';
-import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import Planner from '../../pages/Planner/Planner';
 import Login from '../Login/Login';
 import { useAppSelector } from '../../store';
-import Main from '../Main/Main';
+import Finance from '../../pages/Finance/Finance';
 
 export default function RouterApp() {
   const { currentAccount } = useAppSelector(
@@ -39,7 +38,10 @@ export default function RouterApp() {
           path='/planner'
           element={<Planner />}
         />
-        <Route path='/main' element={<Main />} />
+        <Route
+          path='/finance'
+          element={<Finance />}
+        />
       </Route>
 
       <Route
@@ -55,6 +57,17 @@ export default function RouterApp() {
           element={<Login />}
         />
       </Route>
+
+      <Route
+        path='*'
+        element={
+          !!currentAccount ? (
+            <Navigate to={'/planner'} />
+          ) : (
+            <Navigate to={'/sign-in'} />
+          )
+        }
+      />
     </Routes>
   );
 }

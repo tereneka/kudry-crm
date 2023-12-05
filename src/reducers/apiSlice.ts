@@ -9,8 +9,6 @@ import {
   query,
   where,
   addDoc,
-  Timestamp,
-  writeBatch,
   increment,
   doc,
   runTransaction,
@@ -29,6 +27,7 @@ import {
 } from '../db/firebaseConfig';
 import {
   Category,
+  DbIncome,
   DbNote,
   DbRegistration,
   Income,
@@ -37,13 +36,8 @@ import {
   RegUser,
   Registration,
   Service,
-  SubCategory,
 } from '../types';
-import dayjs from 'dayjs';
-import {
-  convertDbDateToStr,
-  getEarlierDate,
-} from '../utils/date';
+import { getEarlierDate } from '../utils/date';
 import {
   User,
   signInWithEmailAndPassword,
@@ -457,6 +451,51 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
 
+    getIncomeList: builder.query<
+      DbIncome[],
+      { startDate: Date; endDate: Date }
+    >({
+      async queryFn(args) {
+        const { startDate, endDate } = args;
+
+        try {
+          const incomeQuery = query(
+            collection(db, 'income'),
+            where(
+              'date',
+              '>=',
+              new Date(
+                startDate.setHours(0, 0, 0, 0)
+              )
+            ),
+            where(
+              'date',
+              '<=',
+              new Date(
+                endDate.setHours(0, 0, 0, 0)
+              )
+            )
+          );
+          const querySnaphot = await getDocs(
+            incomeQuery
+          );
+          let income: any[] = [];
+          querySnaphot?.forEach((doc) => {
+            income.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          return {
+            data: income,
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ['Income'],
+    }),
+
     updateIncome: builder.mutation<
       void,
       Omit<Income, 'id'>
@@ -548,6 +587,7 @@ export const {
   useUpdateNoteMutation,
   useDeleteNoteMutation,
   useAddUserMutation,
+  useGetIncomeListQuery,
   useUpdateIncomeMutation,
   useSigninMutation,
 } = apiSlice;

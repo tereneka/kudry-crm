@@ -49,7 +49,7 @@ export default function Planner() {
   const { data: regList } =
     useGetRegistrationListQuery(7);
   const { data: noteList } =
-    useGetNoteListQuery(7);
+    useGetNoteListQuery(1);
   const { data: masterList } =
     useGetMasterListQuery();
 

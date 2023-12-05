@@ -73,6 +73,10 @@ interface Income {
   sum: number;
 }
 
+interface DbIncome extends Omit<Income, 'date'> {
+  date: Timestamp;
+}
+
 interface RegistrationContext {
   categores: Category[] | undefined;
   masters: Master[] | undefined;
@@ -107,6 +111,7 @@ export type {
   RegistrationContext,
   DbRegistration,
   Income,
+  DbIncome,
   RegUser,
   Note,
   DbNote,

@@ -1,5 +1,20 @@
 const DATE_FORMAT = 'DD.MM.YYYY';
 
+const MONTHS = [
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
+];
+
 const TIME_FORMAT = 'HH:mm';
 
 const TIME_LIST = ['09:00'];
@@ -28,6 +43,7 @@ const MAILE_HAIRCAT_LIST = [
 
 export {
   DATE_FORMAT,
+  MONTHS,
   TIME_FORMAT,
   TIME_LIST,
   HAIR_LENGTH_LIST,
