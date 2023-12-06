@@ -12,6 +12,16 @@ function getDateRangeList(dateRange: {
   let result = [];
   let num = 0;
   let date = getDate(0, dateRange.startDate);
+
+  if (
+    dateRange.startDate.getMonth() ===
+      dateRange.endDate.getMonth() &&
+    dateRange.startDate.getFullYear() ===
+      dateRange.endDate.getFullYear()
+  ) {
+    return [date];
+  }
+
   const endDate = getDate(0, dateRange.endDate);
   while (date < endDate) {
     date = getDate(num, dateRange.startDate);
@@ -21,26 +31,11 @@ function getDateRangeList(dateRange: {
 
   return result;
 }
-
-// const categoryColorList: {
-//   [key: string]: string;
-// } = {
-//   'парикмахерские услуги': 'rgb(137, 175, 176)',
-//   маникюр: 'rgba(215, 142, 123)',
-//   педикюр: 'rgb(20, 100, 120)',
-//   'брови и ресницы': 'rgb(220, 100, 70)',
-//   макияж: 'rgb(170, 160, 30)',
-// };
 const colorList = [
-  'rgb(137, 175, 176)',
   'rgba(215, 142, 123)',
-  'rgb(20, 100, 120)',
-  'rgb(220, 100, 70)',
-  'rgb(170, 160, 30)',
   'rgb(137, 175, 176)',
-  'rgba(215, 142, 123)',
-  'rgb(20, 100, 120)',
   'rgb(220, 100, 70)',
+  'rgb(20, 100, 120)',
   'rgb(170, 160, 30)',
 ];
 

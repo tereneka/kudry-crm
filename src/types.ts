@@ -77,6 +77,23 @@ interface DbIncome extends Omit<Income, 'date'> {
   date: Timestamp;
 }
 
+interface Expenses {
+  categoryId: string;
+  date: Date;
+  sum: number;
+}
+
+interface DbExpenses
+  extends Omit<Expenses, 'date'> {
+  id: string;
+  date: Timestamp;
+}
+
+interface ExpensesCategory {
+  id: string;
+  name: string;
+}
+
 interface RegistrationContext {
   categores: Category[] | undefined;
   masters: Master[] | undefined;
@@ -112,6 +129,9 @@ export type {
   DbRegistration,
   Income,
   DbIncome,
+  Expenses,
+  DbExpenses,
+  ExpensesCategory,
   RegUser,
   Note,
   DbNote,

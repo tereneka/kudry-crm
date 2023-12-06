@@ -1,1 +1,7 @@
+.finance__calendar .ant-picker-time-panel {
+  display: none !important;
+}
 
+.finance__calendar .ant-picker-footer {
+  display: none !important;
+}

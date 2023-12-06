@@ -1,4 +1,3 @@
-import './UserSelect.css';
 import {
   Button,
   Divider,
@@ -7,78 +6,55 @@ import {
   Select,
 } from 'antd';
 import {
-  useAddUserMutation,
-  useGetUserListQuery,
+  useAddExpensesCategoryMutation,
+  useGetExpensesCategoryListQuery,
 } from '../../reducers/apiSlice';
 import {
   PlusOutlined,
   CloseOutlined,
-  DownOutlined,
 } from '@ant-design/icons';
-import {
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
-import { phoneFormat } from '../../utils/format';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from '../../store';
 import { setIsError } from '../../reducers/appSlice';
-import { RegUser } from '../../types';
+import { ExpensesCategory } from '../../types';
 
-interface UserSelectProps {
-  suffixIcon?: ReactNode;
+interface ExpensesCategorySelectProps {
   value?: string;
   onChange?: (value: string) => void;
 }
 
-export default function UserSelect({
-  suffixIcon = <DownOutlined rev={undefined} />,
+export default function ExpensesCategorySelect({
   value,
   onChange,
-}: UserSelectProps) {
-  const { data: users } = useGetUserListQuery();
+}: ExpensesCategorySelectProps) {
+  const { data: categoryList } =
+    useGetExpensesCategoryListQuery();
 
-  const [isUserFormOpened, setIsUserFormOpened] =
+  const [isFormOpened, setIsFormOpened] =
     useState(false);
 
   const [
-    addUser,
+    addCategory,
     { isLoading, isError, isSuccess },
-  ] = useAddUserMutation();
+  ] = useAddExpensesCategoryMutation();
 
   const dispatch = useAppDispatch();
 
   const { Option } = Select;
 
-  function renderOptionContent(user: RegUser) {
-    return (
-      <div className='user-select__option'>
-        <span className='user-select__option-item user-select__option-item_name_name'>
-          {user.name}
-        </span>
-        <span className='user-select__option-item user-select__option-item_name_phone'>
-          {phoneFormat(user.phone)}
-        </span>
-      </div>
-    );
-  }
-
-  function handleAddUserBtnClick() {
-    setIsUserFormOpened(true);
+  function openForm() {
+    setIsFormOpened(true);
   }
 
   function closeForm() {
-    setIsUserFormOpened(false);
+    setIsFormOpened(false);
   }
 
   function handleFormSubmit(
-    values: Omit<RegUser, 'id'>
+    values: Omit<ExpensesCategory, 'id'>
   ) {
     if (!isLoading) {
-      addUser({
-        ...values,
-        phone: '+7' + values.phone,
-      });
+      addCategory(values);
     }
   }
 
@@ -92,19 +68,18 @@ export default function UserSelect({
     <Select
       value={value}
       onChange={onChange}
-      className='user-select'
       notFoundContent={<></>}
       optionLabelProp='label'
       onDropdownVisibleChange={closeForm}
       listHeight={150}
       showSearch
       allowClear
-      suffixIcon={suffixIcon}
       optionFilterProp='children'
       filterOption={(input, option) => {
-        return !!users
+        return !!categoryList
           ?.find(
-            (user) => user.id === option?.value
+            (category) =>
+              category.id === option?.value
           )
           ?.name.toLowerCase()
           .includes(input.toLowerCase());
@@ -113,7 +88,7 @@ export default function UserSelect({
         <>
           {menu}
 
-          {isUserFormOpened && (
+          {isFormOpened && (
             <>
               <Divider
                 style={{ margin: '8px 0' }}
@@ -131,41 +106,20 @@ export default function UserSelect({
                 }}
               />
               <Form
-                name='user'
+                name='expCategory'
                 onFinish={handleFormSubmit}
                 layout='vertical'
                 requiredMark={false}>
                 <Form.Item
                   name='name'
-                  label='имя'
+                  label='название'
                   rules={[
                     {
                       required: true,
-                      message: 'введите имя',
+                      message: 'введите название',
                     },
                   ]}>
                   <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name='phone'
-                  label='телефон'
-                  rules={[
-                    {
-                      required: true,
-                      message:
-                        'введите номер телефона',
-                    },
-                    {
-                      min: 10,
-                      message:
-                        'минимальное количествосимволов 10',
-                    },
-                  ]}>
-                  <Input
-                    addonBefore={'+7'}
-                    maxLength={10}
-                  />
                 </Form.Item>
 
                 <Form.Item
@@ -185,29 +139,30 @@ export default function UserSelect({
             </>
           )}
 
-          {!isUserFormOpened && (
+          {!isFormOpened && (
             <Button
               type='primary'
               icon={
                 <PlusOutlined rev={undefined} />
               }
-              onClick={handleAddUserBtnClick}
-              style={{ margin: 12 }}>
-              новый клиент
+              onClick={openForm}
+              style={{
+                marginTop: 12,
+                marginBottom: 12,
+              }}>
+              новая категория
             </Button>
           )}
         </>
       )}>
-      {!isUserFormOpened &&
-        users?.map((user) => {
-          const content =
-            renderOptionContent(user);
+      {!isFormOpened &&
+        categoryList?.map((category) => {
           return (
             <Option
-              key={user.id}
-              value={user.id}
-              label={content}>
-              {content}
+              key={category.id}
+              value={category.id}
+              label={category.name}>
+              {category.name}
             </Option>
           );
         })}

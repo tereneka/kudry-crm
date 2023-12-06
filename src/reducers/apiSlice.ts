@@ -27,9 +27,12 @@ import {
 } from '../db/firebaseConfig';
 import {
   Category,
+  DbExpenses,
   DbIncome,
   DbNote,
   DbRegistration,
+  Expenses,
+  ExpensesCategory,
   Income,
   Master,
   Note,
@@ -56,6 +59,8 @@ export const apiSlice = createApi({
     'Registration',
     'Note',
     'Income',
+    'Expenses',
+    'ExpCategory',
     'Account',
   ],
   endpoints: (builder) => ({
@@ -547,6 +552,120 @@ export const apiSlice = createApi({
       invalidatesTags: ['Income'],
     }),
 
+    getExpenseList: builder.query<
+      DbExpenses[],
+      { startDate: Date; endDate: Date }
+    >({
+      async queryFn(args) {
+        const { startDate, endDate } = args;
+
+        try {
+          const expensesQuery = query(
+            collection(db, 'expenses'),
+            where(
+              'date',
+              '>=',
+              new Date(
+                startDate.setHours(0, 0, 0, 0)
+              )
+            ),
+            where(
+              'date',
+              '<=',
+              new Date(
+                endDate.setHours(0, 0, 0, 0)
+              )
+            )
+          );
+          const querySnaphot = await getDocs(
+            expensesQuery
+          );
+          let expenses: any[] = [];
+          querySnaphot?.forEach((doc) => {
+            expenses.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          return {
+            data: expenses,
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ['Expenses'],
+    }),
+
+    addExpense: builder.mutation<
+      string,
+      Expenses
+    >({
+      async queryFn(body) {
+        const expRef = collection(db, 'expenses');
+        try {
+          const data = await addDoc(expRef, body);
+
+          return { data: data.id };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['Expenses'],
+    }),
+
+    getExpensesCategoryList: builder.query<
+      ExpensesCategory[],
+      void
+    >({
+      async queryFn() {
+        try {
+          const expensesQuery = query(
+            collection(db, 'expCategores')
+          );
+          const querySnaphot = await getDocs(
+            expensesQuery
+          );
+          let expenses: any[] = [];
+          querySnaphot?.forEach((doc) => {
+            expenses.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          return {
+            data: expenses,
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ['ExpCategory'],
+    }),
+
+    addExpensesCategory: builder.mutation<
+      string,
+      Omit<ExpensesCategory, 'id'>
+    >({
+      async queryFn(body) {
+        const categoryRef = collection(
+          db,
+          'expCategores'
+        );
+        try {
+          const data = await addDoc(
+            categoryRef,
+            body
+          );
+
+          return { data: data.id };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['ExpCategory'],
+    }),
+
     signin: builder.mutation<
       User,
       { email: string; password: string }
@@ -589,5 +708,9 @@ export const {
   useAddUserMutation,
   useGetIncomeListQuery,
   useUpdateIncomeMutation,
+  useGetExpenseListQuery,
+  useAddExpenseMutation,
+  useGetExpensesCategoryListQuery,
+  useAddExpensesCategoryMutation,
   useSigninMutation,
 } = apiSlice;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Finance.css';
 import {
   useGetCategoryListQuery,
@@ -18,13 +18,18 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { DATE_FORMAT } from '../../constants';
-import { DatePicker, Select } from 'antd';
+import { Button, DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import { convertDateStrToDate } from '../../utils/date';
 import {
   colorList,
   getDateRangeList,
 } from '../../utils/finance';
+import { useAppDispatch } from '../../store';
+import { setIsExpensesFormOpened } from '../../reducers/financeSlice';
+import ExpensesForm from '../../components/ExpensesForm/ExpensesForm';
+import { useLocation } from 'react-router-dom';
 
 ChartJS.register(
   CategoryScale,
@@ -40,9 +45,7 @@ const { RangePicker } = DatePicker;
 
 export default function Finance() {
   const today = new Date();
-  const defaultStartDay = `01.${
-    today.getMonth() + 1
-  }.${today.getFullYear() - 1}`;
+  const defaultStartDay = `01.${today.getMonth()}.${today.getFullYear()}`;
   const defaultEndDay = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -56,31 +59,54 @@ export default function Finance() {
     endDate: convertDateStrToDate(defaultEndDay),
   });
   const [sort, setSort] = useState(1);
+  const [barAspectRatio, setBarAspectRatio] =
+    useState(
+      window.innerHeight > window.innerWidth
+        ? 0.8
+        : 2
+    );
 
   const { data: incomeList } =
     useGetIncomeListQuery(dateRange);
   const { data: categoryList } =
     useGetCategoryListQuery();
-  const { data: serviceList } =
-    useGetServiceListQuery();
   const { data: masterList } =
     useGetMasterListQuery();
+
+  const dispatch = useAppDispatch();
+
+  const dateRangeList =
+    getDateRangeList(dateRange);
 
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: 'bottom' as const,
       },
       title: {
         display: true,
         text: 'ДОХОД, ₽',
       },
+      tooltip: { intersect: true },
     },
+    layout: {
+      padding: 20,
+    },
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    scales: {
+      x: {
+        stacked: true,
+      },
+      y: {
+        stacked: true,
+      },
+    },
+    aspectRatio: barAspectRatio,
   };
-
-  const dateRangeList =
-    getDateRangeList(dateRange);
 
   const sortList =
     sort === 1
@@ -115,9 +141,22 @@ export default function Finance() {
             );
         }),
         backgroundColor: colorList[index],
+        hoverBackgroundColor: colorList[index],
       };
     }),
   };
+
+  window.addEventListener('resize', () => {
+    window.innerHeight > window.innerWidth
+      ? setBarAspectRatio(0.8)
+      : setBarAspectRatio(2);
+  });
+
+  // useEffect(() => {
+  //   window.innerHeight > window.innerWidth
+  //     ? setBarAspectRatio(0.8)
+  //     : setBarAspectRatio(2);
+  // }, []);
 
   function handleDateRangeChange(
     values:
@@ -133,8 +172,17 @@ export default function Finance() {
   }
 
   return (
-    <div>
+    <div className='finance'>
+      <Button
+        type='primary'
+        onClick={() =>
+          dispatch(setIsExpensesFormOpened(true))
+        }>
+        добавить расходы
+      </Button>
       <RangePicker
+        popupClassName='finance__calendar'
+        showTime
         format={DATE_FORMAT}
         defaultValue={[
           dayjs(defaultStartDay, DATE_FORMAT),
@@ -151,8 +199,9 @@ export default function Finance() {
         defaultValue={1}
         onChange={(value) => setSort(value)}
       />
-
       <Bar options={options} data={barData} />
+
+      <ExpensesForm />
     </div>
   );
 }

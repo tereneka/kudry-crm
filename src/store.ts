@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import appReducer from './reducers/appSlice';
 import plannerReducer from './reducers/plannerSlice';
+import financeReducer from './reducers/financeSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
 import notesReducer from './reducers/notesSlice';
@@ -23,6 +24,7 @@ export const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
     appState: appReducer,
     plannerState: plannerReducer,
+    financeState: financeReducer,
     calendarState: calendarReducer,
     regState: regReducer,
     notesState: notesReducer,
