@@ -5,7 +5,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import Planner from '../../pages/Planner/Planner';
-import Login from '../Login/Login';
+import Login from '../../pages/Login/Login';
 import { useAppSelector } from '../../store';
 import Finance from '../../pages/Finance/Finance';
 
@@ -20,7 +20,13 @@ export default function RouterApp() {
         path='/'
         element={
           !!currentAccount ? (
-            <Navigate to={'/planner'} />
+            <Navigate
+              to={
+                localStorage.getItem(
+                  'location'
+                ) || '/planner'
+              }
+            />
           ) : (
             <Navigate to={'/sign-in'} />
           )
@@ -62,7 +68,13 @@ export default function RouterApp() {
         path='*'
         element={
           !!currentAccount ? (
-            <Navigate to={'/planner'} />
+            <Navigate
+              to={
+                localStorage.getItem(
+                  'location'
+                ) || '/planner'
+              }
+            />
           ) : (
             <Navigate to={'/sign-in'} />
           )

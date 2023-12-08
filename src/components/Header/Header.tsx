@@ -14,7 +14,10 @@ export default function Header() {
       <Button type='primary'>
         <Link
           to={'/sign-in'}
-          onClick={() => signOut(auth)}>
+          onClick={() => {
+            signOut(auth);
+            localStorage.removeItem('location');
+          }}>
           <LogoutOutlined rev={undefined} />
         </Link>
       </Button>

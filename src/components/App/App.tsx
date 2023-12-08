@@ -13,8 +13,11 @@ import { auth } from '../../db/firebaseConfig';
 import { setCurrentAccount } from '../../reducers/appSlice';
 import { disableIosTextFieldZoom } from '../../utils/format';
 import Header from '../Header/Header';
+import { useLocation } from 'react-router-dom';
 
 function App() {
+  const { pathname: location } = useLocation();
+
   const { data: masters } =
     useGetMasterListQuery();
 
@@ -44,6 +47,16 @@ function App() {
   onAuthStateChanged(auth, (account) => {
     dispatch(setCurrentAccount(account));
   });
+
+  useEffect(() => {
+    if (
+      location !== '/' &&
+      !!currentAccount &&
+      location !== '/sign-in'
+    ) {
+      localStorage.setItem('location', location);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (masters && !currentMaster) {
