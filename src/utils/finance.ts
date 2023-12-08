@@ -31,12 +31,24 @@ function getDateRangeList(dateRange: {
 
   return result;
 }
-const colorList = [
-  'rgba(215, 142, 123)',
-  'rgb(137, 175, 176)',
-  'rgb(220, 100, 70)',
+const incomeColorList = [
   'rgb(20, 100, 120)',
   'rgb(170, 160, 30)',
+  'rgb(220, 100, 70)',
+  'rgb(137, 175, 176)',
+  'rgba(215, 142, 123)',
 ];
 
-export { getDateRangeList, colorList };
+const expenseColorList = [
+  'rgb(180, 180, 180)',
+  'rgb(120, 120, 120)',
+  'rgb(160, 160, 160)',
+  'rgb(100, 100, 100)',
+  'rgb(140, 140, 140)',
+];
+
+export {
+  getDateRangeList,
+  incomeColorList,
+  expenseColorList,
+};

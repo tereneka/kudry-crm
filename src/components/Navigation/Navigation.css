@@ -7,7 +7,7 @@
   font-size: 16px;
   padding: 5px 8px 8px;
   border-radius: 6px;
-  color: var(--main-text);
+  color: rgb(60, 60, 60, 0.7);
 }
 
 .navigation__link_active {

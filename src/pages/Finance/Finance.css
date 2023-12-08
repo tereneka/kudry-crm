@@ -2,6 +2,39 @@
   display: none !important;
 }
 
-.finance__calendar .ant-picker-footer {
-  display: none !important;
+.finance__settings {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 40px 8px;
+}
+
+.finance__sort {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  min-width: 222px;
+}
+
+.finance__sort-select {
+  min-width: 170px;
+}
+
+.finance__open-form-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  z-index: 10;
+}
+
+@media screen and (min-width: 850px) {
+  .finance__settings {
+    flex-direction: row;
+  }
+
+  .finance__sort {
+    max-width: 0;
+  }
 }

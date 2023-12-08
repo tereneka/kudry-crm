@@ -1,16 +1,3 @@
-.note-form {
-  position: fixed;
-  bottom: 20px;
-  right: 10px;
-  z-index: 10;
-}
-
-.note-form__title {
-  margin: 0;
-  text-transform: uppercase;
-  font-size: 16px;
-}
-
 .note-form__date-time-container {
   display: flex;
   justify-content: space-between;
@@ -24,11 +11,4 @@
 .note-form__btn {
   font-size: 11px;
   margin-left: 8px;
-}
-
-@media screen and (min-width: 700px) {
-  .note-form {
-    bottom: 20px;
-    right: 20px;
-  }
 }

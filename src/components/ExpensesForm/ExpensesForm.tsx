@@ -11,23 +11,13 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../../store';
-import {
-  DATE_FORMAT,
-  TIME_FORMAT,
-} from '../../constants';
-import { Expenses, Note } from '../../types';
-import {
-  convertDateStrToDate,
-  convertDbDateToStr,
-} from '../../utils/date';
-import dayjs from 'dayjs';
+import { DATE_FORMAT } from '../../constants';
 import { setIsError } from '../../reducers/appSlice';
 import type { Dayjs } from 'dayjs';
 import {
-  setIsFormActive,
-  setOpenedFormName,
-} from '../../reducers/plannerSlice';
-import { setIsExpensesFormOpened } from '../../reducers/financeSlice';
+  setIsExpensesFormActive,
+  setIsExpensesFormOpened,
+} from '../../reducers/financeSlice';
 import ExpensesCategorySelect from '../ExpensesCategorySelect/ExpensesCategorySelect';
 import {
   formatToDecimalNumber,
@@ -55,7 +45,14 @@ export default function ExpensesForm() {
   ] = useAddExpenseMutation();
 
   function closeForm() {
+    const isFormEmpty =
+      Object.values(form.getFieldsValue()).filter(
+        (field) => field
+      ).length < 1;
     dispatch(setIsExpensesFormOpened(false));
+    if (isFormEmpty) {
+      dispatch(setIsExpensesFormActive(false));
+    }
   }
 
   function handleNumberInputChange(
@@ -96,6 +93,7 @@ export default function ExpensesForm() {
   function resetForm() {
     form.resetFields();
     dispatch(setIsExpensesFormOpened(false));
+    dispatch(setIsExpensesFormActive(false));
   }
 
   // обработка результата отправки формы
@@ -130,7 +128,7 @@ export default function ExpensesForm() {
             <ExpensesCategorySelect />
           </Form.Item>
 
-          <div className='expenses-form__date-time-container'>
+          <div className='expenses-form__container'>
             <Form.Item
               name='date'
               label=''

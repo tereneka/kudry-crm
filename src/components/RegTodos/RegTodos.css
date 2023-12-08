@@ -34,5 +34,5 @@
 
 .reg-todos__time-table-cell_active:hover,
 .reg-todos__time-table-cell_selected {
-  background: var(--accent-soft);
+  background: var(--accent-bright);
 }

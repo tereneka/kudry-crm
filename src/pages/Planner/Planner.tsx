@@ -158,7 +158,7 @@ export default function Planner() {
                   />
                 }
                 type='primary'
-                danger={!isTimeSelectAvailable}
+                danger={isTimeSelectAvailable}
                 onClick={toggleTimeSelectBtn}
               />
             </Tooltip>
@@ -234,10 +234,11 @@ export default function Planner() {
         }
         showZero={false}
         size='small'
+        color='rgb(137, 175, 176)'
         offset={[-20, 0]}>
         <Button
           type='primary'
-          danger={!isFormActive}
+          danger={isFormActive}
           onClick={openForm}>
           {currentTodoListName === 'reg'
             ? 'новая запись'

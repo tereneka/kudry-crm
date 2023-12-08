@@ -5,10 +5,12 @@ import {
 
 interface FinanceState {
   isExpensesFormOpened: boolean;
+  isExpensesFormActive: boolean;
 }
 
 const initialState: FinanceState = {
   isExpensesFormOpened: false,
+  isExpensesFormActive: false,
 };
 
 const financeSlice = createSlice({
@@ -21,10 +23,19 @@ const financeSlice = createSlice({
     ) => {
       state.isExpensesFormOpened = action.payload;
     },
+
+    setIsExpensesFormActive: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isExpensesFormActive = action.payload;
+    },
   },
 });
 
-export const { setIsExpensesFormOpened } =
-  financeSlice.actions;
+export const {
+  setIsExpensesFormOpened,
+  setIsExpensesFormActive,
+} = financeSlice.actions;
 
 export default financeSlice.reducer;

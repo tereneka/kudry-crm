@@ -5,4 +5,5 @@
 .root {
   margin: 0;
   background: var(--main-back);
+  color: var(--main-text);
 }

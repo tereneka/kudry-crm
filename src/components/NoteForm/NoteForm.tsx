@@ -169,11 +169,9 @@ export default function NoteForm() {
     <div className='note-form'>
       <Drawer
         title={
-          <h3 className='note-form__title'>
-            {openedFormName === 'addNote'
-              ? 'новая напоминалка'
-              : 'изменить напоминалку'}
-          </h3>
+          openedFormName === 'addNote'
+            ? 'НОВАЯ НАПОМИНАЛКА'
+            : 'ИЗМЕНИТЬ НАПОМИНАЛКУ'
         }
         open={
           openedFormName === 'addNote' ||
