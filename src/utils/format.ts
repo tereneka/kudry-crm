@@ -64,7 +64,7 @@ function phoneFormat(phone: string) {
     ')' +
     phone.slice(5, 8) +
     '-' +
-    phone.slice(7, 9) +
+    phone.slice(8, 10) +
     '-' +
     phone.slice(10)
   );
