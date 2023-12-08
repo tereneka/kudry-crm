@@ -22,13 +22,6 @@
   min-width: 170px;
 }
 
-.finance__open-form-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 10px;
-  z-index: 10;
-}
-
 @media screen and (min-width: 850px) {
   .finance__settings {
     flex-direction: row;

@@ -106,7 +106,7 @@ export default function ExpensesCategorySelect({
                 }}
               />
               <Form
-                name='expCategory'
+                name='addExpensesCategory'
                 onFinish={handleFormSubmit}
                 layout='vertical'
                 requiredMark={false}>

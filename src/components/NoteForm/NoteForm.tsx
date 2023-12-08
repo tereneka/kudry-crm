@@ -180,7 +180,7 @@ export default function NoteForm() {
         onClose={closeForm}>
         <Form
           form={form}
-          name='note'
+          name={openedFormName}
           onFinish={handleFormSubmit}
           layout='vertical'
           requiredMark={false}

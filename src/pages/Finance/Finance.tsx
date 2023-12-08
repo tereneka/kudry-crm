@@ -19,7 +19,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { DATE_FORMAT } from '../../constants';
-import { Button, DatePicker, Select } from 'antd';
+import { DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
 import { convertDateStrToDate } from '../../utils/date';
 import {
@@ -38,6 +38,7 @@ import {
   setIsExpensesFormOpened,
 } from '../../reducers/financeSlice';
 import ExpensesForm from '../../components/ExpensesForm/ExpensesForm';
+import OpenFormBtn from '../../components/OpenFormBtn/OpenFormBtn';
 
 ChartJS.register(
   CategoryScale,
@@ -187,6 +188,11 @@ export default function Finance() {
     setChartrAspectRatio(num);
   });
 
+  function openForm() {
+    dispatch(setIsExpensesFormOpened(true));
+    dispatch(setIsExpensesFormActive(true));
+  }
+
   function handleDateRangeChange(
     values:
       | [dayjs.Dayjs | null, dayjs.Dayjs | null]
@@ -257,16 +263,11 @@ export default function Finance() {
         data={chartData}
       />
 
-      <Button
-        className='finance__open-form-btn'
-        type='primary'
-        danger={isExpensesFormActive}
-        onClick={() => {
-          dispatch(setIsExpensesFormOpened(true));
-          dispatch(setIsExpensesFormActive(true));
-        }}>
-        добавить расходы
-      </Button>
+      <OpenFormBtn
+        title='добавить расходы'
+        isFormActive={isExpensesFormActive}
+        onClick={openForm}
+      />
 
       <ExpensesForm />
     </div>

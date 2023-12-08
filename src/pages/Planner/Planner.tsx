@@ -44,6 +44,7 @@ import personIconBlack from '../../images/person-lines-black.svg';
 import notesIconBlack from '../../images/notes-black.svg';
 import personIconWhite from '../../images/person-lines-white.svg';
 import notesIconWhite from '../../images/notes-white.svg';
+import OpenFormBtn from '../../components/OpenFormBtn/OpenFormBtn';
 
 export default function Planner() {
   const { data: regList } =
@@ -224,27 +225,21 @@ export default function Planner() {
         </>
       )}
 
-      <Badge
-        className='planner__open-form-btn'
+      <OpenFormBtn
+        title={
+          currentTodoListName === 'reg'
+            ? 'новая запись'
+            : 'новая напоминалка'
+        }
+        isFormActive={isFormActive}
+        onClick={openForm}
+        hasBadge={currentTodoListName === 'reg'}
         count={
-          currentTodoListName === 'reg' &&
           isFormActive
             ? (regFormDuration || 0) + 'ч.'
             : 0
         }
-        showZero={false}
-        size='small'
-        color='rgb(137, 175, 176)'
-        offset={[-20, 0]}>
-        <Button
-          type='primary'
-          danger={isFormActive}
-          onClick={openForm}>
-          {currentTodoListName === 'reg'
-            ? 'новая запись'
-            : 'новая напоминалка'}
-        </Button>
-      </Badge>
+      />
     </div>
   );
 }

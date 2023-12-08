@@ -131,7 +131,7 @@ export default function UserSelect({
                 }}
               />
               <Form
-                name='user'
+                name='addUser'
                 onFinish={handleFormSubmit}
                 layout='vertical'
                 requiredMark={false}>

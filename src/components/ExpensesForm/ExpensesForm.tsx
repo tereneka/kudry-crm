@@ -112,7 +112,7 @@ export default function ExpensesForm() {
         onClose={closeForm}>
         <Form
           form={form}
-          name='expenses'
+          name='addExpense'
           onFinish={handleFormSubmit}
           layout='vertical'
           requiredMark={false}>
