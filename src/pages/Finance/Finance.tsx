@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './Finance.css';
 import {
   useGetCategoryListQuery,
@@ -6,7 +6,6 @@ import {
   useGetExpensesCategoryListQuery,
   useGetIncomeListQuery,
   useGetMasterListQuery,
-  useGetServiceListQuery,
 } from '../../reducers/apiSlice';
 import {
   Chart as ChartJS,
@@ -22,12 +21,13 @@ import { Bar } from 'react-chartjs-2';
 import { DATE_FORMAT } from '../../constants';
 import { Button, DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
 import { convertDateStrToDate } from '../../utils/date';
 import {
-  expenseColorList,
+  chartOptions,
+  expenseChartDatasets,
   getDateRangeList,
-  incomeColorList,
+  incomeChartDatasets,
+  profitChartDaraset,
 } from '../../utils/finance';
 import {
   useAppDispatch,
@@ -38,9 +38,6 @@ import {
   setIsExpensesFormOpened,
 } from '../../reducers/financeSlice';
 import ExpensesForm from '../../components/ExpensesForm/ExpensesForm';
-import { useLocation } from 'react-router-dom';
-import { retry } from '@reduxjs/toolkit/query';
-import { numberFormat } from '../../utils/format';
 
 ChartJS.register(
   CategoryScale,
@@ -72,12 +69,14 @@ export default function Finance() {
   const [incomeSort, setIncomeSort] = useState(1);
   const [expenseSort, setExpenseSort] =
     useState(1);
-  const [barAspectRatio, setBarAspectRatio] =
-    useState(
-      window.innerHeight > window.innerWidth
-        ? 0.8
-        : 2
-    );
+  const [
+    chartrAspectRatio,
+    setChartrAspectRatio,
+  ] = useState(
+    window.innerHeight > window.innerWidth
+      ? 0.8
+      : 2
+  );
 
   const { data: incomeList } =
     useGetIncomeListQuery(dateRange);
@@ -99,221 +98,93 @@ export default function Finance() {
   const dateRangeList =
     getDateRangeList(dateRange);
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-      },
-      // title: {
-      //   display: true,
-      //   text: 'ДОХОД, ₽',
-      // },
-      tooltip: {
-        intersect: true,
-        callbacks: {
-          label: function (context: any) {
-            let label =
-              context.dataset.label || '';
-
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label +=
-                numberFormat(context.parsed.y) +
-                ' ₽';
-            }
-            return label;
-          },
-          //           footer: function (context: any[]) {
-          //             let income = 0;
-          //             let expense = 0;
-          //             let profit = 0;
-          //             context.forEach((item) => {
-          //               if (
-          //                 categoryList?.find(
-          //                   (category) =>
-          //                     category.name ===
-          //                     item.dataset.label
-          //                 )
-          //               ) {
-          //                 income += item.raw;
-          //               } else if (
-          //                 expCategoryList?.find(
-          //                   (category) =>
-          //                     category.name ===
-          //                     item.dataset.label
-          //                 )
-          //               ) {
-          //                 expense += item.raw;
-          //               } else {
-          //                 profit += item.raw;
-          //               }
-          //             });
-
-          //             return `ИТОГО
-          // доход: ${numberFormat(income)} ₽
-          // расход: ${numberFormat(expense * -1)} ₽
-          // прибыль: ${numberFormat(profit)} ₽`;
-          //           },
-        },
-      },
-    },
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    scales: {
-      x: {
-        stacked: true,
-      },
-      y: {
-        stacked: true,
-      },
-    },
-    aspectRatio: barAspectRatio,
-  };
-
   const incomeSortList =
     incomeSort === 1
       ? [{ name: 'доход', id: 1 }]
       : incomeSort === 2
       ? categoryList || []
       : masterList || [];
-  const incomeBarDatasets = incomeSortList.map(
-    (item, index) => {
-      return {
-        label: item.name,
-        data: dateRangeList.map((date) => {
-          return incomeList
-            ?.filter((income) => {
-              const incomeDate =
-                income.date.toDate();
-
-              return (
-                incomeDate.getMonth() ===
-                  date.getMonth() &&
-                incomeDate.getFullYear() ===
-                  date.getFullYear() &&
-                (incomeSort === 2
-                  ? income.categoryId === item.id
-                  : incomeSort === 3
-                  ? income.masterId === item.id
-                  : income)
-              );
-            })
-            .reduce(
-              (sum, current) => sum + current.sum,
-              0
-            );
-        }),
-        backgroundColor: incomeColorList[index],
-        hoverBackgroundColor:
-          incomeColorList[index],
-        stack: '0',
-        grouped: true,
-      };
-    }
-  );
 
   const expenseSortList =
     expenseSort === 1
       ? [{ name: 'расход', id: 1 }]
       : expCategoryList || [];
-  const expenseBarDatasets = expenseSortList.map(
-    (category, index) => {
-      return {
-        label: category.name,
-        data: dateRangeList.map((date) => {
-          return expenseList
-            ?.filter((expense) => {
-              const expenseDate =
-                expense.date.toDate();
-              return (
-                expenseDate.getMonth() ===
-                  date.getMonth() &&
-                expenseDate.getFullYear() ===
-                  date.getFullYear() &&
-                (expenseSort === 2
-                  ? expense.categoryId ===
-                    category.id
-                  : expense)
-              );
-            })
-            .reduce(
-              (sum, current) =>
-                -(sum + current.sum),
-              0
-            );
-        }),
-        backgroundColor: expenseColorList[index],
-        hoverBackgroundColor:
-          expenseColorList[index],
-        stack: '0',
-      };
-    }
-  );
 
-  const barData = {
+  const chartData = {
     labels: dateRangeList.map(
       (date) =>
         date.toLocaleDateString().slice(3, 6) +
         date.toLocaleDateString().slice(8)
     ),
     datasets: [
-      ...incomeBarDatasets,
-      ...expenseBarDatasets,
-
-      {
-        label: 'прибыль',
-        data: dateRangeList.map((date) => {
-          const expenseSum = expenseList
-            ?.filter((expense) => {
-              const expenseDate =
-                expense.date.toDate();
-              return (
-                expenseDate.getMonth() ===
-                  date.getMonth() &&
-                expenseDate.getFullYear() ===
-                  date.getFullYear()
-              );
-            })
-            .reduce(
-              (sum, current) => sum - current.sum,
-              0
-            );
-          const incomeSum = incomeList
-            ?.filter((income) => {
-              const incomeDate =
-                income.date.toDate();
-              return (
-                incomeDate.getMonth() ===
-                  date.getMonth() &&
-                incomeDate.getFullYear() ===
-                  date.getFullYear()
-              );
-            })
-            .reduce(
-              (sum, current) => sum + current.sum,
-              0
-            );
-          return (
-            (incomeSum || 0) + (expenseSum || 0)
-          );
-        }),
-        backgroundColor: 'rgb(200, 120, 110)',
-        hoverBackgroundColor:
-          'rgb(200, 120, 110)',
-        stack: '1',
-      },
+      ...incomeChartDatasets(
+        incomeSortList,
+        dateRangeList,
+        incomeList,
+        incomeSort
+      ),
+      ...expenseChartDatasets(
+        expenseSortList,
+        dateRangeList,
+        expenseList,
+        expenseSort
+      ),
+      profitChartDaraset(
+        dateRangeList,
+        expenseList,
+        incomeList
+      ),
+      // {
+      //   label: 'прибыль',
+      //   data: dateRangeList.map((date) => {
+      //     const expenseSum = expenseList
+      //       ?.filter((expense) => {
+      //         const expenseDate =
+      //           expense.date.toDate();
+      //         return (
+      //           expenseDate.getMonth() ===
+      //             date.getMonth() &&
+      //           expenseDate.getFullYear() ===
+      //             date.getFullYear()
+      //         );
+      //       })
+      //       .reduce(
+      //         (sum, current) => sum - current.sum,
+      //         0
+      //       );
+      //     const incomeSum = incomeList
+      //       ?.filter((income) => {
+      //         const incomeDate =
+      //           income.date.toDate();
+      //         return (
+      //           incomeDate.getMonth() ===
+      //             date.getMonth() &&
+      //           incomeDate.getFullYear() ===
+      //             date.getFullYear()
+      //         );
+      //       })
+      //       .reduce(
+      //         (sum, current) => sum + current.sum,
+      //         0
+      //       );
+      //     return (
+      //       (incomeSum || 0) + (expenseSum || 0)
+      //     );
+      //   }),
+      //   backgroundColor: 'rgb(200, 120, 110)',
+      //   hoverBackgroundColor:
+      //     'rgb(200, 120, 110)',
+      //   stack: '1',
+      // },
     ],
   };
 
   window.addEventListener('resize', () => {
-    window.innerHeight > window.innerWidth
-      ? setBarAspectRatio(0.8)
-      : setBarAspectRatio(2);
+    const num =
+      window.innerHeight > window.innerWidth
+        ? 0.8
+        : 2;
+    setChartrAspectRatio(num);
   });
 
   function handleDateRangeChange(
@@ -381,7 +252,10 @@ export default function Finance() {
         </label>
       </div>
 
-      <Bar options={options} data={barData} />
+      <Bar
+        options={chartOptions(chartrAspectRatio)}
+        data={chartData}
+      />
 
       <Button
         className='finance__open-form-btn'
