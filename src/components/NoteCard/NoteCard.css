@@ -23,7 +23,7 @@
   padding: 4px;
   border-radius: 4px;
   color: var(--main-back);
-  background: var(--accent-extra);
+  background: var(--color-4);
   box-sizing: border-box;
 }
 

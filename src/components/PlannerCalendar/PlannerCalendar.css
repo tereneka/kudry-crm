@@ -6,6 +6,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  padding-left: 40px;
   display: flex;
   justify-content: center;
   gap: 40px;
@@ -34,7 +35,13 @@
 .planner-caledar__description-list-item:nth-of-type(
     2
   )::before {
-  background: var(--accent-extra);
+  background: var(--color-1);
+}
+
+.planner-caledar__description-list-item:nth-of-type(
+    3
+  )::before {
+  background: var(--color-2);
 }
 
 .planner-calendar__cell {
@@ -70,10 +77,20 @@
   padding: 1px 2px;
 }
 
-.planner-calendar__badge_type_reg {
+.planner-calendar__badge_type_master-reg {
   background: var(--accent-bright);
 }
 
+.planner-calendar__badge_type_reg {
+  background: var(--color-1);
+}
+
 .planner-calendar__badge_type_note {
-  background: var(--accent-extra);
+  background: var(--color-2);
+}
+
+@media screen and (min-width: 500px) {
+  .planner-calendar__description-list {
+    padding-left: 0;
+  }
 }

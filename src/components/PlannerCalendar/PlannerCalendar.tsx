@@ -1,6 +1,6 @@
 import React from 'react';
 import './PlannerCalendar.css';
-import { Calendar, Tooltip } from 'antd';
+import { Calendar } from 'antd';
 import { DATE_FORMAT } from '../../constants';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
@@ -10,12 +10,12 @@ import {
 } from '../../store';
 import { setDate } from '../../reducers/calendarSlice';
 import { classByCondition } from '../../utils/className';
+import { useGetRegistrationListQuery } from '../../reducers/apiSlice';
 
 export default function PlannerCalendar() {
   const { date } = useAppSelector(
     (state) => state.calendarState
   );
-
   const { masterRegList } = useAppSelector(
     (state) => state.regState
   );
@@ -23,10 +23,18 @@ export default function PlannerCalendar() {
     (state) => state.notesState
   );
 
+  const { data: regList } =
+    useGetRegistrationListQuery(7);
+
   const dispatch = useAppDispatch();
 
   const dateCellRender = (date: Dayjs) => {
-    const isRegs = masterRegList?.some(
+    const isRegs = regList?.some(
+      (reg) =>
+        reg.date.toDate().toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    );
+    const isMasterRegs = masterRegList?.some(
       (reg) =>
         reg.date.toDate().toLocaleDateString() ===
         date.format(DATE_FORMAT)
@@ -38,7 +46,12 @@ export default function PlannerCalendar() {
           .toLocaleDateString() ===
         date.format(DATE_FORMAT)
     );
-    const regCount = masterRegList?.filter(
+    const regCount = regList?.filter(
+      (reg) =>
+        reg.date.toDate().toLocaleDateString() ===
+        date.format(DATE_FORMAT)
+    ).length;
+    const masterRegCount = masterRegList?.filter(
       (reg) =>
         reg.date.toDate().toLocaleDateString() ===
         date.format(DATE_FORMAT)
@@ -59,6 +72,11 @@ export default function PlannerCalendar() {
           'type_event'
         )}
         data-date={date.format(DATE_FORMAT)}>
+        {isMasterRegs && (
+          <div className='planner-calendar__badge planner-calendar__badge_type_master-reg'>
+            {masterRegCount}
+          </div>
+        )}
         {isRegs && (
           <div className='planner-calendar__badge planner-calendar__badge_type_reg'>
             {regCount}
@@ -87,10 +105,13 @@ export default function PlannerCalendar() {
       />
       <ul className='planner-calendar__description-list'>
         <li className='planner-caledar__description-list-item'>
-          записи
+          записи мастера
         </li>
         <li className='planner-caledar__description-list-item'>
-          напоминалки
+          всего записей
+        </li>
+        <li className='planner-caledar__description-list-item'>
+          напоминалки мастера
         </li>
       </ul>
     </div>

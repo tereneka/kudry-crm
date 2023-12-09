@@ -44,11 +44,11 @@
 
 .reg-card_type_copy .reg-card__number {
   color: var(--main-back);
-  background: var(--accent-extra);
+  background: var(--color-4);
 }
 
 .reg-card__box {
-  background: var(--accent-extra);
+  background: var(--color-4);
   color: var(--main-back);
   margin-bottom: 4px;
   padding: 4px 8px;
@@ -81,7 +81,7 @@
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--main-back);
-  color: var(--accent-extra);
+  color: var(--color-4);
 }
 
 .reg-card__service-list {
