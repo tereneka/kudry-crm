@@ -8,6 +8,7 @@ import Planner from '../../pages/Planner/Planner';
 import Login from '../../pages/Login/Login';
 import { useAppSelector } from '../../store';
 import Finance from '../../pages/Finance/Finance';
+import Clients from '../../pages/Сlients/Clients';
 
 export default function RouterApp() {
   const { currentAccount } = useAppSelector(
@@ -43,6 +44,10 @@ export default function RouterApp() {
         <Route
           path='/planner'
           element={<Planner />}
+        />
+        <Route
+          path='/clients'
+          element={<Clients />}
         />
         <Route
           path='/finance'

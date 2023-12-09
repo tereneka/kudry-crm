@@ -26,22 +26,19 @@ import {
   setRegCardInfo,
   setRegCardUser,
 } from '../../reducers/regCardSlice';
-import { Button, MenuProps } from 'antd';
+import { Button } from 'antd';
 import {
   CloseOutlined,
   DeleteOutlined,
   EyeOutlined,
   DragOutlined,
-  MenuOutlined,
 } from '@ant-design/icons';
 import { setIsRegModalOpened } from '../../reducers/regSlice';
 import { changeIncome } from '../../utils/reg';
 import { setIsError } from '../../reducers/appSlice';
-import { Dropdown } from 'antd/lib';
-import React from 'react';
-import phoneIcon from '../../images/phone.svg';
-import whatsappIcon from '../../images/whatsapp.svg';
 import { setIsTimeSelectAvailable } from '../../reducers/plannerSlice';
+import AlternateColorCard from '../AlternateColorCard/AlternateColorCard';
+import CardMenu from '../CardMenu/CardMenu';
 
 interface RegCardProps {
   reg: DbRegistration;
@@ -54,7 +51,7 @@ export default function RegCard({
   reg,
   user,
   type = 'major',
-  index,
+  index = 0,
 }: RegCardProps) {
   const { data: serviceList } =
     useGetServiceListQuery();
@@ -99,43 +96,7 @@ export default function RegCard({
         getDataById(serviceList, serviceId)?.name
     );
 
-  const btnGroup: MenuProps['items'] = [
-    {
-      label: (
-        <Button
-          size='large'
-          type='text'
-          href={`tel:${user?.phone}`}
-          icon={
-            <img
-              className='reg-card__social-icon'
-              src={phoneIcon}
-              alt='phone'
-            />
-          }
-        />
-      ),
-      key: '1',
-    },
-    {
-      label: (
-        <Button
-          size='large'
-          type='text'
-          href={`https://wa.me/${user?.phone.slice(
-            1
-          )}`}
-          icon={
-            <img
-              className='reg-card__social-icon'
-              src={whatsappIcon}
-              alt='whatsapp'
-            />
-          }
-        />
-      ),
-      key: '2',
-    },
+  const btnGroup = [
     {
       label: (
         <Button
@@ -234,39 +195,18 @@ export default function RegCard({
   }, [isSuccess]);
 
   return (
-    <div
+    <AlternateColorCard
       className={cardClassName}
       style={cardStyle}
       key={reg.id}>
       {type === 'major' && (
-        <Dropdown
-          menu={{ items: btnGroup }}
-          trigger={['click']}
-          placement='topRight'
-          dropdownRender={(menu) => (
-            <>
-              {React.cloneElement(
-                menu as React.ReactElement,
-                {
-                  class: `reg-card__btn-group ${
-                    index !== undefined &&
-                    index % 2 === 0
-                      ? 'reg-card__btn-group_type_odd'
-                      : 'reg-card__btn-group_type_even'
-                  }`,
-                }
-              )}
-            </>
-          )}>
-          <Button
-            className='reg-card__memu-btn'
-            size='small'
-            type='primary'
-            icon={
-              <MenuOutlined rev={undefined} />
-            }
-          />
-        </Dropdown>
+        <CardMenu
+          color={
+            index % 2 === 0 ? 'danger' : 'primary'
+          }
+          phone={user?.phone}
+          otherBtnGroup={btnGroup}
+        />
       )}
       {type === 'copy' && (
         <Button
@@ -339,6 +279,6 @@ export default function RegCard({
           )}
         </>
       )}
-    </div>
+    </AlternateColorCard>
   );
 }

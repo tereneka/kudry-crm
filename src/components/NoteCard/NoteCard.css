@@ -1,41 +1,8 @@
 .note-card {
   position: relative;
   padding: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
-  background: var(--accent-bright);
   background: var(--disabled);
   margin-bottom: 8px;
-}
-
-.note-card:last-of-type {
-  margin-bottom: 0;
-}
-
-.note-card_invisible {
-  display: none;
-}
-
-.note-card:nth-child(odd) {
-  border-left: 6px solid var(--accent-bright);
-}
-
-.note-card:nth-child(even) {
-  border-left: 6px solid var(--accent-soft);
-}
-
-.note-card_type_copy {
-  width: 190px;
-  height: 100px !important;
-  margin-bottom: -100px;
-  font-size: 10px;
-  background: var(--accent-soft);
-  position: sticky;
-  top: 0px !important;
-  left: calc(100% - 190px) !important;
-  z-index: 10;
-  cursor: auto;
-  border: none !important;
 }
 
 .note-card__box {
@@ -81,94 +48,6 @@
   padding-right: 4px;
 }
 
-.note-card__number-list {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-}
-
-.note-card__number {
-  background: var(--accent-soft);
-  padding: 0 4px;
-  border-radius: 4px;
-  background: var(--disabled);
-}
-
-.note-card__service-list {
-  list-style: none;
-  margin: 0;
-  padding-left: 8px;
-  color: var(--light-text);
-}
-
-.note-card__service {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.note-card__services-paragraph {
-  margin: 0;
-  color: var(--light-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.note-card__btn-group {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 4px;
-  border-radius: 4px;
-}
-
-.note-card__btn-group_type_even {
-  background: var(--accent-soft);
-}
-
-.note-card__btn-group_type_odd {
-  background: var(--accent-bright);
-}
-
-.note-card__memu-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.note-card:nth-child(odd) .note-card__memu-btn {
-  background: var(--accent-bright);
-}
-
-.note-card:nth-child(odd)
-  .note-card__memu-btn:active {
-  background: var(--accent-bright);
-}
-
 .note-card__icon {
   color: var(--main-back);
-}
-
-.note-card__social-icon {
-  width: 20px;
-  height: 20px;
-  padding-top: 2px;
-}
-
-.note-card__move-btn {
-  color: var(--main-text) !important;
-}
-
-.note-card__close-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-@media screen and (max-width: 350px) {
-  .note-card {
-    font-size: 12px;
-  }
 }

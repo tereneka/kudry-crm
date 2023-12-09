@@ -8,7 +8,6 @@ import {
   Input,
   Select,
 } from 'antd';
-import UserSelect from '../UserSelect/UserSelect';
 import {
   useAppDispatch,
   useAppSelector,
@@ -55,6 +54,7 @@ import {
   setIsFormActive,
   setOpenedFormName,
 } from '../../reducers/plannerSlice';
+import ClientSelect from '../ClientSelect/ClientSelect';
 
 export default function RegForm() {
   const [form] = Form.useForm<{
@@ -535,7 +535,7 @@ export default function RegForm() {
                 message: 'выберите клиента',
               },
             ]}>
-            <UserSelect />
+            <ClientSelect />
           </Form.Item>
 
           <div className='reg-form__flex-container'>

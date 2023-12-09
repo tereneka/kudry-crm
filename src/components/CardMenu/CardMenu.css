@@ -1,0 +1,33 @@
+.card-menu__btn-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 4px;
+  border-radius: 4px;
+}
+
+.card-menu__btn-group_color_primary {
+  background: var(--accent-soft);
+}
+
+.card-menu__btn-group_color_danger {
+  background: var(--accent-bright);
+}
+
+.card-menu__memu-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.card-menu__memu-btn_color_danger,
+.card-menu__memu-btn_color_danger:active {
+  background: var(--accent-bright);
+}
+
+.card-menu__social-icon {
+  width: 20px;
+  height: 20px;
+  padding-top: 2px;
+}

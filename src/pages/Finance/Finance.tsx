@@ -135,48 +135,6 @@ export default function Finance() {
         expenseList,
         incomeList
       ),
-      // {
-      //   label: 'прибыль',
-      //   data: dateRangeList.map((date) => {
-      //     const expenseSum = expenseList
-      //       ?.filter((expense) => {
-      //         const expenseDate =
-      //           expense.date.toDate();
-      //         return (
-      //           expenseDate.getMonth() ===
-      //             date.getMonth() &&
-      //           expenseDate.getFullYear() ===
-      //             date.getFullYear()
-      //         );
-      //       })
-      //       .reduce(
-      //         (sum, current) => sum - current.sum,
-      //         0
-      //       );
-      //     const incomeSum = incomeList
-      //       ?.filter((income) => {
-      //         const incomeDate =
-      //           income.date.toDate();
-      //         return (
-      //           incomeDate.getMonth() ===
-      //             date.getMonth() &&
-      //           incomeDate.getFullYear() ===
-      //             date.getFullYear()
-      //         );
-      //       })
-      //       .reduce(
-      //         (sum, current) => sum + current.sum,
-      //         0
-      //       );
-      //     return (
-      //       (incomeSum || 0) + (expenseSum || 0)
-      //     );
-      //   }),
-      //   backgroundColor: 'rgb(200, 120, 110)',
-      //   hoverBackgroundColor:
-      //     'rgb(200, 120, 110)',
-      //   stack: '1',
-      // },
     ],
   };
 

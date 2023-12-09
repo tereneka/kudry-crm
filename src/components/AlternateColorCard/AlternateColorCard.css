@@ -1,0 +1,22 @@
+.alternate-color-card {
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.alternate-color-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.alternate-color-card:nth-child(odd) {
+  border-left: 6px solid var(--accent-bright);
+}
+
+.alternate-color-card:nth-child(even) {
+  border-left: 6px solid var(--accent-soft);
+}
+
+@media screen and (max-width: 350px) {
+  .alternate-color-card {
+    font-size: 12px;
+  }
+}

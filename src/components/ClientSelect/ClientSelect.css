@@ -1,0 +1,37 @@
+.client-select {
+  height: 50px;
+}
+
+.client-select input {
+  font-size: 16px;
+}
+
+.client-select__option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.client-select__option-item {
+  line-height: 1;
+}
+
+.client-select__option-item_name_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-select__option-item_name_phone {
+  font-size: 12px;
+}
+
+.client-select_place_reg-modal
+  .client-select__option {
+  gap: 8px;
+}
+
+.client-select_place_reg-modal
+  .client-select__option-item_name_name {
+  font-weight: 600;
+}

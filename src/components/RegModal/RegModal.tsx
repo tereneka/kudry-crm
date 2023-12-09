@@ -10,7 +10,7 @@ import {
   DbRegistration,
   RegUser,
 } from '../../types';
-import UserSelect from '../UserSelect/UserSelect';
+import UserSelect from '../ClientSelect/ClientSelect';
 import UserSocial from '../Social/UserSocial';
 import {
   useGetServiceListQuery,

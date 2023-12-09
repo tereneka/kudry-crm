@@ -7,7 +7,7 @@ import {
   Form,
   TimePicker,
 } from 'antd';
-import UserSelect from '../UserSelect/UserSelect';
+import UserSelect from '../ClientSelect/ClientSelect';
 import {
   useAppDispatch,
   useAppSelector,

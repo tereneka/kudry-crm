@@ -1,22 +1,13 @@
 import './NoteCard.css';
 import { DbNote, RegUser } from '../../types';
 import { phoneFormat } from '../../utils/format';
-import {
-  useAppDispatch,
-  useAppSelector,
-} from '../../store';
+import { useAppDispatch } from '../../store';
 import { useEffect } from 'react';
-import { Button, MenuProps } from 'antd';
+import { Button } from 'antd';
 import {
-  CloseOutlined,
   DeleteOutlined,
   EditFilled,
-  MenuOutlined,
 } from '@ant-design/icons';
-import { Dropdown } from 'antd/lib';
-import React from 'react';
-import phoneIcon from '../../images/phone.svg';
-import whatsappIcon from '../../images/whatsapp.svg';
 import {
   setNoteCardInfo,
   setNoteCardUser,
@@ -24,63 +15,25 @@ import {
 import { useDeleteNoteMutation } from '../../reducers/apiSlice';
 import { setIsError } from '../../reducers/appSlice';
 import { setOpenedFormName } from '../../reducers/plannerSlice';
+import AlternateColorCard from '../AlternateColorCard/AlternateColorCard';
+import CardMenu from '../CardMenu/CardMenu';
 
 interface NoteCardProps {
   note: DbNote;
   user: RegUser | undefined;
-  type?: 'major' | 'copy';
   index?: number;
 }
 
 export default function NoteCard({
   note,
   user,
-  type = 'major',
-  index,
+  index = 0,
 }: NoteCardProps) {
   const [deleteNote, { isError }] =
     useDeleteNoteMutation();
 
   const dispatch = useAppDispatch();
 
-  const socialBtnGroup = [
-    {
-      label: (
-        <Button
-          size='large'
-          type='text'
-          href={`tel:${user?.phone}`}
-          icon={
-            <img
-              className='note-card__social-icon'
-              src={phoneIcon}
-              alt='phone'
-            />
-          }
-        />
-      ),
-      key: '1',
-    },
-    {
-      label: (
-        <Button
-          size='large'
-          type='text'
-          href={`https://wa.me/${user?.phone.slice(
-            1
-          )}`}
-          icon={
-            <img
-              className='note-card__social-icon'
-              src={whatsappIcon}
-              alt='whatsapp'
-            />
-          }
-        />
-      ),
-      key: '2',
-    },
-  ];
   const editBtnGroup = [
     {
       label: (
@@ -115,14 +68,6 @@ export default function NoteCard({
       key: '5',
     },
   ];
-  const btnGroup: MenuProps['items'] = user
-    ? [...socialBtnGroup, ...editBtnGroup]
-    : editBtnGroup;
-
-  function handleCloseBtnClick() {
-    dispatch(setNoteCardInfo(null));
-    dispatch(setNoteCardUser(null));
-  }
 
   function handleEditBtnClick() {
     dispatch(setNoteCardInfo(note));
@@ -135,46 +80,16 @@ export default function NoteCard({
   }, [isError]);
 
   return (
-    <div className='note-card' key={note.id}>
-      {type === 'major' && (
-        <Dropdown
-          menu={{ items: btnGroup }}
-          trigger={['click']}
-          placement='topRight'
-          dropdownRender={(menu) => (
-            <>
-              {React.cloneElement(
-                menu as React.ReactElement,
-                {
-                  class: `note-card__btn-group ${
-                    index !== undefined &&
-                    index % 2 === 0
-                      ? 'note-card__btn-group_type_odd'
-                      : 'note-card__btn-group_type_even'
-                  }`,
-                }
-              )}
-            </>
-          )}>
-          <Button
-            className='note-card__memu-btn'
-            size='small'
-            type='primary'
-            icon={
-              <MenuOutlined rev={undefined} />
-            }
-          />
-        </Dropdown>
-      )}
-      {type === 'copy' && (
-        <Button
-          className='note-card__close-btn'
-          type='text'
-          size='small'
-          icon={<CloseOutlined rev={undefined} />}
-          onClick={handleCloseBtnClick}
-        />
-      )}
+    <AlternateColorCard
+      className='note-card'
+      key={note.id}>
+      <CardMenu
+        color={
+          index % 2 === 0 ? 'danger' : 'primary'
+        }
+        phone={user?.phone}
+        otherBtnGroup={editBtnGroup}
+      />
 
       <p className='note-card__time'>
         {note.time}
@@ -199,6 +114,6 @@ export default function NoteCard({
           </div>
         </div>
       )}
-    </div>
+    </AlternateColorCard>
   );
 }

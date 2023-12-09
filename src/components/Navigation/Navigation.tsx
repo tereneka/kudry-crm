@@ -24,6 +24,17 @@ export default function Navigation() {
               : ''
           }`
         }
+        to='/clients'>
+        клиенты
+      </NavLink>
+      <NavLink
+        className={({ isActive }) =>
+          `navigation__link ${
+            isActive
+              ? 'navigation__link_active'
+              : ''
+          }`
+        }
         to='/finance'>
         финансы
       </NavLink>

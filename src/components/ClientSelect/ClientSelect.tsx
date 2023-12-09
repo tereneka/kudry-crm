@@ -1,4 +1,4 @@
-import './UserSelect.css';
+import './ClientSelect.css';
 import {
   Button,
   Divider,
@@ -31,12 +31,13 @@ interface UserSelectProps {
   onChange?: (value: string) => void;
 }
 
-export default function UserSelect({
+export default function ClientSelect({
   suffixIcon = <DownOutlined rev={undefined} />,
   value,
   onChange,
 }: UserSelectProps) {
-  const { data: users } = useGetUserListQuery();
+  const { data: clientList } =
+    useGetUserListQuery();
 
   const [isUserFormOpened, setIsUserFormOpened] =
     useState(false);
@@ -52,11 +53,11 @@ export default function UserSelect({
 
   function renderOptionContent(user: RegUser) {
     return (
-      <div className='user-select__option'>
-        <span className='user-select__option-item user-select__option-item_name_name'>
+      <div className='client-select__option'>
+        <span className='client-select__option-item client-select__option-item_name_name'>
           {user.name}
         </span>
-        <span className='user-select__option-item user-select__option-item_name_phone'>
+        <span className='client-select__option-item client-select__option-item_name_phone'>
           {phoneFormat(user.phone)}
         </span>
       </div>
@@ -92,7 +93,7 @@ export default function UserSelect({
     <Select
       value={value}
       onChange={onChange}
-      className='user-select'
+      className='client-select'
       notFoundContent={<></>}
       optionLabelProp='label'
       onDropdownVisibleChange={closeForm}
@@ -102,7 +103,7 @@ export default function UserSelect({
       suffixIcon={suffixIcon}
       optionFilterProp='children'
       filterOption={(input, option) => {
-        return !!users
+        return !!clientList
           ?.find(
             (user) => user.id === option?.value
           )
@@ -199,7 +200,7 @@ export default function UserSelect({
         </>
       )}>
       {!isUserFormOpened &&
-        users?.map((user) => {
+        clientList?.map((user) => {
           const content =
             renderOptionContent(user);
           return (

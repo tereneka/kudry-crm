@@ -3,9 +3,6 @@
   left: 48px;
   border: 2px solid var(--disabled);
   padding: 2px;
-  font-size: 14px;
-  box-sizing: border-box;
-  background: var(--accent-bright);
   background: var(--main-back);
 }
 
@@ -13,19 +10,11 @@
   display: none;
 }
 
-.reg-card:nth-child(odd) {
-  border-left: 6px solid var(--accent-bright);
-}
-
-.reg-card:nth-child(even) {
-  border-left: 6px solid var(--accent-soft);
-}
-
 .reg-card_type_copy {
-  width: 190px;
+  width: 190px !important;
   height: 100px !important;
   margin-bottom: -100px;
-  font-size: 10px;
+  font-size: 10px !important;
   background: var(--accent-soft);
   position: sticky;
   top: 76.5px !important;
@@ -117,46 +106,8 @@
   white-space: nowrap;
 }
 
-.reg-card__btn-group {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 4px;
-  border-radius: 4px;
-}
-
-.reg-card__btn-group_type_even {
-  background: var(--accent-soft);
-}
-
-.reg-card__btn-group_type_odd {
-  background: var(--accent-bright);
-}
-
-.reg-card__memu-btn {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-}
-
-.reg-card:nth-child(odd) .reg-card__memu-btn {
-  background: var(--accent-bright);
-}
-
-.reg-card:nth-child(odd)
-  .reg-card__memu-btn:active {
-  background: var(--accent-bright);
-}
-
 .reg-card__icon {
   color: var(--main-back);
-}
-
-.reg-card__social-icon {
-  width: 20px;
-  height: 20px;
-  padding-top: 2px;
 }
 
 .reg-card__move-btn {
@@ -167,10 +118,4 @@
   position: absolute;
   top: 0;
   right: 0;
-}
-
-@media screen and (max-width: 350px) {
-  .reg-card {
-    font-size: 12px;
-  }
 }
