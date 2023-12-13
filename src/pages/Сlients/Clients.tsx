@@ -71,7 +71,7 @@ export default function Clients() {
     const result = clientList?.filter((client) =>
       client.name
         .toLocaleLowerCase()
-        .includes(value)
+        .includes(value.toLocaleLowerCase())
     );
     setFiltredClientList(result);
   }
