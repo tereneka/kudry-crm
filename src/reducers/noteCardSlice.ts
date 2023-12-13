@@ -2,11 +2,11 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import { DbNote, RegUser } from '../types';
+import { DbNote, Client } from '../types';
 
 interface NoteCardState {
   noteCardInfo: DbNote | null;
-  noteCardUser: RegUser | undefined | null;
+  noteCardUser: Client | undefined | null;
 }
 
 const initialState: NoteCardState = {
@@ -28,7 +28,7 @@ const noteCardSlice = createSlice({
     setNoteCardUser: (
       state,
       action: PayloadAction<
-        RegUser | undefined | null
+        Client | undefined | null
       >
     ) => {
       state.noteCardUser = action.payload;

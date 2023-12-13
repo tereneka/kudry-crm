@@ -1,7 +1,7 @@
 import './RegCard.css';
 import {
   DbRegistration,
-  RegUser,
+  Client,
 } from '../../types';
 import { TIME_LIST } from '../../constants';
 import {
@@ -42,7 +42,7 @@ import CardMenu from '../CardMenu/CardMenu';
 
 interface RegCardProps {
   reg: DbRegistration;
-  user: RegUser | undefined;
+  user: Client | undefined;
   type?: 'major' | 'copy';
   index?: number;
 }

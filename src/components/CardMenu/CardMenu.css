@@ -19,6 +19,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 2;
 }
 
 .card-menu__memu-btn_color_danger,

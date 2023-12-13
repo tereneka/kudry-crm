@@ -2,14 +2,11 @@ import {
   PayloadAction,
   createSlice,
 } from '@reduxjs/toolkit';
-import {
-  DbRegistration,
-  RegUser,
-} from '../types';
+import { DbRegistration, Client } from '../types';
 
 interface RegCardState {
   regCardInfo: DbRegistration | null;
-  regCardUser: RegUser | undefined | null;
+  regCardUser: Client | undefined | null;
   draggableRegCard: string | null;
 }
 
@@ -33,7 +30,7 @@ const regCardSlice = createSlice({
     setRegCardUser: (
       state,
       action: PayloadAction<
-        RegUser | undefined | null
+        Client | undefined | null
       >
     ) => {
       state.regCardUser = action.payload;

@@ -1,0 +1,12 @@
+.client-form__btn-group {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+  height: 32px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.client-form__btn-group_invisible {
+  height: 0;
+}

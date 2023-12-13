@@ -6,6 +6,7 @@ import {
 import appReducer from './reducers/appSlice';
 import plannerReducer from './reducers/plannerSlice';
 import financeReducer from './reducers/financeSlice';
+import clientsReducer from './reducers/clientsSlice';
 import calendarReducer from './reducers/calendarSlice';
 import regReducer from './reducers/regSlice';
 import notesReducer from './reducers/notesSlice';
@@ -25,6 +26,7 @@ export const store = configureStore({
     appState: appReducer,
     plannerState: plannerReducer,
     financeState: financeReducer,
+    clientsState: clientsReducer,
     calendarState: calendarReducer,
     regState: regReducer,
     notesState: notesReducer,

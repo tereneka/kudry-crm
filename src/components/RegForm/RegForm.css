@@ -1,7 +1,7 @@
 .reg-form {
 }
 
-.reg-form__flex-container {
+.reg-form__items-group {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -16,6 +16,19 @@
   margin-top: -24px;
   margin-bottom: 8px;
   min-height: 24px;
+}
+
+.reg-form__new-client-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.reg-form__new-client-title {
+  margin: 0;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .reg-form__btn-group {

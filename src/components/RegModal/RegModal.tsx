@@ -8,7 +8,7 @@ import {
 import { setIsRegModalOpened } from '../../reducers/regSlice';
 import {
   DbRegistration,
-  RegUser,
+  Client,
 } from '../../types';
 import UserSelect from '../ClientSelect/ClientSelect';
 import UserSocial from '../Social/UserSocial';
@@ -41,7 +41,7 @@ import { useWatch } from 'antd/es/form/Form';
 
 interface RegModalProps {
   reg: DbRegistration | null;
-  user: RegUser | undefined | null;
+  user: Client | undefined | null;
 }
 
 export default function RegModal({
@@ -251,8 +251,7 @@ export default function RegModal({
         className='reg-modal__form'
         form={form}
         name='editReg'
-        requiredMark={false}
-        validateTrigger='onSubmit'>
+        requiredMark={false}>
         <div className='reg-modal__date-time-container'>
           <span>{date}</span>
           <span>

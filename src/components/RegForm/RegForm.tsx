@@ -3,6 +3,7 @@ import './RegForm.css';
 import {
   Button,
   DatePicker,
+  Divider,
   Drawer,
   Form,
   Input,
@@ -14,6 +15,7 @@ import {
 } from '../../store';
 import {
   useAddRegistrationMutation,
+  useAddUserMutation,
   useGetCategoryListQuery,
   useGetServiceListQuery,
   useUpdateIncomeMutation,
@@ -38,7 +40,6 @@ import {
   isIndexSelect,
   isMastersCategoriesSame,
 } from '../../utils/reg';
-import { Registration } from '../../types';
 import { convertDateStrToDate } from '../../utils/date';
 import {
   convertStrToNum,
@@ -49,7 +50,10 @@ import {
 import ServicesSelect from '../ServicesSelect/ServicesSelect';
 import { setIsError } from '../../reducers/appSlice';
 import dayjs from 'dayjs';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import {
+  ClockCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import {
   setIsFormActive,
   setOpenedFormName,
@@ -58,7 +62,6 @@ import ClientSelect from '../ClientSelect/ClientSelect';
 
 export default function RegForm() {
   const [form] = Form.useForm<{
-    userId: string;
     serviceIdList: string[];
     date: Date;
     time: string;
@@ -67,6 +70,9 @@ export default function RegForm() {
     priceCorrection: number;
     index: number;
     gender: 'male' | 'female';
+    userId?: string;
+    name?: string;
+    phone?: string;
   }>();
 
   const genderFormItemValue = useWatch(
@@ -110,6 +116,13 @@ export default function RegForm() {
     updateIncome,
     { isLoading: isIncomeLoading },
   ] = useUpdateIncomeMutation();
+  const [
+    addClient,
+    {
+      isLoading: isAddClientLoading,
+      isError: isAddClientError,
+    },
+  ] = useAddUserMutation();
 
   const [
     isIndexSelectVisible,
@@ -120,6 +133,8 @@ export default function RegForm() {
     useState('');
   const [caculatedIncome, setCaculatedIncome] =
     useState(0);
+  const [isNewClient, setIsNewClient] =
+    useState(false);
 
   const isHairCategory = hasMasterHairCategory(
     currentMaster,
@@ -197,15 +212,19 @@ export default function RegForm() {
   }
 
   function handleFormSubmit(values: {
-    userId: string;
     serviceIdList: string[];
     duration: string;
     income: string;
     index?: number;
     gender?: 'male' | 'female';
+    userId?: string;
+    name?: string;
+    phone?: string;
   }) {
     const {
       userId,
+      name,
+      phone,
       serviceIdList,
       duration,
       income,
@@ -217,9 +236,8 @@ export default function RegForm() {
     const incomeNum = convertStrToNum(income);
 
     const body = {
-      userId,
       serviceIdList,
-      masterId: currentMaster?.id,
+      masterId: currentMaster?.id || '',
       date: convertDateStrToDate(date),
       time: regFormTime,
       duration: durationNum,
@@ -229,26 +247,51 @@ export default function RegForm() {
       serviceIndex: index || 0,
       gender:
         gender === undefined ? null : gender,
-    } as Registration;
+    };
 
-    if (
-      regFormTime &&
-      date &&
-      !isRegLoading &&
-      !isIncomeLoading
-    ) {
-      changeIncome(
-        currentMaster,
-        serviceIdList,
-        serviceList,
-        convertDateStrToDate(date),
-        index || 0,
-        incomeNum / caculatedIncome,
-        'plus',
-        updateIncome
-      );
-      addReg(body);
-    } else if (!regFormTime || !date) {
+    function addRegistration(userId: string) {
+      if (!isRegLoading && !isIncomeLoading) {
+        changeIncome(
+          currentMaster,
+          serviceIdList,
+          serviceList,
+          convertDateStrToDate(date),
+          index || 0,
+          incomeNum / caculatedIncome,
+          'plus',
+          updateIncome
+        );
+        addReg({ ...body, userId });
+      }
+    }
+
+    if (regFormTime && date) {
+      if (userId) {
+        addRegistration(userId);
+      } else if (
+        name &&
+        phone &&
+        !isAddClientLoading
+      ) {
+        addClient({
+          name,
+          phone: '+7' + phone,
+        }).then(
+          (res: {
+            data?: string;
+            error?: any;
+          }) => {
+            if (
+              res.data &&
+              !isAddClientError &&
+              !isAddClientLoading
+            ) {
+              addRegistration(res.data);
+            }
+          }
+        );
+      }
+    } else {
       setDateTimeError(
         '← выберите дату и время в планере'
       );
@@ -265,6 +308,7 @@ export default function RegForm() {
     setIsIndexSelectVisible(false);
     setCaculatedIncome(0);
     setDateTimeError('');
+    setIsNewClient(false);
   }
 
   // вычисляем продолжительность регистрации и стоимость
@@ -335,6 +379,9 @@ export default function RegForm() {
       resetForm();
     }
   }, [isError, isSuccess]);
+  useEffect(() => {
+    dispatch(setIsError(isAddClientError));
+  }, [isAddClientError]);
 
   return (
     <div className='reg-form'>
@@ -360,8 +407,7 @@ export default function RegForm() {
             date: dayjs(date, DATE_FORMAT),
             duration: '0',
             income: '0',
-          }}
-          validateTrigger='onSubmit'>
+          }}>
           {isHairCategory && (
             <Form.Item
               name='gender'
@@ -441,7 +487,7 @@ export default function RegForm() {
             </Form.Item>
           )}
 
-          <div className='reg-form__flex-container'>
+          <div className='reg-form__items-group'>
             <Form.Item
               className='reg-form__numeric-item'
               name='duration'
@@ -526,19 +572,94 @@ export default function RegForm() {
             </Form.Item>
           </div>
 
-          <Form.Item
-            name='userId'
-            label='клиент'
-            rules={[
-              {
-                required: true,
-                message: 'выберите клиента',
-              },
-            ]}>
-            <ClientSelect />
-          </Form.Item>
+          {isNewClient ? (
+            <>
+              <Divider
+                style={{
+                  marginTop: 0,
+                  marginBottom: 12,
+                }}
+              />
+              <div className='reg-form__new-client-header'>
+                <Button
+                  type='text'
+                  icon={
+                    <CloseOutlined
+                      rev={undefined}
+                    />
+                  }
+                  onClick={() =>
+                    setIsNewClient(false)
+                  }
+                  style={{
+                    color:
+                      'rgba(60, 60, 60, 0.45)',
+                  }}
+                />
+                <h4 className='reg-form__new-client-title'>
+                  новый клиент
+                </h4>
+              </div>
 
-          <div className='reg-form__flex-container'>
+              <Form.Item
+                name='name'
+                label='имя'
+                rules={[
+                  {
+                    required: true,
+                    message: 'введите имя',
+                  },
+                ]}>
+                <Input allowClear />
+              </Form.Item>
+
+              <Form.Item
+                name='phone'
+                label='телефон'
+                rules={[
+                  {
+                    required: true,
+                    message:
+                      'введите номер телефона',
+                  },
+                  {
+                    min: 10,
+                    message:
+                      'минимальное количествосимволов 10',
+                  },
+                ]}>
+                <Input
+                  prefix={'+7'}
+                  maxLength={10}
+                  allowClear
+                />
+              </Form.Item>
+              <Divider />
+            </>
+          ) : (
+            <Form.Item
+              name='userId'
+              label='клиент'
+              rules={[
+                {
+                  required: true,
+                  message: 'выберите клиента',
+                },
+              ]}>
+              <ClientSelect
+                isAddClientBtn={true}
+                onAddClientBtnClick={() => {
+                  setIsNewClient(true);
+                  form.setFieldValue(
+                    'userId',
+                    ''
+                  );
+                }}
+              />
+            </Form.Item>
+          )}
+
+          <div className='reg-form__items-group'>
             <Form.Item
               className='reg-form__numeric-item'
               name='date'
@@ -586,7 +707,9 @@ export default function RegForm() {
               type='primary'
               className='reg-form__btn'
               loading={
-                isRegLoading || isIncomeLoading
+                isRegLoading ||
+                isIncomeLoading ||
+                isAddClientLoading
               }>
               сохранить
             </Button>

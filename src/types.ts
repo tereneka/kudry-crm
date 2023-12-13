@@ -100,7 +100,7 @@ interface RegistrationContext {
   registrationList: Registration[] | undefined;
 }
 
-interface RegUser {
+interface Client {
   id: string;
   name: string;
   phone: string;
@@ -132,7 +132,7 @@ export type {
   Expenses,
   DbExpenses,
   ExpensesCategory,
-  RegUser,
+  Client,
   Note,
   DbNote,
 };

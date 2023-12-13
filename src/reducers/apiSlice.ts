@@ -36,7 +36,7 @@ import {
   Income,
   Master,
   Note,
-  RegUser,
+  Client,
   Registration,
   Service,
 } from '../types';
@@ -89,7 +89,7 @@ export const apiSlice = createApi({
       providesTags: ['Master'],
     }),
 
-    getUserList: builder.query<RegUser[], void>({
+    getUserList: builder.query<Client[], void>({
       async queryFn() {
         try {
           const usersQuery = query(
@@ -438,7 +438,7 @@ export const apiSlice = createApi({
 
     addUser: builder.mutation<
       string,
-      Omit<RegUser, 'id'>
+      Omit<Client, 'id'>
     >({
       async queryFn(body) {
         const userRef = collection(db, 'users');
@@ -449,6 +449,41 @@ export const apiSlice = createApi({
           );
 
           return { data: data.id };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['User'],
+    }),
+
+    updateUser: builder.mutation<
+      any,
+      { id: string; body: Partial<Client> }
+    >({
+      async queryFn({ id, body }) {
+        const userRef = doc(db, 'users', id);
+        try {
+          const data = await updateDoc(
+            userRef,
+            body
+          );
+
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ['User'],
+    }),
+
+    deleteUser: builder.mutation<void, string>({
+      async queryFn(id) {
+        const userRef = doc(db, 'users', id);
+
+        try {
+          const data = await deleteDoc(userRef);
+
+          return { data };
         } catch (error) {
           return { error };
         }
@@ -706,6 +741,8 @@ export const {
   useUpdateNoteMutation,
   useDeleteNoteMutation,
   useAddUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
   useGetIncomeListQuery,
   useUpdateIncomeMutation,
   useGetExpenseListQuery,

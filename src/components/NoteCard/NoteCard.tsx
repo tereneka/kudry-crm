@@ -1,5 +1,5 @@
 import './NoteCard.css';
-import { DbNote, RegUser } from '../../types';
+import { DbNote, Client } from '../../types';
 import { phoneFormat } from '../../utils/format';
 import { useAppDispatch } from '../../store';
 import { useEffect } from 'react';
@@ -20,7 +20,7 @@ import CardMenu from '../CardMenu/CardMenu';
 
 interface NoteCardProps {
   note: DbNote;
-  user: RegUser | undefined;
+  user: Client | undefined;
   index?: number;
 }
 
@@ -109,7 +109,7 @@ export default function NoteCard({
 
           <div className='note-card__contacts'>
             <span>
-              {phoneFormat(user?.phone || '')}
+              {phoneFormat(user?.phone)}
             </span>
           </div>
         </div>

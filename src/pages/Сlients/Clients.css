@@ -1,0 +1,19 @@
+.clients {
+  max-width: 500px;
+  padding: 20px 0 20px 8px;
+}
+
+.clients__search {
+  margin-bottom: 20px;
+}
+
+.clients__card {
+  position: relative;
+  padding: 8px;
+  background: var(--disabled);
+  margin-bottom: 8px;
+}
+
+.clients__form {
+  width: calc(100% - 24px);
+}
