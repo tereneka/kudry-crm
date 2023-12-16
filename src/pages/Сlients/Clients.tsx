@@ -10,6 +10,7 @@ import AlternateColorCard from '../../components/AlternateColorCard/AlternateCol
 import {
   Button,
   Drawer,
+  Empty,
   FormInstance,
   Input,
 } from 'antd';
@@ -28,10 +29,10 @@ import {
   setIsClientFormActive,
   setIsClientFormOpened,
 } from '../../reducers/clientsSlice';
-import { SearchProps } from 'antd/es/input';
+import Spinner from '../../components/Spinner/Spinner';
 
 export default function Clients() {
-  const { data: clientList } =
+  const { data: clientList, isLoading } =
     useGetUserListQuery();
 
   const {
@@ -68,10 +69,15 @@ export default function Clients() {
   const dispatch = useAppDispatch();
 
   function handleSearch(value: string) {
-    const result = clientList?.filter((client) =>
-      client.name
-        .toLocaleLowerCase()
-        .includes(value.toLocaleLowerCase())
+    const searchedText = value
+      .toLocaleLowerCase()
+      .trim();
+    const result = clientList?.filter(
+      (client) =>
+        client.name
+          .toLocaleLowerCase()
+          .includes(searchedText) ||
+        client.phone.includes(searchedText)
     );
     setFiltredClientList(result);
   }
@@ -144,78 +150,113 @@ export default function Clients() {
   }, [isAddError]);
 
   return (
-    <div className='clients'>
-      <Input.Search
-        className='clients__search'
-        size='large'
-        onSearch={handleSearch}
-        enterButton
-        allowClear
-      />
-      {filtredClientList?.map((client, index) => (
-        <AlternateColorCard
-          className='clients__card'
-          key={client.id}>
-          <CardMenu
-            color={
-              index % 2 === 0
-                ? 'danger'
-                : 'primary'
-            }
-            phone={client.phone}
-            otherBtnGroup={[
-              {
-                label: (
-                  <Button
-                    size='large'
-                    type='text'
-                    icon={
-                      <DeleteOutlined
-                        rev={undefined}
-                        className='note-card__icon'
-                      />
-                    }
-                    onClick={() =>
-                      deleteClient(client.id)
-                    }
-                  />
-                ),
-                key: '5',
-              },
-            ]}
-          />
-          <ClientForm
-            name='edit'
-            client={client}
-            className='clients__form'
-            isBtnGroupCollapsed={true}
-            onFinish={handleUpdateFormSubmit}
-            isLoading={
-              isUpdateLoading &&
-              currentClientId === client.id
-            }
-          />
-        </AlternateColorCard>
-      ))}
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div className='clients'>
+          {clientList &&
+          clientList?.length > 0 ? (
+            <>
+              <Input.Search
+                className='clients__search'
+                size='large'
+                onSearch={handleSearch}
+                enterButton
+                allowClear
+              />
+              {filtredClientList?.map(
+                (client, index) => (
+                  <AlternateColorCard
+                    className='clients__card'
+                    key={client.id}>
+                    <CardMenu
+                      color={
+                        index % 2 === 0
+                          ? 'danger'
+                          : 'primary'
+                      }
+                      phone={client.phone}
+                      otherBtnGroup={[
+                        {
+                          label: (
+                            <Button
+                              size='large'
+                              type='text'
+                              icon={
+                                <DeleteOutlined
+                                  rev={undefined}
+                                  className='note-card__icon'
+                                />
+                              }
+                              onClick={() =>
+                                deleteClient(
+                                  client.id
+                                )
+                              }
+                            />
+                          ),
+                          key: '5',
+                        },
+                      ]}
+                    />
+                    <ClientForm
+                      name='edit'
+                      client={client}
+                      className='clients__form'
+                      isBtnGroupCollapsed={true}
+                      onFinish={
+                        handleUpdateFormSubmit
+                      }
+                      isLoading={
+                        isUpdateLoading &&
+                        currentClientId ===
+                          client.id
+                      }
+                    />
+                  </AlternateColorCard>
+                )
+              )}
+            </>
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description='нет клиентов'
+            />
+          )}
 
-      <OpenFormBtn
-        title='новый клиент'
-        isFormActive={isClientFormActive}
-        onClick={openAddForm}
-      />
+          {clientList &&
+            clientList?.length > 0 &&
+            filtredClientList &&
+            filtredClientList?.length < 1 && (
+              <Empty
+                image={
+                  Empty.PRESENTED_IMAGE_SIMPLE
+                }
+                description='клиент не найден'
+              />
+            )}
 
-      <Drawer
-        title={'НОВЫЙ КЛИЕНТ'}
-        open={isClientFormOpened}
-        onClose={closeAddForm}>
-        <ClientForm
-          isLabels={true}
-          onFinish={handleAddFormSubmit}
-          isLoading={isAddLoading}
-          closeForm={closeAddForm}
-          isFormOpened={isClientFormOpened}
-        />
-      </Drawer>
-    </div>
+          <OpenFormBtn
+            title='новый клиент'
+            isFormActive={isClientFormActive}
+            onClick={openAddForm}
+          />
+
+          <Drawer
+            title={'НОВЫЙ КЛИЕНТ'}
+            open={isClientFormOpened}
+            onClose={closeAddForm}>
+            <ClientForm
+              isLabels={true}
+              onFinish={handleAddFormSubmit}
+              isLoading={isAddLoading}
+              closeForm={closeAddForm}
+              isFormOpened={isClientFormOpened}
+            />
+          </Drawer>
+        </div>
+      )}
+    </>
   );
 }

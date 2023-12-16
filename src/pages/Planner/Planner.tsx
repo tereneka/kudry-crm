@@ -45,14 +45,21 @@ import notesIconBlack from '../../images/notes-black.svg';
 import personIconWhite from '../../images/person-lines-white.svg';
 import notesIconWhite from '../../images/notes-white.svg';
 import OpenFormBtn from '../../components/OpenFormBtn/OpenFormBtn';
+import Spinner from '../../components/Spinner/Spinner';
 
 export default function Planner() {
-  const { data: regList } =
-    useGetRegistrationListQuery(7);
-  const { data: noteList } =
-    useGetNoteListQuery(7);
-  const { data: masterList } =
-    useGetMasterListQuery();
+  const {
+    data: regList,
+    isLoading: isRegListLoading,
+  } = useGetRegistrationListQuery(7);
+  const {
+    data: noteList,
+    isLoading: isNoteListLoading,
+  } = useGetNoteListQuery(7);
+  const {
+    data: masterList,
+    isLoading: isMasterListLoading,
+  } = useGetMasterListQuery();
 
   const { currentMaster } = useAppSelector(
     (state) => state.mastersState
@@ -142,104 +149,117 @@ export default function Planner() {
   }, [isFormActive]);
 
   return (
-    <div className='planner'>
-      <div className='planner__container'>
-        <MastersSelect
-          isAllOption={false}
-          currentMaster={currentMaster}
-          onChange={handleMasterChange}
-        />
-        <div className='planner__btn-group'>
-          {currentTodoListName === 'reg' && (
-            <Tooltip title='выбрать время'>
-              <Button
-                icon={
-                  <SelectOutlined
-                    rev={undefined}
+    <>
+      {isRegListLoading ||
+      isNoteListLoading ||
+      isMasterListLoading ? (
+        <Spinner />
+      ) : (
+        <div className='planner'>
+          <div className='planner__container'>
+            <MastersSelect
+              isAllOption={false}
+              currentMaster={currentMaster}
+              onChange={handleMasterChange}
+            />
+            <div className='planner__btn-group'>
+              {currentTodoListName === 'reg' && (
+                <Tooltip title='выбрать время'>
+                  <Button
+                    icon={
+                      <SelectOutlined
+                        rev={undefined}
+                      />
+                    }
+                    type='primary'
+                    danger={isTimeSelectAvailable}
+                    onClick={toggleTimeSelectBtn}
                   />
-                }
-                type='primary'
-                danger={isTimeSelectAvailable}
-                onClick={toggleTimeSelectBtn}
+                </Tooltip>
+              )}
+              <Radio.Group
+                className='planner__radio-group'
+                defaultValue={currentTodoListName}
+                buttonStyle='solid'
+                onChange={(e) =>
+                  handleTodoListChange(
+                    e.target.value
+                  )
+                }>
+                <Radio.Button
+                  className='planner__radio-btn'
+                  value={'reg'}>
+                  <div className='planner__radio-content'>
+                    <img
+                      src={
+                        currentTodoListName ===
+                        'reg'
+                          ? personIconWhite
+                          : personIconBlack
+                      }
+                      alt=''
+                    />
+                    <span>записи</span>
+                  </div>
+                </Radio.Button>
+                <Radio.Button
+                  value={'notes'}
+                  className='planner__radio-btn'>
+                  <div className='planner__radio-content'>
+                    <img
+                      src={
+                        currentTodoListName ===
+                        'notes'
+                          ? notesIconWhite
+                          : notesIconBlack
+                      }
+                      alt=''
+                    />
+                    <span>напоминалки</span>
+                  </div>
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+          </div>
+
+          <PlannerCalendar />
+          <Todos />
+
+          {currentTodoListName === 'reg' && (
+            <>
+              <RegForm />
+              <RegModal
+                reg={regCardInfo}
+                user={regCardUser}
               />
-            </Tooltip>
+            </>
           )}
-          <Radio.Group
-            className='planner__radio-group'
-            defaultValue={currentTodoListName}
-            buttonStyle='solid'
-            onChange={(e) =>
-              handleTodoListChange(e.target.value)
-            }>
-            <Radio.Button
-              className='planner__radio-btn'
-              value={'reg'}>
-              <div className='planner__radio-content'>
-                <img
-                  src={
-                    currentTodoListName === 'reg'
-                      ? personIconWhite
-                      : personIconBlack
-                  }
-                  alt=''
-                />
-                <span>записи</span>
-              </div>
-            </Radio.Button>
-            <Radio.Button
-              value={'notes'}
-              className='planner__radio-btn'>
-              <div className='planner__radio-content'>
-                <img
-                  src={
-                    currentTodoListName ===
-                    'notes'
-                      ? notesIconWhite
-                      : notesIconBlack
-                  }
-                  alt=''
-                />
-                <span>напоминалки</span>
-              </div>
-            </Radio.Button>
-          </Radio.Group>
-        </div>
-      </div>
+          {currentTodoListName === 'notes' && (
+            <>
+              <NoteForm />
+              <NoteForm />
+            </>
+          )}
 
-      <PlannerCalendar />
-      <Todos />
-
-      {currentTodoListName === 'reg' && (
-        <>
-          <RegForm />
-          <RegModal
-            reg={regCardInfo}
-            user={regCardUser}
+          <OpenFormBtn
+            title={
+              currentTodoListName === 'reg'
+                ? 'новая запись'
+                : 'новая напоминалка'
+            }
+            isFormActive={isFormActive}
+            onClick={openForm}
+            hasBadge={
+              currentTodoListName === 'reg'
+            }
+            count={
+              isFormActive
+                ? (regFormDuration || 0) + 'ч.'
+                : 0
+            }
           />
-        </>
+        </div>
       )}
-      {currentTodoListName === 'notes' && (
-        <>
-          <NoteForm />
-          <NoteForm />
-        </>
-      )}
-
-      <OpenFormBtn
-        title={
-          currentTodoListName === 'reg'
-            ? 'новая запись'
-            : 'новая напоминалка'
-        }
-        isFormActive={isFormActive}
-        onClick={openForm}
-        hasBadge={currentTodoListName === 'reg'}
-        count={
-          isFormActive
-            ? (regFormDuration || 0) + 'ч.'
-            : 0
-        }
-      />
-    </div>
+    </>
   );
 }

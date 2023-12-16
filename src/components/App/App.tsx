@@ -14,13 +14,13 @@ import { setCurrentAccount } from '../../reducers/appSlice';
 import { disableIosTextFieldZoom } from '../../utils/format';
 import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
+import Spinner from '../Spinner/Spinner';
 
 function App() {
   const { pathname: location } = useLocation();
 
   const { data: masters } =
     useGetMasterListQuery();
-
   const { currentAccount } = useAppSelector(
     (state) => state.appState
   );
@@ -43,6 +43,7 @@ function App() {
       duration: 4,
     });
   }
+  console.log(currentAccount);
 
   onAuthStateChanged(auth, (account) => {
     dispatch(setCurrentAccount(account));
@@ -76,7 +77,11 @@ function App() {
     <div className='content'>
       {!!currentAccount && <Header />}
       <main>
-        <RouterApp />
+        {currentAccount === undefined ? (
+          <Spinner />
+        ) : (
+          <RouterApp />
+        )}
       </main>
 
       {errorMessage}

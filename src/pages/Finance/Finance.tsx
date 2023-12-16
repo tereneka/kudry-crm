@@ -39,6 +39,7 @@ import {
 } from '../../reducers/financeSlice';
 import ExpensesForm from '../../components/ExpensesForm/ExpensesForm';
 import OpenFormBtn from '../../components/OpenFormBtn/OpenFormBtn';
+import Spinner from '../../components/Spinner/Spinner';
 
 ChartJS.register(
   CategoryScale,
@@ -79,16 +80,26 @@ export default function Finance() {
       : 2
   );
 
-  const { data: incomeList } =
-    useGetIncomeListQuery(dateRange);
-  const { data: expenseList } =
-    useGetExpenseListQuery(dateRange);
-  const { data: categoryList } =
-    useGetCategoryListQuery();
-  const { data: masterList } =
-    useGetMasterListQuery();
-  const { data: expCategoryList } =
-    useGetExpensesCategoryListQuery();
+  const {
+    data: incomeList,
+    isLoading: isIncomeListLoading,
+  } = useGetIncomeListQuery(dateRange);
+  const {
+    data: expenseList,
+    isLoading: isExpenseListLoading,
+  } = useGetExpenseListQuery(dateRange);
+  const {
+    data: categoryList,
+    isLoading: isCategoryListLoading,
+  } = useGetCategoryListQuery();
+  const {
+    data: masterList,
+    isLoading: isMasterListLoading,
+  } = useGetMasterListQuery();
+  const {
+    data: expCategoryList,
+    isLoading: isExpCategoryListLoading,
+  } = useGetExpensesCategoryListQuery();
 
   const { isExpensesFormActive } = useAppSelector(
     (state) => state.financeState
@@ -165,69 +176,87 @@ export default function Finance() {
   }
 
   return (
-    <div className='finance'>
-      <div className='finance__settings'>
-        <RangePicker
-          popupClassName='finance__calendar'
-          showTime
-          showNow
-          allowClear={false}
-          format={DATE_FORMAT}
-          defaultValue={[
-            dayjs(defaultStartDay, DATE_FORMAT),
-            dayjs(defaultEndDay, DATE_FORMAT),
-          ]}
-          onChange={handleDateRangeChange}
-        />
-        <label className='finance__sort'>
-          доход:{' '}
-          <Select
-            className='finance__sort-select'
-            options={[
-              { value: 1, label: 'итого' },
-              {
-                value: 2,
-                label: 'по категориям',
-              },
-              { value: 3, label: 'по мастерам' },
-            ]}
-            defaultValue={1}
-            onChange={(value) =>
-              setIncomeSort(value)
-            }
+    <>
+      {isIncomeListLoading ||
+      isExpenseListLoading ||
+      isMasterListLoading ||
+      isCategoryListLoading ||
+      isExpCategoryListLoading ? (
+        <Spinner />
+      ) : (
+        <div className='finance'>
+          <div className='finance__settings'>
+            <RangePicker
+              popupClassName='finance__calendar'
+              showTime
+              showNow
+              allowClear={false}
+              format={DATE_FORMAT}
+              defaultValue={[
+                dayjs(
+                  defaultStartDay,
+                  DATE_FORMAT
+                ),
+                dayjs(defaultEndDay, DATE_FORMAT),
+              ]}
+              onChange={handleDateRangeChange}
+            />
+            <label className='finance__sort'>
+              доход:{' '}
+              <Select
+                className='finance__sort-select'
+                options={[
+                  { value: 1, label: 'итого' },
+                  {
+                    value: 2,
+                    label: 'по категориям',
+                  },
+                  {
+                    value: 3,
+                    label: 'по мастерам',
+                  },
+                ]}
+                defaultValue={1}
+                onChange={(value) =>
+                  setIncomeSort(value)
+                }
+              />
+            </label>
+            <label className='finance__sort'>
+              расход:{' '}
+              <Select
+                className='finance__sort-select'
+                options={[
+                  { value: 1, label: 'итого' },
+                  {
+                    value: 2,
+                    label: 'по категориям',
+                  },
+                ]}
+                defaultValue={1}
+                onChange={(value) =>
+                  setExpenseSort(value)
+                }
+              />
+            </label>
+          </div>
+
+          <Bar
+            options={chartOptions(
+              chartrAspectRatio
+            )}
+            data={chartData}
           />
-        </label>
-        <label className='finance__sort'>
-          расход:{' '}
-          <Select
-            className='finance__sort-select'
-            options={[
-              { value: 1, label: 'итого' },
-              {
-                value: 2,
-                label: 'по категориям',
-              },
-            ]}
-            defaultValue={1}
-            onChange={(value) =>
-              setExpenseSort(value)
-            }
+
+          <OpenFormBtn
+            title='добавить расходы'
+            isFormActive={isExpensesFormActive}
+            onClick={openForm}
           />
-        </label>
-      </div>
 
-      <Bar
-        options={chartOptions(chartrAspectRatio)}
-        data={chartData}
-      />
-
-      <OpenFormBtn
-        title='добавить расходы'
-        isFormActive={isExpensesFormActive}
-        onClick={openForm}
-      />
-
-      <ExpensesForm />
-    </div>
+          <ExpensesForm />
+        </div>
+      )}
+    </>
   );
 }

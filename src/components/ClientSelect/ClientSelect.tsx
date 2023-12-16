@@ -1,5 +1,5 @@
 import './ClientSelect.css';
-import { Button, Select } from 'antd';
+import { Button, Empty, Select } from 'antd';
 import { useGetUserListQuery } from '../../reducers/apiSlice';
 import {
   PlusOutlined,
@@ -8,6 +8,7 @@ import {
 import { ReactNode } from 'react';
 import { phoneFormat } from '../../utils/format';
 import { Client } from '../../types';
+import { DefaultOptionType } from 'antd/es/select';
 
 interface UserSelectProps {
   suffixIcon?: ReactNode;
@@ -42,26 +43,42 @@ export default function ClientSelect({
     );
   }
 
+  function handleSearch(
+    input: string,
+    option: DefaultOptionType | undefined
+  ) {
+    const searchedText = input
+      .toLocaleLowerCase()
+      .trim();
+    const findedClient = clientList?.find(
+      (user) => user.id === option?.value
+    );
+    return !!(
+      findedClient?.name
+        .toLowerCase()
+        .includes(searchedText) ||
+      findedClient?.phone.includes(searchedText)
+    );
+  }
+
   return (
     <Select
       value={value}
       onChange={onChange}
       className='client-select'
-      notFoundContent={<></>}
+      notFoundContent={
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description='клиент не найден'
+        />
+      }
       optionLabelProp='label'
       listHeight={150}
       showSearch
       allowClear
       suffixIcon={suffixIcon}
       optionFilterProp='children'
-      filterOption={(input, option) => {
-        return !!clientList
-          ?.find(
-            (user) => user.id === option?.value
-          )
-          ?.name.toLowerCase()
-          .includes(input.toLowerCase());
-      }}
+      filterOption={handleSearch}
       dropdownRender={(menu) => (
         <>
           {isAddClientBtn && (

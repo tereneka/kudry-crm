@@ -5,11 +5,11 @@ import {
 import { User } from 'firebase/auth';
 
 interface AppState {
-  currentAccount: User | null;
+  currentAccount: User | null | undefined;
   isError: boolean;
 }
 const initialState: AppState = {
-  currentAccount: null,
+  currentAccount: undefined,
   isError: false,
 };
 
