@@ -11,8 +11,9 @@ import Finance from '../../pages/Finance/Finance';
 import Clients from '../../pages/Сlients/Clients';
 
 export default function RouterApp() {
-  const { currentAccount, isOwnerAccount } =
-    useAppSelector((state) => state.appState);
+  const { currentAccount } = useAppSelector(
+    (state) => state.appState
+  );
 
   return (
     <Routes>
@@ -44,18 +45,14 @@ export default function RouterApp() {
           path='/planner'
           element={<Planner />}
         />
-        {isOwnerAccount && (
-          <>
-            <Route
-              path='/clients'
-              element={<Clients />}
-            />
-            <Route
-              path='/finance'
-              element={<Finance />}
-            />
-          </>
-        )}
+        <Route
+          path='/clients'
+          element={<Clients />}
+        />
+        <Route
+          path='/finance'
+          element={<Finance />}
+        />
       </Route>
 
       <Route
