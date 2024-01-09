@@ -15,6 +15,7 @@ import { disableIosTextFieldZoom } from '../../utils/format';
 import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
+import { convertDateStrToDate } from '../../utils/date';
 
 function App() {
   const { pathname: location } = useLocation();
@@ -43,7 +44,6 @@ function App() {
       duration: 4,
     });
   }
-  console.log(currentAccount);
 
   onAuthStateChanged(auth, (account) => {
     dispatch(setCurrentAccount(account));

@@ -54,19 +54,9 @@ ChartJS.register(
 const { RangePicker } = DatePicker;
 
 export default function Finance() {
-  const today = new Date();
-  const defaultStartDay = `01.${today.getMonth()}.${today.getFullYear()}`;
-  const defaultEndDay = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    0
-  ).toLocaleDateString();
-
   const [dateRange, setDateRange] = useState({
-    startDate: convertDateStrToDate(
-      defaultStartDay
-    ),
-    endDate: convertDateStrToDate(defaultEndDay),
+    startDate: dayjs().startOf('month').toDate(),
+    endDate: dayjs().endOf('month').toDate(),
   });
   const [incomeSort, setIncomeSort] = useState(1);
   const [expenseSort, setExpenseSort] =
@@ -193,11 +183,8 @@ export default function Finance() {
               allowClear={false}
               format={DATE_FORMAT}
               defaultValue={[
-                dayjs(
-                  defaultStartDay,
-                  DATE_FORMAT
-                ),
-                dayjs(defaultEndDay, DATE_FORMAT),
+                dayjs().startOf('month'),
+                dayjs().endOf('month'),
               ]}
               onChange={handleDateRangeChange}
             />
