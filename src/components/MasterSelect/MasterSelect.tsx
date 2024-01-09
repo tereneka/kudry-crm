@@ -3,6 +3,7 @@ import { Avatar, Select } from 'antd';
 import { Master } from '../../types';
 import { nanoid } from 'nanoid';
 import './MasterSelect.css';
+import { useAppSelector } from '../../store';
 
 interface Props {
   isAllOption: boolean;
@@ -17,6 +18,10 @@ export default function MasterSelect({
 }: Props) {
   const { data: masterList } =
     useGetMasterListQuery();
+
+  const { isOwnerAccount } = useAppSelector(
+    (state) => state.appState
+  );
 
   const { Option } = Select;
 
@@ -33,6 +38,10 @@ export default function MasterSelect({
       </span>
     </div>
   );
+
+  const currentMasterOptionContent =
+    optionContent(currentMaster as Master);
+
   return (
     <div className='master-select'>
       <Select
@@ -43,7 +52,7 @@ export default function MasterSelect({
         placeholder={'Выберите мастера'}
         optionLabelProp='label'
         suffixIcon>
-        {isAllOption && (
+        {isAllOption && isOwnerAccount && (
           <Option
             key={nanoid()}
             value={'all'}
@@ -52,17 +61,26 @@ export default function MasterSelect({
           </Option>
         )}
 
-        {masterList?.map((master) => {
-          const content = optionContent(master);
-          return (
-            <Option
-              key={master.id}
-              value={master.id}
-              label={content}>
-              {content}
-            </Option>
-          );
-        })}
+        {isOwnerAccount ? (
+          masterList?.map((master) => {
+            const content = optionContent(master);
+            return (
+              <Option
+                key={master.id}
+                value={master.id}
+                label={content}>
+                {content}
+              </Option>
+            );
+          })
+        ) : (
+          <Option
+            key={currentMaster?.id}
+            value={currentMaster?.id}
+            label={currentMasterOptionContent}>
+            {currentMasterOptionContent}
+          </Option>
+        )}
       </Select>
     </div>
   );

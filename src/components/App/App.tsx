@@ -8,9 +8,16 @@ import {
 import { setCurrentMaster } from '../../reducers/mastersSlice';
 import { message } from 'antd';
 import RouterApp from '../RouterApp/RouterApp';
-import { onAuthStateChanged } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  updateCurrentUser,
+  updateProfile,
+} from 'firebase/auth';
 import { auth } from '../../db/firebaseConfig';
-import { setCurrentAccount } from '../../reducers/appSlice';
+import {
+  setCurrentAccount,
+  setIsOwnerAccount,
+} from '../../reducers/appSlice';
 import { disableIosTextFieldZoom } from '../../utils/format';
 import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
@@ -21,9 +28,8 @@ function App() {
 
   const { data: masters } =
     useGetMasterListQuery();
-  const { currentAccount } = useAppSelector(
-    (state) => state.appState
-  );
+  const { currentAccount, isOwnerAccount } =
+    useAppSelector((state) => state.appState);
   const { isError } = useAppSelector(
     (state) => state.appState
   );
@@ -43,10 +49,19 @@ function App() {
       duration: 4,
     });
   }
-  console.log(currentAccount);
 
   onAuthStateChanged(auth, (account) => {
     dispatch(setCurrentAccount(account));
+    if (account) {
+      dispatch(
+        setIsOwnerAccount(
+          account.displayName === 'owner'
+        )
+      );
+    } else {
+      dispatch(setIsOwnerAccount(undefined));
+      dispatch(setCurrentMaster(undefined));
+    }
   });
 
   useEffect(() => {
@@ -60,10 +75,24 @@ function App() {
   }, [location]);
 
   useEffect(() => {
-    if (masters && !currentMaster) {
-      dispatch(setCurrentMaster(masters[0]));
+    if (
+      masters &&
+      !currentMaster &&
+      isOwnerAccount !== undefined
+    ) {
+      !isOwnerAccount
+        ? dispatch(
+            setCurrentMaster(
+              masters.find(
+                (master) =>
+                  master.id ===
+                  currentAccount?.displayName
+              )
+            )
+          )
+        : dispatch(setCurrentMaster(masters[0]));
     }
-  }, [masters]);
+  }, [masters, currentAccount, isOwnerAccount]);
 
   useEffect(() => {
     if (isError) {
@@ -71,7 +100,12 @@ function App() {
     }
   }, [isError]);
 
-  disableIosTextFieldZoom();
+  // disableIosTextFieldZoom();
+  // if (auth.currentUser) {
+  //   updateProfile(auth.currentUser, {
+  //     displayName: 'k0z5Dg46yQm3lwi5HsUW',
+  //   });
+  // }
 
   return (
     <div className='content'>
