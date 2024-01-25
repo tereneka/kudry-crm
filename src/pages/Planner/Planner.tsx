@@ -25,12 +25,7 @@ import {
   setDraggableRegCard,
 } from '../../reducers/regCardSlice';
 import RegModal from '../../components/RegModal/RegModal';
-import {
-  Badge,
-  Button,
-  Radio,
-  Tooltip,
-} from 'antd';
+import { Button, Radio, Tooltip } from 'antd';
 import NoteForm from '../../components/NoteForm/NoteForm';
 import { filterNoteListByMasterId } from '../../reducers/notesSlice';
 import {
@@ -51,11 +46,11 @@ export default function Planner() {
   const {
     data: regList,
     isLoading: isRegListLoading,
-  } = useGetRegistrationListQuery(7);
+  } = useGetRegistrationListQuery();
   const {
     data: noteList,
     isLoading: isNoteListLoading,
-  } = useGetNoteListQuery(7);
+  } = useGetNoteListQuery();
   const {
     data: masterList,
     isLoading: isMasterListLoading,

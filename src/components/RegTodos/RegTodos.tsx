@@ -44,7 +44,7 @@ export default function RegTodos() {
     useGetServiceListQuery();
 
   const { data: regList } =
-    useGetRegistrationListQuery(7);
+    useGetRegistrationListQuery();
   const { data: masterList } =
     useGetMasterListQuery();
   const {

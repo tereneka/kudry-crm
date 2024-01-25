@@ -4,3 +4,15 @@
   right: 10px;
   z-index: 10;
 }
+
+@media screen and (min-width: 700px) {
+  .open-form-btn {
+    right: 20px;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .open-form-btn {
+    right: calc((100vw - 1024px) / 2);
+  }
+}

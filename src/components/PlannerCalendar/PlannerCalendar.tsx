@@ -24,7 +24,7 @@ export default function PlannerCalendar() {
   );
 
   const { data: regList } =
-    useGetRegistrationListQuery(7);
+    useGetRegistrationListQuery();
 
   const dispatch = useAppDispatch();
 
